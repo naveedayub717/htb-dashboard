@@ -13,14 +13,9 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-if (!process.env.DATABASE_URL) {
-  console.error('ERROR: DATABASE_URL environment variable is not set.');
-  process.exit(1);
-}
-
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false },
+  connectionString: process.env.DATABASE_URL || '',
+  ssl: (process.env.DATABASE_URL || '').includes('localhost') ? false : { rejectUnauthorized: false },
 });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
@@ -623,6 +618,11 @@ app.get('*', (req, res) => {
 // ── Start ─────────────────────────────────────────────────────────────────────
 
 const PORT = process.env.PORT || 3000;
-initDB()
-  .then(() => server.listen(PORT, () => console.log(`HTB Dashboard running on port ${PORT}`)))
-  .catch(e => { console.error('DB init failed:', e.message); process.exit(1); });
+server.listen(PORT, () => {
+  console.log(`HTB Dashboard listening on port ${PORT}`);
+  if (!process.env.DATABASE_URL) {
+    console.error('WARNING: DATABASE_URL is not set. DB calls will fail.');
+    return;
+  }
+  initDB().catch(e => console.error('DB init failed:', e.message));
+});
