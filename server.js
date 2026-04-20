@@ -186,18 +186,20 @@ app.post('/api/ig/sync', auth, async (req, res) => {
     existing.forEach(p => { ex[p.id] = p; });
 
     let all = [];
-    let url = `https://graph.instagram.com/${me.id}/media?fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count&limit=50&access_token=${token}`;
+    let url = `https://graph.instagram.com/${me.id}/media?fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count,video_views&limit=50&access_token=${token}`;
 
     while (url && all.length < 600) {
       const data = await apiFetch(url);
       const batch = (data.data || []).filter(p => p.media_type === 'VIDEO' || p.media_type === 'REEL');
       batch.forEach(p => {
+        const apiViews = p.video_views || 0;
+        const existingViews = ex[p.id]?.views || 0;
         all.push({
           id: p.id,
           caption: p.caption || '',
           thumb: p.thumbnail_url || p.media_url || '',
           ts: p.timestamp,
-          views: ex[p.id]?.views || 0,
+          views: apiViews > 0 ? apiViews : existingViews,
           likes: p.like_count || 0,
           comments: p.comments_count || 0,
           format: ex[p.id]?.format || null,
@@ -211,7 +213,9 @@ app.post('/api/ig/sync', auth, async (req, res) => {
       await pool.query(
         `INSERT INTO ig_posts (id, caption, thumb, ts, views, likes, comments, format, f_status, plat)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'ig')
-         ON CONFLICT (id) DO UPDATE SET caption=$2, thumb=$3, ts=$4, likes=$6, comments=$7`,
+         ON CONFLICT (id) DO UPDATE SET caption=$2, thumb=$3, ts=$4,
+           views = CASE WHEN $5 > 0 THEN $5 ELSE ig_posts.views END,
+           likes=$6, comments=$7`,
         [p.id, p.caption, p.thumb, p.ts, p.views, p.likes, p.comments, p.format ? JSON.stringify(p.format) : null, p.f_status]
       );
     }

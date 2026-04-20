@@ -254,7 +254,7 @@ textarea::placeholder{color:#bbb;}
 
 <div class="page" id="page-posts">
   <div class="ph">
-    <div><div class="pt">All Posts</div><div class="ps">Enter view counts from Instagram Insights. YouTube views pull automatically.</div></div>
+    <div><div class="pt">All Posts</div><div class="ps">View counts sync automatically on refresh. Use the input to override manually.</div></div>
   </div>
   <div class="plat-tabs" id="posts-plat-tabs">
     <div class="plat-tab active" onclick="switchPostsPlat('ig',this)"><span class="plat-dot pd-ig"></span> Instagram <span class="plat-count" id="posts-ig-ct">0</span></div>
@@ -815,7 +815,7 @@ function buildCard(p,showInp,maxV,isNew) {
   var newB=isNew?'<div style="position:absolute;bottom:6px;left:6px;"><span class="tb tb-new">This week</span></div>':'';
   var viewsH=p.views>0?('<span class="cb-views">'+fv(p.views)+' views</span>'):'<span class="cb-views-empty">No views yet</span>';
   var vbarH=(maxV&&p.views)?('<div class="vbar"><div class="vbar-fill'+(isYT?' yt':'')+'" style="width:'+barW+'%"></div></div>'):'';
-  var inpH=showInp?('<div class="vi-row" onclick="event.stopPropagation()"><input class="vi-inp" id="vi-'+p.id+'" type="number" placeholder="Views from Insights..." value="'+(p.views||'')+'" /><button class="vi-btn" onclick="saveViews(\''+p.id+'\')">Save</button></div>'):'';
+  var inpH=showInp?('<div class="vi-row" onclick="event.stopPropagation()"><input class="vi-inp" id="vi-'+p.id+'" type="number" placeholder="Override views manually..." value="'+(p.views||'')+'" /><button class="vi-btn" onclick="saveViews(\''+p.id+'\')">Save</button></div>'):'';
   var mClass=isYT?'ctag ctag-mult-yt':'ctag ctag-mult';
   var multTag=(p.views>0&&m>=1.5)?('<span class="'+mClass+'">'+m+'x avg</span>'):'';
   var fmtTag=p.format?('<span class="ctag ctag-fmt">'+(p.format.matchedFormat||'Analyzed')+'</span>'):'';
