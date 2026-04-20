@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTB Content Intelligence</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#f7f7f5;color:#1a1a1a;min-height:100vh;font-size:13px;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:200px;background:#fff;border-right:0.5px solid #e5e5e3;display:flex;flex-direction:column;z-index:100;}
+.logo{padding:20px 16px 16px;border-bottom:0.5px solid #e5e5e3;}
+.logo-mark{font-size:14px;font-weight:600;color:#1a1a1a;}
+.logo-sub{font-size:10px;color:#999;margin-top:1px;letter-spacing:0.06em;text-transform:uppercase;}
+.nav{padding:8px 0;flex:1;}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;color:#666;font-size:12px;transition:all 0.12s;border-left:2px solid transparent;user-select:none;}
+.ni:hover{color:#1a1a1a;background:#f7f7f5;}
+.ni.active{color:#1a1a1a;border-left-color:#1a1a1a;background:#f7f7f5;font-weight:500;}
+.main{margin-left:200px;padding:24px 28px;min-height:100vh;background:#f7f7f5;}
+.page{display:none;}.page.active{display:block;}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.pt{font-size:17px;font-weight:600;color:#1a1a1a;}
+.ps{font-size:12px;color:#999;margin-top:2px;}
+.btn{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all 0.12s;padding:7px 14px;border-radius:7px;}
+.btn-dark{background:#1a1a1a;color:#fff;}.btn-dark:hover{background:#333;}
+.btn-border{background:#fff;color:#666;border:0.5px solid #d5d5d3;}.btn-border:hover{color:#1a1a1a;border-color:#999;}
+.btn-green{background:#eaf3de;color:#2d6a1f;border:0.5px solid #c0dd97;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+.inp{font-family:'Inter',sans-serif;font-size:12px;background:#f7f7f5;border:0.5px solid #d5d5d3;border-radius:7px;padding:8px 12px;color:#1a1a1a;outline:none;transition:border 0.12s;}
+.inp:focus{border-color:#1a1a1a;background:#fff;}
+.inp::placeholder{color:#bbb;}
+textarea{font-family:'Inter',sans-serif;font-size:11px;background:#f7f7f5;border:0.5px solid #d5d5d3;border-radius:6px;padding:8px 10px;color:#1a1a1a;line-height:1.5;outline:none;resize:vertical;min-height:70px;width:100%;}
+textarea:focus{border-color:#1a1a1a;background:#fff;}
+textarea::placeholder{color:#bbb;}
+.plat-tabs{display:flex;gap:6px;margin-bottom:16px;}
+.plat-tab{font-size:11px;padding:5px 12px;border-radius:20px;border:0.5px solid #d5d5d3;color:#666;background:#fff;cursor:pointer;transition:all 0.12s;user-select:none;display:flex;align-items:center;gap:5px;}
+.plat-tab:hover{color:#1a1a1a;border-color:#999;}
+.plat-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;font-weight:500;}
+.plat-count{font-size:9px;padding:1px 5px;border-radius:8px;margin-left:2px;}
+.plat-tab.active .plat-count{background:rgba(255,255,255,0.2);color:#fff;}
+.plat-tab:not(.active) .plat-count{background:#f0f0ee;color:#888;}
+.plat-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.pd-ig{background:#e1306c;}.pd-yt{background:#ff0000;}
+.plat-section{background:#fff;border:0.5px solid #e5e5e3;border-radius:10px;margin-bottom:10px;overflow:hidden;}
+.plat-section-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
+.plat-section-header:hover{background:#fafafa;}
+.psh-left{display:flex;align-items:center;gap:10px;}
+.psh-title{font-size:13px;font-weight:500;color:#1a1a1a;}
+.psh-sub{font-size:11px;color:#999;margin-top:1px;}
+.psh-stats{display:flex;gap:14px;align-items:center;}
+.psh-stat{font-size:11px;color:#666;}
+.psh-stat strong{color:#1a1a1a;font-weight:500;}
+.psh-stat.green strong{color:#2d6a1f;}
+.plat-section-body{padding:0 16px 14px;border-top:0.5px solid #f0f0ee;}
+.connect-inline{display:flex;gap:8px;align-items:center;padding-top:12px;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.stat-card{background:#f7f7f5;border-radius:8px;padding:12px 14px;}
+.stat-label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;}
+.stat-val{font-size:20px;font-weight:600;color:#1a1a1a;line-height:1;}
+.stat-val.green{color:#2d6a1f;}
+.stat-sub{font-size:10px;color:#bbb;margin-top:2px;}
+.post-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.post-card{background:#fff;border:0.5px solid #e5e5e3;border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;}
+.post-card:hover{border-color:#999;transform:translateY(-1px);}
+.post-card.selected{border-color:#1a1a1a;box-shadow:0 0 0 1px #1a1a1a;}
+.thumb{width:100%;aspect-ratio:9/13;background:#e5e5e3;position:relative;overflow:hidden;}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:20px;}
+.thumb-ph.yt{background:#ffebee;color:#c62828;}
+.thumb-badges{position:absolute;top:6px;left:6px;right:6px;display:flex;justify-content:space-between;align-items:flex-start;}
+.tb{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;}
+.tb-mult{background:#2d6a1f;color:#fff;}
+.tb-plat-ig{background:#e1306c;color:#fff;}
+.tb-plat-yt{background:#ff0000;color:#fff;}
+.tb-new{background:#1857a4;color:#fff;}
+.cb{padding:10px;}
+.cb-caption{font-size:11px;color:#1a1a1a;line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.cb-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.cb-views{font-size:12px;font-weight:500;color:#2d6a1f;}
+.cb-views-empty{font-size:12px;color:#bbb;}
+.cb-date{font-size:10px;color:#bbb;}
+.vbar{height:2px;background:#f0f0ee;border-radius:1px;overflow:hidden;margin-bottom:6px;}
+.vbar-fill{height:100%;background:#2d6a1f;border-radius:1px;}
+.vbar-fill.yt{background:#ff0000;}
+.cb-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.ctag{font-size:9px;padding:2px 6px;border-radius:3px;border:0.5px solid #e5e5e3;color:#888;}
+.ctag-mult{border-color:#c0dd97;color:#2d6a1f;background:#f0f8e8;}
+.ctag-mult-yt{border-color:#ffcdd2;color:#c62828;background:#ffebee;}
+.ctag-win{border-color:#c0dd97;color:#2d6a1f;background:#f0f8e8;}
+.ctag-test{border-color:#d5d5d3;color:#888;background:#f7f7f5;}
+.ctag-fmt{border-color:#b5d4f4;color:#1857a4;background:#e6f1fb;}
+.vi-row{display:flex;gap:5px;margin-top:6px;}
+.vi-inp{flex:1;font-family:'Inter',sans-serif;font-size:11px;padding:4px 8px;border:0.5px solid #d5d5d3;border-radius:5px;background:#f7f7f5;color:#1a1a1a;outline:none;}
+.vi-inp:focus{border-color:#1a1a1a;background:#fff;}
+.vi-inp::placeholder{color:#bbb;}
+.vi-btn{font-family:'Inter',sans-serif;font-size:10px;font-weight:500;padding:4px 9px;border:0.5px solid #d5d5d3;border-radius:5px;background:#fff;color:#666;cursor:pointer;}
+.fmt-panel{background:#fff;border:0.5px solid #e5e5e3;border-radius:10px;padding:20px;margin-top:16px;}
+.fp-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:16px;}
+.fp-title{font-size:15px;font-weight:600;color:#1a1a1a;}
+.fp-meta{font-size:11px;color:#999;margin-top:3px;}
+.why-box{font-size:12px;color:#2d6a1f;padding:10px 12px;background:#f0f8e8;border-radius:7px;border:0.5px solid #c0dd97;margin-bottom:14px;line-height:1.5;}
+.match-box{font-size:12px;color:#1857a4;padding:10px 12px;background:#e6f1fb;border-radius:7px;border:0.5px solid #b5d4f4;margin-bottom:14px;line-height:1.5;}
+.section{background:#f7f7f5;border:0.5px solid #e5e5e3;border-radius:8px;padding:12px 14px;border-left:2px solid #1a1a1a;margin-bottom:8px;}
+.sec-label{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#999;font-weight:600;margin-bottom:2px;}
+.sec-name{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:4px;}
+.sec-desc{font-size:12px;color:#666;line-height:1.6;}
+.sec-ex{margin-top:7px;padding:7px 10px;background:#fff;border-radius:5px;font-size:11px;color:#666;font-style:italic;border:0.5px solid #e5e5e3;}
+.tpl-box{background:#f7f7f5;border:0.5px solid #e5e5e3;border-radius:8px;padding:14px;margin-top:12px;}
+.tpl-label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:10px;}
+.tpl-line{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:0.5px solid #e5e5e3;}
+.tpl-line:last-child{border-bottom:none;}
+.tpl-num{width:18px;height:18px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;flex-shrink:0;margin-top:1px;}
+.tpl-text{font-size:12px;color:#666;line-height:1.5;}
+.wf-card{background:#fff;border:0.5px solid #e5e5e3;border-radius:10px;padding:16px;margin-bottom:8px;position:relative;}
+.wf-card.confirmed{border-color:#c0dd97;}.wf-card.yt-confirmed{border-color:#ffcdd2;}
+.wf-badge{position:absolute;top:-1px;right:10px;font-size:9px;font-weight:600;padding:2px 8px;border-radius:0 0 5px 5px;letter-spacing:0.04em;text-transform:uppercase;}
+.wf-badge.confirmed{background:#2d6a1f;color:#fff;}.wf-badge.yt-confirmed{background:#c62828;color:#fff;}.wf-badge.testing{background:#e5e5e3;color:#666;}
+.wf-name{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:3px;}
+.wf-score{font-size:11px;color:#2d6a1f;margin-bottom:4px;font-weight:500;}
+.wf-step{display:flex;gap:7px;font-size:11px;color:#666;line-height:1.4;margin-bottom:5px;}
+.wf-step-n{width:16px;height:16px;border-radius:50%;background:#f0f0ee;border:0.5px solid #e5e5e3;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:#888;flex-shrink:0;margin-top:1px;}
+.wf-rule{font-size:11px;color:#888;padding:3px 0;border-bottom:0.5px solid #f0f0ee;line-height:1.4;}
+.wf-rule:last-child{border-bottom:none;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.sec-hd-title{font-size:13px;font-weight:500;color:#1a1a1a;}
+.count-pill{font-size:10px;padding:1px 7px;border-radius:10px;background:#f0f0ee;color:#888;border:0.5px solid #e5e5e3;}
+.filters{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.pill{font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid #d5d5d3;color:#666;background:#fff;cursor:pointer;transition:all 0.12s;user-select:none;}
+.pill:hover{color:#1a1a1a;border-color:#999;}
+.pill.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;font-weight:500;}
+.empty{text-align:center;padding:40px 20px;}
+.empty-icon{font-size:24px;opacity:0.25;margin-bottom:10px;}
+.empty-text{font-size:13px;color:#666;margin-bottom:4px;font-weight:500;}
+.empty-sub{font-size:12px;color:#bbb;}
+.load-overlay{position:fixed;inset:0;background:rgba(247,247,245,0.9);display:flex;align-items:center;justify-content:center;z-index:1000;}
+.load-box{background:#fff;border:0.5px solid #e5e5e3;border-radius:12px;padding:28px 36px;text-align:center;}
+.spinner{width:28px;height:28px;border:1.5px solid #e5e5e3;border-top-color:#1a1a1a;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sep{border:none;border-top:0.5px solid #e5e5e3;margin:10px 0;}
+.divider{border:none;border-top:0.5px solid #e5e5e3;margin:20px 0;}
+.sel{font-family:'Inter',sans-serif;font-size:11px;background:#fff;border:0.5px solid #d5d5d3;border-radius:6px;padding:5px 10px;color:#666;outline:none;cursor:pointer;}
+.sw-box{display:none;margin-top:12px;background:#f7f7f5;border:0.5px solid #e5e5e3;border-radius:8px;padding:14px;}
+.az-note{font-size:11px;color:#2d6a1f;padding:7px 10px;background:#f0f8e8;border-radius:6px;border:0.5px solid #c0dd97;margin-bottom:10px;}
+.az-label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;font-weight:600;}
+.az-caption{font-size:11px;color:#666;padding:8px;background:#f7f7f5;border-radius:6px;margin-bottom:10px;line-height:1.5;border:0.5px solid #e5e5e3;}
+.add-fmt-box{background:#fff;border:0.5px solid #e5e5e3;border-radius:10px;padding:16px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo"><div class="logo-mark">HTB</div><div class="logo-sub">Content Intelligence</div></div>
+  <nav class="nav">
+    <div class="ni active" onclick="nav('overview',this)">&#9672; &nbsp;Overview</div>
+    <div class="ni" onclick="nav('posts',this)">&#9675; &nbsp;All Posts</div>
+    <div class="ni" onclick="nav('outliers',this)">&#9677; &nbsp;Outliers</div>
+    <div class="ni" onclick="nav('formats',this)">&#9671; &nbsp;Winning Formats</div>
+    <div class="ni" onclick="nav('settings',this)">&#9676; &nbsp;Settings</div>
+  </nav>
+</aside>
+<main class="main">
+
+<div class="page active" id="page-overview">
+  <div class="ph">
+    <div><div class="pt">Overview</div><div class="ps" id="ov-sub">@hakeemhoang &middot; HTB Content Intelligence</div></div>
+    <button class="btn btn-dark" onclick="syncAll()">&#8635; Sync all</button>
+  </div>
+  <div class="plat-section">
+    <div class="plat-section-header" onclick="toggleSection('ig')">
+      <div class="psh-left"><span class="plat-dot pd-ig"></span><div><div class="psh-title">Instagram</div><div class="psh-sub" id="ig-section-sub">Not connected</div></div></div>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="psh-stats" id="ig-header-stats" style="display:none;">
+          <div class="psh-stat">Week <strong id="igs-week">0</strong></div>
+          <div class="psh-stat">Month <strong id="igs-month">0</strong></div>
+          <div class="psh-stat green">Outliers <strong id="igs-out">0</strong></div>
+        </div>
+        <span id="ig-arrow" style="font-size:12px;color:#999;">&#9656;</span>
+      </div>
+    </div>
+    <div id="ig-body" style="display:none;">
+      <div id="ig-connect-area">
+        <div class="connect-inline">
+          <input type="password" class="inp" id="ig-tok-inp" placeholder="Paste Instagram access token..." style="flex:1;" />
+          <button class="btn btn-dark" onclick="connectIG()">Connect</button>
+        </div>
+        <div style="font-size:11px;color:#999;margin-top:6px;padding-left:0;">Token stored locally only.</div>
+      </div>
+      <div id="ig-stats-area" style="display:none;">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">This week</div><div class="stat-val green" id="ig-stat-week">0</div><div class="stat-sub" id="ig-stat-week-dates">Last 7 days</div></div>
+          <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="ig-stat-month">0</div><div class="stat-sub">Last 30 days</div></div>
+          <div class="stat-card"><div class="stat-label">Avg views</div><div class="stat-val" id="ig-stat-avg">-</div><div class="stat-sub">Baseline (1x)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="plat-section">
+    <div class="plat-section-header" onclick="toggleSection('yt')">
+      <div class="psh-left"><span class="plat-dot pd-yt"></span><div><div class="psh-title">YouTube</div><div class="psh-sub" id="yt-section-sub">Not connected</div></div></div>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="psh-stats" id="yt-header-stats" style="display:none;">
+          <div class="psh-stat">Week <strong id="yts-week">0</strong></div>
+          <div class="psh-stat">Month <strong id="yts-month">0</strong></div>
+          <div class="psh-stat green">Outliers <strong id="yts-out">0</strong></div>
+        </div>
+        <span id="yt-arrow" style="font-size:12px;color:#999;">&#9656;</span>
+      </div>
+    </div>
+    <div id="yt-body" style="display:none;">
+      <div id="yt-connect-area">
+        <div class="connect-inline">
+          <input type="text" class="inp" id="yt-key-inp" placeholder="Paste Google API key..." style="flex:1;" />
+          <button class="btn btn-dark" onclick="connectYT()">Connect</button>
+        </div>
+        <div style="font-size:11px;color:#999;margin-top:6px;">Get a free key at <a href="https://console.cloud.google.com" target="_blank" style="color:#1857a4;">console.cloud.google.com</a> &rarr; YouTube Data API v3.</div>
+      </div>
+      <div id="yt-stats-area" style="display:none;">
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">This week</div><div class="stat-val green" id="yt-stat-week">0</div><div class="stat-sub">Last 7 days</div></div>
+          <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="yt-stat-month">0</div><div class="stat-sub">Last 30 days</div></div>
+          <div class="stat-card"><div class="stat-label">Avg views</div><div class="stat-val" id="yt-stat-avg">-</div><div class="stat-sub">Auto-calculated</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-posts">
+  <div class="ph">
+    <div><div class="pt">All Posts</div><div class="ps">Enter view counts from Instagram Insights. YouTube views pull automatically.</div></div>
+  </div>
+  <div class="plat-tabs" id="posts-plat-tabs">
+    <div class="plat-tab active" onclick="switchPostsPlat('ig',this)"><span class="plat-dot pd-ig"></span> Instagram <span class="plat-count" id="posts-ig-ct">0</span></div>
+    <div class="plat-tab" onclick="switchPostsPlat('yt',this)"><span class="plat-dot pd-yt"></span> YouTube <span class="plat-count" id="posts-yt-ct">0</span></div>
+  </div>
+  <div class="filters" id="ig-post-filters">
+    <span style="font-size:11px;color:#999;margin-right:2px;">Show:</span>
+    <div class="pill active" onclick="filterIGPosts('all',this)">All</div>
+    <div class="pill" onclick="filterIGPosts('week',this)">This week</div>
+    <div class="pill" onclick="filterIGPosts('noviews',this)">No views yet</div>
+    <div class="pill" onclick="filterIGPosts('hasviews',this)">Views logged</div>
+  </div>
+  <div class="filters" id="yt-post-filters" style="display:none;">
+    <span style="font-size:11px;color:#999;margin-right:2px;">Type:</span>
+    <div class="pill active" onclick="filterYTPosts('all',this)">All</div>
+    <div class="pill" onclick="filterYTPosts('long',this)">Long form (3min+)</div>
+    <div class="pill" onclick="filterYTPosts('short',this)">Shorts (under 3min)</div>
+  </div>
+  <div class="post-grid" id="all-grid"></div>
+</div>
+
+<div class="page" id="page-outliers">
+  <div class="ph">
+    <div><div class="pt">Outliers</div><div class="ps">Posts performing above average. Click any post to extract its format.</div></div>
+    <select class="sel" id="mult-sel" onchange="renderOutliers()"><option value="1.5">1.5x and above</option><option value="2">2x and above</option><option value="3">3x and above</option></select>
+  </div>
+  <div class="plat-tabs" id="out-plat-tabs">
+    <div class="plat-tab active" onclick="switchOutliersPlat('ig',this)"><span class="plat-dot pd-ig"></span> Instagram <span class="plat-count" id="out-ig-ct">0</span></div>
+    <div class="plat-tab" onclick="switchOutliersPlat('yt',this)"><span class="plat-dot pd-yt"></span> YouTube <span class="plat-count" id="out-yt-ct">0</span></div>
+  </div>
+  <div class="filters" id="yt-out-filters" style="display:none;">
+    <span style="font-size:11px;color:#999;margin-right:2px;">Type:</span>
+    <div class="pill active" onclick="filterYTOutliers('all',this)">All</div>
+    <div class="pill" onclick="filterYTOutliers('long',this)">Long form (3min+)</div>
+    <div class="pill" onclick="filterYTOutliers('short',this)">Shorts (under 3min)</div>
+  </div>
+  <div class="post-grid" id="out-grid"></div>
+  <div id="fmt-detail" style="display:none;"><div class="divider"></div><div class="fmt-panel" id="fmt-panel"></div></div>
+</div>
+
+<div class="page" id="page-formats">
+  <div class="ph"><div><div class="pt">Winning Formats</div><div class="ps">Proven format library. Separate per platform.</div></div></div>
+  <div class="plat-tabs" id="fmt-plat-tabs">
+    <div class="plat-tab active" onclick="switchFormatsPlat('ig',this)"><span class="plat-dot pd-ig"></span> Instagram <span class="plat-count" id="fmt-ig-ct">4</span></div>
+    <div class="plat-tab" onclick="switchFormatsPlat('yt',this)"><span class="plat-dot pd-yt"></span> YouTube <span class="plat-count" id="fmt-yt-ct">0</span></div>
+    <div class="plat-tab" onclick="switchFormatsPlat('hooks',this)">&#9632; Hook Bank <span class="plat-count" id="fmt-hook-ct">0</span></div>
+  </div>
+  <div id="formats-ig">
+    <div class="grid2">
+      <div><div class="sec-hd"><span class="sec-hd-title" style="color:#2d6a1f;">Confirmed winners</span><span class="count-pill" id="win-ct">3</span></div><div id="win-grid"></div></div>
+      <div><div class="sec-hd"><span class="sec-hd-title">Testing</span><span class="count-pill" id="test-ct">1</span></div><div id="test-grid"></div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-hd" style="cursor:pointer;user-select:none;" onclick="toggleAddBox('ig')"><span class="sec-hd-title">Add Instagram Format Manually</span><span id="ig-add-arrow" style="font-size:11px;color:#999;margin-left:auto;">&#9656; Expand</span></div>
+    <div id="ig-add-box" style="display:none;"><div class="add-fmt-box">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div><div class="az-label">Format name</div><input type="text" class="inp" id="ig-mfmt-name" placeholder="e.g. Before-After Identity Flip" style="width:100%;margin-top:4px;" /></div>
+        <div><div class="az-label">Status</div><select class="sel" id="ig-mfmt-status" style="width:100%;margin-top:4px;padding:8px 12px;"><option value="testing">Testing</option><option value="confirmed">Winner</option></select></div>
+      </div>
+      <div style="margin-bottom:10px;"><div class="az-label">Why it works</div><input type="text" class="inp" id="ig-mfmt-why" placeholder="One sentence on why this format gets views" style="width:100%;margin-top:4px;" /></div>
+      <div style="margin-bottom:10px;"><div class="az-label">Format steps (one per line)</div><textarea id="ig-mfmt-steps" placeholder="Step 1: Hook with dollar contrast" style="margin-top:4px;min-height:80px;"></textarea></div>
+      <div style="margin-bottom:12px;"><div class="az-label">Reference links (one per line)</div><textarea id="ig-mfmt-links" placeholder="https://instagram.com/reel/..." style="margin-top:4px;min-height:45px;"></textarea></div>
+      <button class="btn btn-dark" onclick="addIGManualFormat()">Add Format</button>
+    </div></div>
+  </div>
+  <div id="formats-yt" style="display:none;">
+    <div class="grid2">
+      <div><div class="sec-hd"><span class="sec-hd-title" style="color:#c62828;">YouTube Winners</span><span class="count-pill" id="yt-win-ct">0</span></div><div id="yt-win-grid"></div></div>
+      <div><div class="sec-hd"><span class="sec-hd-title">YouTube Testing</span><span class="count-pill" id="yt-test-ct">0</span></div><div id="yt-test-grid"></div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-hd" style="cursor:pointer;user-select:none;" onclick="toggleAddBox('yt')"><span class="sec-hd-title">Add YouTube Format</span><span id="yt-add-arrow" style="font-size:11px;color:#999;margin-left:auto;">&#9656; Expand</span></div>
+    <div id="yt-add-box" style="display:none;"><div class="add-fmt-box">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div><div class="az-label">Format name</div><input type="text" class="inp" id="yt-mfmt-name" placeholder="e.g. Long-form Story Arc" style="width:100%;margin-top:4px;" /></div>
+        <div><div class="az-label">Status</div><select class="sel" id="yt-mfmt-status" style="width:100%;margin-top:4px;padding:8px 12px;"><option value="testing">Testing</option><option value="confirmed">Winner</option></select></div>
+      </div>
+      <div style="margin-bottom:10px;"><div class="az-label">Why it works</div><input type="text" class="inp" id="yt-mfmt-why" placeholder="One sentence on why this format gets views" style="width:100%;margin-top:4px;" /></div>
+      <div style="margin-bottom:10px;"><div class="az-label">Format steps (one per line)</div><textarea id="yt-mfmt-steps" placeholder="Step 1: Hook with shocking number" style="margin-top:4px;min-height:80px;"></textarea></div>
+      <div style="margin-bottom:12px;"><div class="az-label">Reference links (one per line)</div><textarea id="yt-mfmt-links" placeholder="https://youtube.com/watch?v=..." style="margin-top:4px;min-height:45px;"></textarea></div>
+      <button class="btn btn-dark" onclick="addYTFormat()">Add Format</button>
+    </div>
+  </div>
+</div>
+
+  <div id="formats-hooks" style="display:none;">
+    <div class="grid2">
+      <div>
+        <div class="sec-hd"><span class="sec-hd-title" style="color:#2d6a1f;">Winner hooks</span><span class="count-pill" id="hook-win-ct">0</span></div>
+        <div id="hook-win-grid"><div class="empty"><div class="empty-icon">&#9632;</div><div class="empty-text">No winner hooks yet</div><div class="empty-sub">Add hooks below</div></div></div>
+      </div>
+      <div>
+        <div class="sec-hd"><span class="sec-hd-title">Testing hooks</span><span class="count-pill" id="hook-test-ct">0</span></div>
+        <div id="hook-test-grid"><div class="empty"><div class="empty-icon">&#9632;</div><div class="empty-text">No testing hooks yet</div></div></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-hd" style="cursor:pointer;user-select:none;" onclick="toggleAddBox('hook')">
+      <span class="sec-hd-title">Add Hook</span>
+      <span id="hook-add-arrow" style="font-size:11px;color:#999;margin-left:auto;">&#9656; Expand</span>
+    </div>
+    <div id="hook-add-box" style="display:none;">
+      <div class="add-fmt-box">
+        <div style="margin-bottom:10px;"><div class="az-label">Hook text</div><textarea id="hook-text" placeholder="e.g. I charged $10 a haircut. Now I charge $250. Here is what changed." style="margin-top:4px;min-height:70px;"></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <div><div class="az-label">Status</div><select class="sel" id="hook-status" style="width:100%;margin-top:4px;padding:8px 12px;"><option value="testing">Testing</option><option value="confirmed">Winner</option></select></div>
+          <div><div class="az-label">Multiplier or note (optional)</div><input type="text" class="inp" id="hook-note" placeholder="e.g. 6.8x outlier, April" style="width:100%;margin-top:4px;" /></div>
+        </div>
+        <div style="margin-bottom:12px;"><div class="az-label">Reference link (optional)</div><input type="text" class="inp" id="hook-link" placeholder="https://instagram.com/reel/..." style="width:100%;margin-top:4px;" /></div>
+        <button class="btn btn-dark" onclick="addHook()">Add Hook</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-settings">
+  <div class="ph"><div><div class="pt">Settings</div></div></div>
+  <div style="max-width:480px;">
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span class="plat-dot pd-ig"></span> Instagram token</div>
+    <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="password" class="inp" id="s-tok" placeholder="Access token" style="flex:1;" /><button class="btn btn-dark" onclick="saveTok()">Save</button></div>
+    <div style="font-size:11px;color:#999;margin-bottom:24px;">Account: <span id="s-acc" style="color:#1a1a1a;">Not connected</span></div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span class="plat-dot pd-yt"></span> YouTube API key</div>
+    <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="text" class="inp" id="s-yt-key" placeholder="Google API key" style="flex:1;" /><button class="btn btn-dark" onclick="saveYTKey()">Save</button></div>
+    <div style="font-size:11px;color:#999;margin-bottom:24px;">Channel: @hakeemhoang &middot; Get key at <a href="https://console.cloud.google.com" target="_blank" style="color:#1857a4;">console.cloud.google.com</a></div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Anthropic API key</div>
+    <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="password" class="inp" id="s-ak" placeholder="sk-ant-..." style="flex:1;" /><button class="btn btn-dark" onclick="saveAK()">Save</button></div>
+    <div style="font-size:11px;color:#999;margin-bottom:24px;">Free at <a href="https://console.anthropic.com" target="_blank" style="color:#1857a4;">console.anthropic.com</a></div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Manual average views (Instagram)</div>
+    <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="number" class="inp" id="s-avg" placeholder="e.g. 20000" style="width:180px;" /><button class="btn btn-border btn-sm" onclick="saveAvg()">Save</button></div>
+    <div style="font-size:11px;color:#999;margin-bottom:32px;">Leave blank to auto-calculate.</div>
+    <button class="btn btn-border" onclick="clearAll()" style="color:#c0392b;border-color:#f5c6c6;">Clear all data</button>
+  </div>
+</div>
+
+</main>
+<div class="load-overlay" id="loader" style="display:none;">
+  <div class="load-box"><div class="spinner"></div><div style="font-size:13px;font-weight:500;" id="load-t">Loading...</div><div style="font-size:11px;color:#999;margin-top:4px;" id="load-s"></div></div>
+</div>
+<script>
+var SW={};
+var YT_HANDLE='hakeemhoang';
+var YT_CHANNEL_ID='';
+
+var WF=[
+{id:"origin-story-arc",name:"Origin Story Arc",type:"Talking Head",status:"confirmed",score:"4x outlier",month:"March",platform:"ig",
+description:"Personal story that mirrors the avatars exact journey. Leads with proof, hyper-specific shame detail, ends with one contrarian line.",
+steps:["HOOK: Before/After dollar contrast. Biggest gap possible. One sentence. $10 to $250 a cut.","SHAME DETAIL: One embarrassing hyper-specific image. Asian blanket as cape. KFC. Single mum working 9 to 9.","THE GRIND THAT DID NOT WORK: Exact attempts the avatar makes that felt right but produced nothing.","TURNING POINT: One moment. One decision. Keep it simple.","THE CLIMB: Specific numbers in sequence. $35, $45, $65, $90, $250.","THE RESULT: Credibility proof stacked fast. Followers, recognition, awards.","THE LESSON: One contrarian line. Skill does not set your price. Attention does."],
+rules:["Every detail must be embarrassingly specific. Not I was broke. Use an Asian blanket as a cape.","Simple English. Grade 5. Short sentences.","Close with one contrarian line that challenges a belief they have held for years.","The viewer must see themselves in the story before the lesson starts."],links:[]},
+{id:"two-barber-comparison",name:"Two-Barber Comparison Skit",type:"Split Screen",status:"confirmed",score:"Confirmed March",month:"March",platform:"ig",
+description:"Split screen. Left wrong barber. Right correct barber. 4-5 contrast pairs. Viewer self-diagnoses in under 2 seconds.",
+steps:["VISUAL SETUP: Left wrong physical cue. Right correct physical cue. Text on screen 3 words max.","PAIR 1: Surface complaint. Left = excuse. Right = intentional action.","PAIR 2: The wrong attempt. Left = lazy/random. Right = strategic/specific.","PAIR 3: The blind spot. Left = in the dark. Right = operating with data.","PAIR 4: Identity gap. Left = passive reactive. Right = ownership mindset.","CLOSE: Last right line always carries a real proof number. $6K to $17K in 4 months."],
+rules:["Every left line must sound like something a real barber says out loud.","Every right line must be specific. Behaviour plus result where possible.","One topic per video only. Never mix pain points.","Embed CTA inside the narrative. Never pitch at the end."],links:[]},
+{id:"interview-format",name:"Interview Format",type:"Conversation/Q&A",status:"confirmed",score:"6.8x outlier",month:"April",platform:"ig",
+description:"Highest performing format. 215K views. No script feel. Real conversation. Shocking numbers. Divisive closing line that drives comments.",
+steps:["OPENING QUESTION: Lead with the money question immediately. How much do you charge?","SHOCKING NUMBER: Answer must contain a number nobody expects. $2.5K in one day. $250K a year.","ESCALATING QUESTIONS: Each question pushes deeper. Price to volume to income to philosophy.","DIVISIVE CLOSE: Bold statement that splits the room. No work-life balance. All in or all out.","NO SCRIPT FEEL: Must sound like overhearing a real conversation."],
+rules:["Shocking numbers must be real and specific. Never vague.","Closing statement must be divisive. Agreeable content gets scrolled past.","No scripted transitions. Let the conversation breathe.","Comments are the goal. Arguable lines drive comment volume."],links:[]}
+];
+
+var TF=[
+{id:"action-contrast-skit",name:"Action-While-Talking Contrast Skit",type:"Talking Head + Visual Overlay",status:"testing",score:"New format",month:"April",platform:"ig",
+description:"Hakeem speaks to camera while doing a physical activity. Protein shake, Muay Thai prep. On-screen text reveals the contrast. The activity is the visual hook.",
+steps:["VISUAL HOOK: Hakeem doing a physical action. Protein shake, wrapping hands for Muay Thai. Activity runs throughout. Never explained.","SCREEN TEXT SETUP: $35 CUT left side. $150 CUT right side. Text reveals line by line.","CONTRAST PAIRS (escalating): Start with surface behaviour. Escalate to energy. End with identity.","THE THESIS LINE: The wrong price attracts the wrong client. And the wrong client will destroy the right barber.","THE IDENTITY CLOSE: Most of you have priced your peace at $35. It shows in your face, your energy, and your bank account.","THE OBJECTION HANDLE: You are not stuck because of your city. You are stuck because nobody knows your name.","CTA: Comment brand and I will send you exactly how I went from $35 to $250 a cut."],
+rules:["The physical activity must be real and natural to Hakeem. Never forced.","Never explain the activity. The viewer figures out who he is by watching.","On-screen text must reveal line by line in sync with speech.","Every contrast pair must be hyper-specific. Exact behaviour, exact words, exact feeling.","The objection handle is mandatory. Address the city objection before they can leave."],links:[]}
+];
+
+var D={
+  igPosts:[],ytVideos:[],userFormats:[],ytFormats:[],igManualFormats:[],hooks:[],
+  token:'',ytKey:'',ak:'',manualAvg:0,
+  igAvg:20000,ytAvg:0,ytAvgLong:0,ytAvgShort:0,
+  sel:null,igPostFilter:'all',ytPostFilter:'all',ytOutFilter:'all',
+  postsPlat:'ig',outliersPlat:'ig',formatsPlat:'ig'
+};
+
+function g(k){return localStorage.getItem(k);}
+function s(k,v){localStorage.setItem(k,v);}
+
+function init(){
+  D.token=g('tok')||''; D.ytKey=g('ytk')||''; D.ak=g('ak')||'';
+  D.manualAvg=parseInt(g('mavg')||'0');
+  D.userFormats=JSON.parse(g('ufmts')||'[]');
+  D.ytFormats=JSON.parse(g('ytfmts')||'[]');
+  D.hooks=JSON.parse(g('hooks')||'[]');
+  D.igManualFormats=JSON.parse(g('igmfmts')||'[]');
+  var ig=g('igp'); if(ig){D.igPosts=JSON.parse(ig);recalcIG();}
+  var yt=g('ytp'); if(yt){D.ytVideos=JSON.parse(yt);recalcYT();}
+  if(D.token){document.getElementById('s-tok').value=D.token;document.getElementById('s-acc').textContent='@hakeemhoang';updateIGUI();}
+  if(D.ytKey){document.getElementById('s-yt-key').value=D.ytKey;if(D.ytVideos.length)updateYTUI();}
+  if(D.ak)document.getElementById('s-ak').value=D.ak;
+  if(D.manualAvg)document.getElementById('s-avg').value=D.manualAvg;
+  loadWFLinks();
+  renderAll(); renderFormatsPage();
+}
+
+function nav(name,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('active');});
+  document.getElementById('page-'+name).classList.add('active');
+  if(el)el.classList.add('active');
+}
+
+function showLoad(t,sub){document.getElementById('load-t').textContent=t||'Loading...';document.getElementById('load-s').textContent=sub||'';document.getElementById('loader').style.display='flex';}
+function hideLoad(){document.getElementById('loader').style.display='none';}
+
+function toggleSection(plat){
+  var b=document.getElementById(plat+'-body');
+  var a=document.getElementById(plat+'-arrow');
+  if(!b)return;
+  var open=b.style.display!=='none';
+  b.style.display=open?'none':'block';
+  a.innerHTML=open?'&#9656;':'&#9660;';
+}
+
+function toggleAddBox(id){
+  var b=document.getElementById(id+'-add-box');
+  var a=document.getElementById(id+'-add-arrow');
+  if(!b)return;
+  var open=b.style.display!=='none';
+  b.style.display=open?'none':'block';
+  if(a)a.innerHTML=open?'&#9656; Expand':'&#9660; Collapse';
+}
+
+function syncAll(){
+  if(D.token)fetchIGPosts();
+  if(D.ytKey)fetchYTPosts();
+  if(!D.token&&!D.ytKey)alert('Connect at least one platform first.');
+}
+
+async function connectIG(){
+  var tok=document.getElementById('ig-tok-inp').value.trim();
+  if(!tok){alert('Paste your access token first.');return;}
+  D.token=tok; s('tok',tok); await fetchIGPosts();
+}
+
+async function fetchIGPosts(){
+  showLoad('Fetching Instagram posts...','Getting thumbnails and captions');
+  try{
+    var me=await apiFetch('https://graph.instagram.com/me?fields=id,username&access_token='+D.token);
+    var ex={}; D.igPosts.forEach(function(p){ex[p.id]=p;});
+    var all=[]; var url='https://graph.instagram.com/'+me.id+'/media?fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count&limit=50&access_token='+D.token;
+    while(url&&all.length<600){
+      var data=await apiFetch(url);
+      var batch=(data.data||[]).filter(function(p){return p.media_type==='VIDEO'||p.media_type==='REEL';});
+      batch.forEach(function(p){
+        if(ex[p.id]){all.push(ex[p.id]);}
+        else{all.push({id:p.id,caption:p.caption||'',thumb:p.thumbnail_url||p.media_url||'',ts:p.timestamp,views:0,likes:p.like_count||0,comments:p.comments_count||0,format:null,fStatus:null,plat:'ig'});}
+      });
+      url=data.paging&&data.paging.next?data.paging.next:null;
+    }
+    D.igPosts=all; s('igp',JSON.stringify(D.igPosts));
+    recalcIG(); updateIGUI(); renderAll(); hideLoad();
+  }catch(e){hideLoad();alert('Instagram error: '+e.message);}
+}
+
+async function connectYT(){
+  var key=document.getElementById('yt-key-inp').value.trim();
+  if(!key){alert('Paste your Google API key first.');return;}
+  D.ytKey=key; s('ytk',key); await fetchYTPosts();
+}
+
+async function fetchYTPosts(){
+  showLoad('Fetching YouTube videos...','Getting channel data from @'+YT_HANDLE);
+  try{
+    var chanRes=await apiFetch('https://www.googleapis.com/youtube/v3/channels?part=id,contentDetails,statistics&forHandle='+YT_HANDLE+'&key='+D.ytKey);
+    if(!chanRes.items||!chanRes.items.length)throw new Error('Channel not found. Check your API key.');
+    var chan=chanRes.items[0]; YT_CHANNEL_ID=chan.id;
+    var uploadsId=chan.contentDetails.relatedPlaylists.uploads;
+    var ex={}; D.ytVideos.forEach(function(v){ex[v.id]=v;});
+    var all=[]; var pageToken=''; var pages=0;
+    while(pages<20){
+      var ptParam=pageToken?'&pageToken='+pageToken:'';
+      var plRes=await apiFetch('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId='+uploadsId+'&maxResults=50&key='+D.ytKey+ptParam);
+      var items=plRes.items||[];
+      var vidIds=items.map(function(it){return it.snippet.resourceId.videoId;}).join(',');
+      if(!vidIds)break;
+      var statsRes=await apiFetch('https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet,contentDetails&id='+vidIds+'&key='+D.ytKey);
+      var sm={}; (statsRes.items||[]).forEach(function(v){sm[v.id]=v;});
+      items.forEach(function(it){
+        var vid=sm[it.snippet.resourceId.videoId];
+        if(!vid)return;
+        var dur=parseDur(vid.contentDetails&&vid.contentDetails.duration?vid.contentDetails.duration:'PT0S');
+        var vtype=dur>=180?'long':'short';
+        if(ex[vid.id]){
+          ex[vid.id].views=parseInt(vid.statistics.viewCount||0);
+          ex[vid.id].likes=parseInt(vid.statistics.likeCount||0);
+          ex[vid.id].comments=parseInt(vid.statistics.commentCount||0);
+          ex[vid.id].duration=dur; ex[vid.id].vtype=vtype;
+          all.push(ex[vid.id]);
+        }else{
+          all.push({id:vid.id,caption:vid.snippet.title||'',thumb:vid.snippet.thumbnails&&vid.snippet.thumbnails.medium?vid.snippet.thumbnails.medium.url:'',ts:vid.snippet.publishedAt,views:parseInt(vid.statistics.viewCount||0),likes:parseInt(vid.statistics.likeCount||0),comments:parseInt(vid.statistics.commentCount||0),duration:dur,vtype:vtype,format:null,fStatus:null,plat:'yt'});
+        }
+      });
+      pageToken=plRes.nextPageToken||''; pages++;
+      if(!pageToken)break;
+    }
+    D.ytVideos=all; s('ytp',JSON.stringify(D.ytVideos));
+    recalcYT(); updateYTUI(); renderAll(); hideLoad();
+  }catch(e){hideLoad();alert('YouTube error: '+e.message);}
+}
+
+async function apiFetch(url){
+  var r=await fetch(url); var d=await r.json();
+  if(d.error)throw new Error(d.error.message||JSON.stringify(d.error));
+  return d;
+}
+
+async function refreshData(){
+  if(D.token)fetchIGPosts();
+  if(D.ytKey)fetchYTPosts();
+}
+
+function parseDur(iso){
+  var h=0,m=0,ss=0;
+  var hm=iso.match(/(\d+)H/); if(hm)h=parseInt(hm[1]);
+  var mm=iso.match(/(\d+)M/); if(mm)m=parseInt(mm[1]);
+  var sm=iso.match(/(\d+)S/); if(sm)ss=parseInt(sm[1]);
+  return h*3600+m*60+ss;
+}
+
+function recalcIG(){
+  if(D.manualAvg){D.igAvg=D.manualAvg;return;}
+  var w=D.igPosts.filter(function(p){return p.views>0;});
+  D.igAvg=w.length?Math.round(w.reduce(function(a,p){return a+p.views;},0)/w.length):20000;
+}
+
+function recalcYT(){
+  var all=D.ytVideos.filter(function(v){return v.views>0;});
+  D.ytAvg=all.length?Math.round(all.reduce(function(a,v){return a+v.views;},0)/all.length):0;
+  var longs=D.ytVideos.filter(function(v){return v.views>0&&v.vtype==='long';});
+  D.ytAvgLong=longs.length?Math.round(longs.reduce(function(a,v){return a+v.views;},0)/longs.length):0;
+  var shorts=D.ytVideos.filter(function(v){return v.views>0&&v.vtype==='short';});
+  D.ytAvgShort=shorts.length?Math.round(shorts.reduce(function(a,v){return a+v.views;},0)/shorts.length):0;
+}
+
+function fv(n){if(!n)return'0';if(n>=1000000)return(n/1000000).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'K';return n.toString();}
+function mxIG(v){return D.igAvg?Math.round((v/D.igAvg)*10)/10:0;}
+function mxYT(v,vtype){
+  var avg=0;
+  if(vtype==='long'){avg=D.ytAvgLong||D.ytAvg;}else{avg=D.ytAvgShort||D.ytAvg;}
+  return avg?Math.round((v/avg)*10)/10:0;
+}
+function daysAgo(d){var dt=new Date();dt.setDate(dt.getDate()-d);return dt;}
+function inDays(arr,d){return arr.filter(function(p){return new Date(p.ts)>=daysAgo(d);});}
+
+function updateIGUI(){
+  document.getElementById('ig-section-sub').textContent='@hakeemhoang - '+D.igPosts.length+' posts';
+  document.getElementById('ig-connect-area').style.display='none';
+  document.getElementById('ig-stats-area').style.display='block';
+  document.getElementById('ig-header-stats').style.display='flex';
+  document.getElementById('s-acc').textContent='@hakeemhoang';
+  var w=inDays(D.igPosts,7).length,m=inDays(D.igPosts,30).length;
+  var ol=D.igPosts.filter(function(p){return p.views>0&&mxIG(p.views)>=1.5;}).length;
+  document.getElementById('igs-week').textContent=w;
+  document.getElementById('igs-month').textContent=m;
+  document.getElementById('igs-out').textContent=ol;
+  document.getElementById('ig-stat-week').textContent=w;
+  document.getElementById('ig-stat-month').textContent=m;
+  document.getElementById('ig-stat-avg').textContent=D.igPosts.filter(function(p){return p.views>0;}).length?fv(D.igAvg):'-';
+  var now=new Date();
+  document.getElementById('ig-stat-week-dates').textContent=daysAgo(7).toLocaleDateString('en-US',{month:'short',day:'numeric'})+' - '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+function updateYTUI(){
+  document.getElementById('yt-section-sub').textContent='@hakeemhoang - '+D.ytVideos.length+' videos';
+  document.getElementById('yt-connect-area').style.display='none';
+  document.getElementById('yt-stats-area').style.display='block';
+  document.getElementById('yt-header-stats').style.display='flex';
+  var w=inDays(D.ytVideos,7).length,m=inDays(D.ytVideos,30).length;
+  var ol=D.ytAvg?D.ytVideos.filter(function(v){return mxYT(v.views,v.vtype)>=1.5;}).length:0;
+  document.getElementById('yts-week').textContent=w;
+  document.getElementById('yts-month').textContent=m;
+  document.getElementById('yts-out').textContent=ol;
+  document.getElementById('yt-stat-week').textContent=w;
+  document.getElementById('yt-stat-month').textContent=m;
+  document.getElementById('yt-stat-avg').textContent=D.ytAvg?fv(D.ytAvg):'-';
+}
+
+function renderAll(){renderPostCounts();renderAllPosts();renderOutliers();updateOutCounts();}
+
+function renderPostCounts(){
+  document.getElementById('posts-ig-ct').textContent=D.igPosts.length;
+  document.getElementById('posts-yt-ct').textContent=D.ytVideos.length;
+}
+
+function switchPostsPlat(plat,el){
+  D.postsPlat=plat;
+  document.querySelectorAll('#posts-plat-tabs .plat-tab').forEach(function(t){t.classList.remove('active');});
+  if(el)el.classList.add('active');
+  document.getElementById('ig-post-filters').style.display=plat==='ig'?'flex':'none';
+  document.getElementById('yt-post-filters').style.display=plat==='yt'?'flex':'none';
+  renderAllPosts();
+}
+
+function filterIGPosts(filter,el){
+  D.igPostFilter=filter;
+  document.querySelectorAll('#ig-post-filters .pill').forEach(function(p){p.classList.remove('active');});
+  if(el)el.classList.add('active');
+  renderAllPosts();
+}
+
+function filterYTPosts(filter,el){
+  D.ytPostFilter=filter;
+  document.querySelectorAll('#yt-post-filters .pill').forEach(function(p){p.classList.remove('active');});
+  if(el)el.classList.add('active');
+  renderAllPosts();
+}
+
+function filterYTOutliers(filter,el){
+  D.ytOutFilter=filter;
+  document.querySelectorAll('#yt-out-filters .pill').forEach(function(p){p.classList.remove('active');});
+  if(el)el.classList.add('active');
+  renderOutliers();
+}
+
+function switchOutliersPlat(plat,el){
+  D.outliersPlat=plat;
+  document.querySelectorAll('#out-plat-tabs .plat-tab').forEach(function(t){t.classList.remove('active');});
+  if(el)el.classList.add('active');
+  document.getElementById('yt-out-filters').style.display=plat==='yt'?'flex':'none';
+  document.getElementById('fmt-detail').style.display='none';
+  renderOutliers();
+}
+
+function switchFormatsPlat(plat,el){
+  D.formatsPlat=plat;
+  document.querySelectorAll('#fmt-plat-tabs .plat-tab').forEach(function(t){t.classList.remove('active');});
+  if(el)el.classList.add('active');
+  document.getElementById('formats-ig').style.display=plat==='ig'?'block':'none';
+  document.getElementById('formats-yt').style.display=plat==='yt'?'block':'none';
+  document.getElementById('formats-hooks').style.display=plat==='hooks'?'block':'none';
+}
+
+function renderAllPosts(){
+  var g=document.getElementById('all-grid');
+  if(D.postsPlat==='ig'){
+    if(!D.igPosts.length){g.innerHTML=emptyH('Connect Instagram in Overview first');return;}
+    var sorted=D.igPosts.slice().sort(function(a,b){return new Date(b.ts)-new Date(a.ts);});
+    var w7=daysAgo(7);
+    if(D.igPostFilter==='week')sorted=sorted.filter(function(p){return new Date(p.ts)>=w7;});
+    else if(D.igPostFilter==='noviews')sorted=sorted.filter(function(p){return !p.views;});
+    else if(D.igPostFilter==='hasviews')sorted=sorted.filter(function(p){return p.views>0;});
+    g.innerHTML=sorted.map(function(p){return buildCard(p,true,0,new Date(p.ts)>=w7);}).join('');
+  }else{
+    if(!D.ytVideos.length){g.innerHTML=emptyH('Connect YouTube in Overview first');return;}
+    var sorted=D.ytVideos.slice().sort(function(a,b){return new Date(b.ts)-new Date(a.ts);});
+    if(D.ytPostFilter==='long')sorted=sorted.filter(function(v){return v.vtype==='long';});
+    else if(D.ytPostFilter==='short')sorted=sorted.filter(function(v){return v.vtype==='short';});
+    g.innerHTML=sorted.map(function(p){return buildCard(p,false,0,false);}).join('');
+  }
+}
+
+function renderOutliers(){
+  var sel=document.getElementById('mult-sel');
+  var min=sel?parseFloat(sel.value):1.5;
+  var g=document.getElementById('out-grid');
+  if(D.outliersPlat==='ig'){
+    var ol=D.igPosts.filter(function(p){return p.views>0&&mxIG(p.views)>=min;}).sort(function(a,b){return b.views-a.views;});
+    document.getElementById('out-ig-ct').textContent=ol.length;
+    if(!ol.length){g.innerHTML=emptyH('No Instagram outliers yet. Enter view counts in All Posts first.');return;}
+    var maxV=Math.max.apply(null,ol.map(function(p){return p.views;}));
+    g.innerHTML=ol.map(function(p){return buildCard(p,false,maxV,false);}).join('');
+  }else{
+    if(!D.ytAvg){g.innerHTML=emptyH('Connect YouTube in Overview first.');return;}
+    var pool=D.ytVideos;
+    if(D.ytOutFilter==='long')pool=pool.filter(function(v){return v.vtype==='long';});
+    else if(D.ytOutFilter==='short')pool=pool.filter(function(v){return v.vtype==='short';});
+    var ol=pool.filter(function(v){return mxYT(v.views,v.vtype)>=min;}).sort(function(a,b){return b.views-a.views;});
+    document.getElementById('out-yt-ct').textContent=ol.length;
+    if(!ol.length){g.innerHTML=emptyH('No YouTube outliers at this threshold.');return;}
+    var maxV=Math.max.apply(null,ol.map(function(v){return v.views;}));
+    g.innerHTML=ol.map(function(v){return buildCard(v,false,maxV,false);}).join('');
+  }
+}
+
+function updateOutCounts(){
+  var min=1.5;
+  document.getElementById('out-ig-ct').textContent=D.igPosts.filter(function(p){return p.views>0&&mxIG(p.views)>=min;}).length;
+  document.getElementById('out-yt-ct').textContent=D.ytAvg?D.ytVideos.filter(function(v){return mxYT(v.views,v.vtype)>=min;}).length:0;
+}
+
+function emptyH(msg){return '<div class="empty" style="grid-column:1/-1;"><div class="empty-icon">&#9675;</div><div class="empty-text">Nothing here yet</div><div class="empty-sub">'+msg+'</div></div>';}
+
+function buildCard(p,showInp,maxV,isNew){
+  var isYT=p.plat==='yt';
+  var m=isYT?mxYT(p.views,p.vtype):mxIG(p.views);
+  var title=(p.caption||'No caption').substring(0,90);
+  var date=new Date(p.ts).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  var barW=maxV&&p.views?Math.round((p.views/maxV)*100):0;
+  var selClass=D.sel===p.id?' selected':'';
+  var platBadge=isYT?'tb-plat-yt':'tb-plat-ig';
+  var platLabel=isYT?'YT':'IG';
+  var thumbPh=isYT?'thumb-ph yt':'thumb-ph';
+  var thumbH=p.thumb?('<img src="'+p.thumb+'" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class='+thumbPh+'>&#9654;</div>\'">'):'<div class="'+thumbPh+'">&#9654;</div>';
+  var multB=(p.views>0&&m>=1.5)?('<span class="tb tb-mult">'+m+'x</span>'):'';
+  var newB=isNew?'<div style="position:absolute;bottom:6px;left:6px;"><span class="tb tb-new">This week</span></div>':'';
+  var viewsH=p.views>0?('<span class="cb-views">'+fv(p.views)+' views</span>'):'<span class="cb-views-empty">No views yet</span>';
+  var vbarH=(maxV&&p.views)?('<div class="vbar"><div class="vbar-fill'+(isYT?' yt':'')+'" style="width:'+barW+'%"></div></div>'):'';
+  var inpH=showInp?('<div class="vi-row" onclick="event.stopPropagation()"><input class="vi-inp" id="vi-'+p.id+'" type="number" placeholder="Views from Insights..." value="'+(p.views||'')+'" /><button class="vi-btn" onclick="saveViews(\''+p.id+'\')">Save</button></div>'):'';
+  var mClass=isYT?'ctag ctag-mult-yt':'ctag ctag-mult';
+  var multTag=(p.views>0&&m>=1.5)?('<span class="'+mClass+'">'+m+'x avg</span>'):'';
+  var fmtTag=p.format?('<span class="ctag ctag-fmt">'+(p.format.matchedFormat||'Analyzed')+'</span>'):'';
+  var winTag=p.fStatus==='confirmed'?'<span class="ctag ctag-win">Winner</span>':'';
+  var testTag=p.fStatus==='testing'?'<span class="ctag ctag-test">Testing</span>':'';
+  return '<div class="post-card'+selClass+'" onclick="selectPost(\''+p.id+'\',\''+p.plat+'\')">'
+    +'<div class="thumb">'+thumbH+'<div class="thumb-badges"><span class="tb '+platBadge+'">'+platLabel+'</span>'+multB+'</div>'+newB+'</div>'
+    +'<div class="cb"><div class="cb-caption">'+title+'</div>'
+    +'<div class="cb-row">'+viewsH+'<span class="cb-date">'+date+'</span></div>'
+    +vbarH+inpH
+    +'<div class="cb-tags" style="margin-top:5px;">'+multTag+fmtTag+winTag+testTag+'</div>'
+    +'</div></div>';
+}
+
+function saveViews(pid){
+  var inp=document.getElementById('vi-'+pid); if(!inp)return;
+  var val=parseInt(inp.value); if(!val||val<0){alert('Enter a valid number.');return;}
+  var p=D.igPosts.find(function(p){return p.id===pid;}); if(!p)return;
+  p.views=val; s('igp',JSON.stringify(D.igPosts));
+  recalcIG(); renderAll(); updateIGUI();
+}
+
+function selectPost(pid,plat){
+  var posts=plat==='yt'?D.ytVideos:D.igPosts;
+  var post=posts.find(function(p){return p.id===pid;}); if(!post)return;
+  D.sel=pid;
+  var nis=document.querySelectorAll('.ni');
+  nav('outliers',nis[2]);
+  if(plat==='yt'){
+    D.outliersPlat='yt';
+    document.querySelectorAll('#out-plat-tabs .plat-tab').forEach(function(t){t.classList.remove('active');});
+    document.querySelectorAll('#out-plat-tabs .plat-tab')[1].classList.add('active');
+    document.getElementById('yt-out-filters').style.display='flex';
+  }else{
+    D.outliersPlat='ig';
+    document.querySelectorAll('#out-plat-tabs .plat-tab').forEach(function(t){t.classList.remove('active');});
+    document.querySelectorAll('#out-plat-tabs .plat-tab')[0].classList.add('active');
+    document.getElementById('yt-out-filters').style.display='none';
+  }
+  renderOutliers();
+  var det=document.getElementById('fmt-detail');
+  var pan=document.getElementById('fmt-panel');
+  det.style.display='block';
+  setTimeout(function(){det.scrollIntoView({behavior:'smooth',block:'start'});},150);
+  if(plat==='yt'){pan.innerHTML='<div style="padding:20px;font-size:13px;color:#666;">YouTube format analysis is manual. Go to <strong>Winning Formats &rarr; YouTube</strong> to add this format.</div>';return;}
+  if(post.format){renderFormatPanel(post);return;}
+  var ak=D.ak||g('ak')||'';
+  if(!ak){
+    pan.innerHTML='<div style="padding:24px;"><div style="font-size:14px;font-weight:600;margin-bottom:8px;">Anthropic API key required</div><div style="font-size:13px;color:#888;margin-bottom:14px;">Add your key to analyze formats. Free at <a href="https://console.anthropic.com" target="_blank" style="color:#1857a4;">console.anthropic.com</a></div><div style="display:flex;gap:8px;"><input type="password" class="inp" id="iak" placeholder="sk-ant-..." style="flex:1;" /><button class="btn btn-dark" onclick="saveIAK(\''+pid+'\')">Save &amp; analyze</button></div></div>';
+    return;
+  }
+  showAnalysisPanel(post,pan);
+}
+
+function saveIAK(pid){var k=document.getElementById('iak').value.trim();if(!k)return;D.ak=k;s('ak',k);selectPost(pid,'ig');}
+
+function showAnalysisPanel(post,pan){
+  var cap=(post.caption||'').substring(0,500);
+  pan.innerHTML='<div style="padding:20px;"><div style="font-size:13px;font-weight:500;margin-bottom:6px;">Analyze format</div>'
+    +'<div style="font-size:12px;color:#888;margin-bottom:10px;">Caption pre-loaded. Paste full transcript for deeper analysis.</div>'
+    +'<div class="az-note">Tip: Copy auto-captions from Instagram and paste below for best results.</div>'
+    +'<div class="az-label">Caption</div><div class="az-caption">'+(cap||'No caption available')+'</div>'
+    +'<div class="az-label" style="margin-top:4px;">Full transcript (optional)</div>'
+    +'<textarea id="tr-'+post.id+'" placeholder="Paste full video script or auto-captions here..."></textarea>'
+    +'<button class="btn btn-dark" style="margin-top:10px;" onclick="runAI(\''+post.id+'\')">Analyze with AI</button>'
+    +'</div>';
+}
+
+async function runAI(pid){
+  var post=D.igPosts.find(function(p){return p.id===pid;}); if(!post)return;
+  var trEl=document.getElementById('tr-'+pid);
+  var content=(trEl?trEl.value.trim():'')||post.caption||'';
+  if(!content){alert('No content to analyze.');return;}
+  var pan=document.getElementById('fmt-panel');
+  pan.innerHTML='<div style="text-align:center;padding:40px;"><div class="spinner" style="margin:0 auto 16px;"></div><div style="font-size:13px;font-weight:500;">Reading script and extracting format...</div></div>';
+  try{
+    var fmt=await analyzeFormat(post,content);
+    post.format=fmt; s('igp',JSON.stringify(D.igPosts));
+    renderFormatPanel(post); renderOutliers();
+  }catch(e){
+    pan.innerHTML='<div style="padding:20px;color:#c0392b;font-size:12px;">Failed: '+e.message+'<br><br><button class="btn btn-border btn-sm" onclick="selectPost(\''+pid+'\',\'ig\')">Retry</button></div>';
+  }
+}
+
+async function analyzeFormat(post,content){
+  var ak=D.ak||g('ak')||''; if(!ak)throw new Error('No Anthropic API key.');
+  var prompt='You are the content strategist for Hakeem Hoang (@hakeemhoang), founder of High Ticket Barbers (HTB).\n\n'
+    +'This Instagram video got '+fv(post.views)+' views which is '+mxIG(post.views)+'x above his channel average.\n\n'
+    +'HTB helps barbers build premium personal brands. Hakeems voice: grade 5 English, no jargon, spoken language.\n\n'
+    +'THREE KNOWN WINNING FORMATS:\n'
+    +'1. ORIGIN STORY ARC: Hook with dollar contrast, shame detail, grind that did not work, turning point, climb with numbers, lesson with contrarian line.\n'
+    +'2. TWO-BARBER COMPARISON SKIT: Split screen, left wrong barber, right correct barber, 4-5 contrast pairs escalating.\n'
+    +'3. INTERVIEW FORMAT: Opens with money question, shocking numbers, escalating questions, divisive close.\n\n'
+    +'VIDEO CONTENT:\n"'+content.substring(0,2000)+'"\n\n'
+    +'Return ONLY valid JSON:\n{"name":"Short format name 3-5 words","matchedFormat":"Origin Story Arc OR Two-Barber Comparison Skit OR Interview Format OR New Format","pillar":"HTB content pillar","hookType":"Specific hook type","whyItWorks":"One clear sentence","isNewFormat":true,"sections":[{"label":"HOOK","name":"What the hook does","description":"How this works","example":"Exact line from this video"},{"label":"BODY","name":"How the body builds","description":"Flow and escalation","example":"Specific moment"},{"label":"TURNING POINT","name":"The shift","description":"How it lands","example":"Exact moment"},{"label":"CLOSE","name":"How it ends","description":"The close","example":"Exact closing"}],"reusableTemplate":["Step 1","Step 2","Step 3","Step 4"]}';
+  var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ak,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1400,messages:[{role:'user',content:prompt}]})});
+  var data=await res.json(); if(data.error)throw new Error(data.error.message);
+  return JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+}
+
+function renderFormatPanel(post){
+  var f=post.format;
+  var pan=document.getElementById('fmt-panel');
+  var swId='panel-'+post.id;
+  SW[swId]={formatName:f.name,formatType:f.hookType,steps:f.reusableTemplate||[]};
+  var h='<div class="fp-hd"><div><div class="fp-title">'+f.name+'</div><div class="fp-meta">'+fv(post.views)+' views - '+mxIG(post.views)+'x - '+f.pillar+' - Hook: '+f.hookType+'</div></div>'
+    +'<div style="display:flex;gap:6px;flex-shrink:0;"><button class="btn btn-border btn-sm" onclick="addFmt(\''+post.id+'\',\'testing\')">+ Testing</button><button class="btn btn-dark btn-sm" onclick="addFmt(\''+post.id+'\',\'confirmed\')">Mark winner</button></div></div>';
+  if(!f.isNewFormat)h+='<div class="match-box">Matches: <strong>'+f.matchedFormat+'</strong></div>';
+  h+='<div class="why-box">Why it worked: '+f.whyItWorks+'</div>';
+  f.sections.forEach(function(sec){
+    h+='<div class="section"><div class="sec-label">'+sec.label+'</div><div class="sec-name">'+sec.name+'</div><div class="sec-desc">'+sec.description+'</div>';
+    if(sec.example)h+='<div class="sec-ex"><strong>From this video:</strong> "'+sec.example+'"</div>';
+    h+='</div>';
+  });
+  h+='<div class="tpl-box"><div class="tpl-label">Reusable template</div>';
+  (f.reusableTemplate||[]).forEach(function(step,i){h+='<div class="tpl-line"><div class="tpl-num">'+(i+1)+'</div><div class="tpl-text">'+step+'</div></div>';});
+  h+='</div><div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+swId+'\')">&#9997; Write a script in this format</button>';
+  h+=buildSWHtml(swId,f.name,f.hookType,f.reusableTemplate||[]);
+  pan.innerHTML=h;
+}
+
+function addFmt(pid,status){
+  var post=D.igPosts.find(function(p){return p.id===pid;}); if(!post||!post.format)return;
+  var ex=D.userFormats.find(function(f){return f.pid===pid;});
+  if(ex){ex.status=status;}else{D.userFormats.push({pid:pid,status:status,format:post.format,views:post.views,links:[],added:new Date().toISOString()});}
+  post.fStatus=status; s('igp',JSON.stringify(D.igPosts)); s('ufmts',JSON.stringify(D.userFormats));
+  renderAll(); renderFormatsPage(); alert(status==='confirmed'?'Marked as winning format.':'Added to testing.');
+}
+
+function addIGManualFormat(){
+  var name=document.getElementById('ig-mfmt-name').value.trim();
+  var status=document.getElementById('ig-mfmt-status').value;
+  var why=document.getElementById('ig-mfmt-why').value.trim();
+  var stepsRaw=document.getElementById('ig-mfmt-steps').value.trim();
+  var linksRaw=document.getElementById('ig-mfmt-links').value.trim();
+  if(!name||!why||!stepsRaw){alert('Fill in name, why it works, and at least one step.');return;}
+  var steps=stepsRaw.split('\n').filter(function(x){return x.trim();});
+  var links=linksRaw?linksRaw.split('\n').filter(function(x){return x.trim();}):[]; 
+  if(!D.igManualFormats)D.igManualFormats=[];
+  D.igManualFormats.push({id:'igm'+Date.now(),name:name,status:status,whyItWorks:why,steps:steps,links:links,added:new Date().toISOString()});
+  s('igmfmts',JSON.stringify(D.igManualFormats));
+  document.getElementById('ig-mfmt-name').value='';
+  document.getElementById('ig-mfmt-why').value='';
+  document.getElementById('ig-mfmt-steps').value='';
+  document.getElementById('ig-mfmt-links').value='';
+  renderFormatsPage(); alert('Instagram format added.');
+}
+
+function addYTFormat(){
+  var name=document.getElementById('yt-mfmt-name').value.trim();
+  var status=document.getElementById('yt-mfmt-status').value;
+  var why=document.getElementById('yt-mfmt-why').value.trim();
+  var stepsRaw=document.getElementById('yt-mfmt-steps').value.trim();
+  var linksRaw=document.getElementById('yt-mfmt-links').value.trim();
+  if(!name||!why||!stepsRaw){alert('Fill in name, why it works, and at least one step.');return;}
+  var steps=stepsRaw.split('\n').filter(function(x){return x.trim();});
+  var links=linksRaw?linksRaw.split('\n').filter(function(x){return x.trim();}):[]; 
+  D.ytFormats.push({id:'ytm'+Date.now(),name:name,status:status,whyItWorks:why,steps:steps,links:links,added:new Date().toISOString()});
+  s('ytfmts',JSON.stringify(D.ytFormats));
+  document.getElementById('yt-mfmt-name').value='';
+  document.getElementById('yt-mfmt-why').value='';
+  document.getElementById('yt-mfmt-steps').value='';
+  document.getElementById('yt-mfmt-links').value='';
+  renderFormatsPage(); alert('YouTube format added.');
+}
+
+function promoteWinner(pid){var f=D.userFormats.find(function(f){return f.pid===pid;});var p=D.igPosts.find(function(p){return p.id===pid;});if(f)f.status='confirmed';if(p)p.fStatus='confirmed';s('igp',JSON.stringify(D.igPosts));s('ufmts',JSON.stringify(D.userFormats));renderFormatsPage();renderOutliers();}
+function removeFmt(pid){D.userFormats=D.userFormats.filter(function(f){return f.pid!==pid;});var p=D.igPosts.find(function(p){return p.id===pid;});if(p)p.fStatus=null;s('igp',JSON.stringify(D.igPosts));s('ufmts',JSON.stringify(D.userFormats));renderFormatsPage();renderOutliers();}
+function promoteIGManual(fid){var f=(D.igManualFormats||[]).find(function(f){return f.id===fid;});if(f)f.status='confirmed';s('igmfmts',JSON.stringify(D.igManualFormats));renderFormatsPage();}
+function removeIGManual(fid){D.igManualFormats=(D.igManualFormats||[]).filter(function(f){return f.id!==fid;});s('igmfmts',JSON.stringify(D.igManualFormats));renderFormatsPage();}
+function promoteYT(fid){var f=D.ytFormats.find(function(f){return f.id===fid;});if(f)f.status='confirmed';s('ytfmts',JSON.stringify(D.ytFormats));renderFormatsPage();}
+function removeYT(fid){D.ytFormats=D.ytFormats.filter(function(f){return f.id!==fid;});s('ytfmts',JSON.stringify(D.ytFormats));renderFormatsPage();}
+function addLink(pid){var inp=document.getElementById('lnk-'+pid);if(!inp)return;var v=inp.value.trim();if(!v){alert('Paste a link first.');return;}var f=D.userFormats.find(function(f){return f.pid===pid;});if(!f)return;if(!f.links)f.links=[];f.links.push(v);inp.value='';s('ufmts',JSON.stringify(D.userFormats));renderFormatsPage();setTimeout(function(){openCard('usr-'+pid);},50);}
+function removeLink(pid,idx){var f=D.userFormats.find(function(f){return f.pid===pid;});if(!f||!f.links)return;f.links.splice(idx,1);s('ufmts',JSON.stringify(D.userFormats));renderFormatsPage();setTimeout(function(){openCard('usr-'+pid);},50);}
+function addPreLink(fid){
+  var inp=document.getElementById('plnk-'+fid);
+  if(!inp)return;
+  var v=inp.value.trim(); if(!v){alert('Paste a link first.');return;}
+  var f=WF.find(function(f){return f.id===fid;});
+  if(!f)return;
+  if(!f.links)f.links=[];
+  f.links.push(v); inp.value='';
+  saveWFLinks();
+  renderFormatsPage();
+  setTimeout(function(){openCard('pre-'+fid);},50);
+}
+
+function removePreLink(fid,idx){
+  var f=WF.find(function(f){return f.id===fid;});
+  if(!f||!f.links)return;
+  f.links.splice(idx,1);
+  saveWFLinks();
+  renderFormatsPage();
+  setTimeout(function(){openCard('pre-'+fid);},50);
+}
+
+function saveWFLinks(){
+  var map={};
+  WF.forEach(function(f){map[f.id]=f.links||[];});
+  TF.forEach(function(f){map['tf-'+f.id]=f.links||[];});
+  s('wflinks',JSON.stringify(map));
+}
+
+function loadWFLinks(){
+  var raw=g('wflinks'); if(!raw)return;
+  var map=JSON.parse(raw);
+  WF.forEach(function(f){if(map[f.id])f.links=map[f.id];});
+  TF.forEach(function(f){if(map['tf-'+f.id])f.links=map['tf-'+f.id];});
+}
+
+function addTFLink(fid){var inp=document.getElementById('tlnk-'+fid);if(!inp)return;var v=inp.value.trim();if(!v){alert('Paste a link first.');return;}var f=TF.find(function(f){return f.id===fid;});if(!f)return;if(!f.links)f.links=[];f.links.push(v);inp.value='';renderFormatsPage();setTimeout(function(){openCard('tpre-'+fid);},50);}
+function removeTFLink(fid,idx){var f=TF.find(function(f){return f.id===fid;});if(!f||!f.links)return;f.links.splice(idx,1);renderFormatsPage();setTimeout(function(){openCard('tpre-'+fid);},50);}
+
+function toggleCard(id){var b=document.getElementById('wfc-'+id);var a=document.getElementById('wfa-'+id);if(!b)return;var open=b.style.display!=='none';b.style.display=open?'none':'block';if(a)a.innerHTML=open?'&#9656;':'&#9660;';}
+function openCard(id){var b=document.getElementById('wfc-'+id);var a=document.getElementById('wfa-'+id);if(b)b.style.display='block';if(a)a.innerHTML='&#9660;';}
+function toggleSW(fid){var sw=document.getElementById('sw-'+fid);if(!sw)return;sw.style.display=sw.style.display==='none'?'block':'none';}
+
+function buildStepsH(steps){return steps.map(function(step,i){return '<div class="wf-step"><div class="wf-step-n">'+(i+1)+'</div><div>'+step+'</div></div>';}).join('');}
+function buildRulesH(rules){return (rules||[]).map(function(r){return '<div class="wf-rule">- '+r+'</div>';}).join('');}
+function buildLinksH(links,pid,isTF,addFnName,rmFnName){
+  var h='';
+  var rmBase=rmFnName||(isTF?'removeTFLink':'removeLink');
+  if(links&&links.length){
+    links.forEach(function(lnk,i){
+      var rmFn=rmBase+'(\''+pid+'\','+i+')';
+      h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;"><a href="'+lnk+'" target="_blank" style="font-size:11px;color:#1857a4;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">&#8599; '+lnk+'</a><button onclick="'+rmFn+'" style="font-size:10px;color:#bbb;background:none;border:none;cursor:pointer;">&#10005;</button></div>';
+    });
+  }else{h='<div style="font-size:11px;color:#bbb;margin-bottom:6px;">No reference links yet.</div>';}
+  return h;
+}
+
+function buildSWHtml(fid,fmtName,fmtType,steps){
+  SW[fid]={formatName:fmtName,formatType:fmtType,steps:steps};
+  return '<div id="sw-'+fid+'" class="sw-box">'
+    +'<div style="font-size:12px;font-weight:500;margin-bottom:4px;">Write a script in this format</div>'
+    +'<div style="font-size:11px;color:#888;margin-bottom:10px;">Paste your idea or brain dump. AI writes a full script in the <strong>'+fmtName+'</strong> format using Hakeems voice.</div>'
+    +'<textarea id="sw-inp-'+fid+'" placeholder="e.g. I want to talk about how barbers undercharge because they are afraid of losing clients..."></textarea>'
+    +'<div style="display:flex;gap:6px;margin-top:8px;"><button class="btn btn-dark" style="font-size:11px;padding:6px 14px;" onclick="generateScript(\''+fid+'\')">Generate script</button>'
+    +'<button class="btn btn-border btn-sm" style="font-size:11px;" onclick="document.getElementById(\'sw-'+fid+'\').style.display=\'none\'">Cancel</button></div>'
+    +'<div id="sw-out-'+fid+'" style="display:none;margin-top:12px;"></div></div>';
+}
+
+async function generateScript(fid){
+  var meta=SW[fid]; if(!meta){alert('Format data not found.');return;}
+  var inp=document.getElementById('sw-inp-'+fid);
+  var out=document.getElementById('sw-out-'+fid);
+  if(!inp||!out)return;
+  var idea=inp.value.trim(); if(!idea){alert('Paste your idea first.');return;}
+  var ak=D.ak||g('ak')||''; if(!ak){alert('Add your Anthropic API key in Settings first.');return;}
+  out.style.display='block';
+  out.innerHTML='<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:0 auto 10px;width:20px;height:20px;border-width:1.5px;"></div><div style="font-size:11px;color:#999;">Writing script in '+meta.formatName+' format...</div></div>';
+  var stepsText=meta.steps.map(function(st,i){return (i+1)+'. '+st;}).join('\n');
+  var prompt='You are writing a script for Hakeem Hoang, founder of High Ticket Barbers (HTB).\n\n'
+    +'VOICE: Grade 5 English. Short sentences. No jargon. Sounds like Hakeem talking to a barber friend.\n\n'
+    +'POSITIONING: Stop being a barber. Become a brand. Skill does not set your price. Attention does.\n\n'
+    +'PROOF: Joshy $6K to $17K in 4 months. Bryan $6K to $20K. Kevin 2K to 70K Instagram. Landen $40 cuts to $13K per month.\n\n'
+    +'FORMAT: '+meta.formatName+' ('+meta.formatType+')\nSTRUCTURE:\n'+stepsText+'\n\n'
+    +'IDEA:\n"'+idea+'"\n\n'
+    +'Write the full script broken into labeled sections matching the format structure. Use specific numbers. End with a clear CTA.';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':ak,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})});
+    var data=await res.json(); if(data.error)throw new Error(data.error.message);
+    var script=data.content[0].text;
+    var formatted=script.split('\n').map(function(line){
+      line=line.trim(); if(!line)return '<div style="height:8px;"></div>';
+      if(/^(HOOK|SHAME|GRIND|TURNING|CLIMB|RESULT|LESSON|BODY|CLOSE|PAIR|LEFT|RIGHT|VISUAL|CTA|REFRAME|POINT|OPEN|QUESTION|ANSWER|SETUP|SCENE)/i.test(line)&&line.length<60) return '<div style="font-size:10px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.08em;margin-top:14px;margin-bottom:4px;">'+line+'</div>';
+      if(line.charAt(0)==='[') return '<div style="font-size:11px;color:#1857a4;font-style:italic;padding:4px 0;">'+line+'</div>';
+      return '<div style="font-size:12px;color:#1a1a1a;line-height:1.7;padding:1px 0;">'+line+'</div>';
+    }).join('');
+    var sid='sw-script-'+fid;
+    out.innerHTML='<div style="background:#fff;border:0.5px solid #e5e5e3;border-radius:8px;padding:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:11px;font-weight:600;color:#2d6a1f;">Script ready</div><button class="btn btn-border btn-sm" style="font-size:10px;" onclick="copyScript(\''+sid+'\')">Copy</button></div><div id="'+sid+'">'+formatted+'</div></div>';
+  }catch(e){out.innerHTML='<div style="font-size:11px;color:#c0392b;padding:10px;">Failed: '+e.message+'<br><br><button class="btn btn-border btn-sm" onclick="generateScript(\''+fid+'\')">Retry</button></div>';}
+}
+
+function copyScript(id){var el=document.getElementById(id);if(!el)return;navigator.clipboard.writeText(el.innerText).then(function(){alert('Copied.');}).catch(function(){alert('Select and copy manually.');});}
+
+function buildPreCard(f){
+  var id='pre-'+f.id;
+  var sw=buildSWHtml(id,f.name,f.type,f.steps);
+  var lh=buildLinksH(f.links||[],'pre-'+f.id,false,'addPreLink','removePreLink');
+  var h='<div class="wf-card confirmed"><div class="wf-badge confirmed">Winner</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score">'+f.score+' - '+f.type+' - '+f.month+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#999;">&#9656;</span></div>'
+    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#888;margin-bottom:10px;font-style:italic;">'+f.description+'</div><div class="sep"></div>'
+    +'<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>'+buildStepsH(f.steps)
+    +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
+    +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
+    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="vi-inp" id="plnk-'+f.id+'" type="text" placeholder="Paste reference link..." style="flex:1;" /><button class="vi-btn" onclick="addPreLink(\''+f.id+'\')">Add link</button></div>'
+    +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
+    +'</div></div>';
+  return h;
+}
+
+function buildTFCard(f){
+  var id='tpre-'+f.id;
+  var sw=buildSWHtml(id,f.name,f.type,f.steps);
+  var lh=buildLinksH(f.links,f.id,true);
+  var h='<div class="wf-card"><div class="wf-badge testing">Testing</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score" style="color:#888;">'+f.score+' - '+f.type+' - '+f.month+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#999;">&#9656;</span></div>'
+    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#888;margin-bottom:10px;font-style:italic;">'+f.description+'</div><div class="sep"></div>'
+    +'<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>'+buildStepsH(f.steps)
+    +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
+    +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
+    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="vi-inp" id="tlnk-'+f.id+'" type="text" placeholder="Paste Instagram link..." style="flex:1;" /><button class="vi-btn" onclick="addTFLink(\''+f.id+'\')">Add link</button></div>'
+    +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
+    +'</div></div>';
+  return h;
+}
+
+function buildUserCard(f){
+  var isW=f.status==='confirmed';
+  var fm=f.format; var id='usr-'+f.pid;
+  var lh=buildLinksH(f.links||[],f.pid,false);
+  var sw=buildSWHtml(id,fm.name,fm.hookType,fm.reusableTemplate||[]);
+  var h='<div class="wf-card'+(isW?' confirmed':'')+'"><div class="wf-badge '+(isW?'confirmed':'testing')+'">'+(isW?'Winner':'Testing')+'</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+fm.name+'</div><div class="wf-score">'+fv(f.views)+' views - '+mxIG(f.views)+'x</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#999;">&#9656;</span></div>'
+    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#888;margin-bottom:10px;font-style:italic;">'+fm.whyItWorks+'</div><div class="sep"></div>'
+    +'<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>';
+  fm.sections.forEach(function(sec){
+    h+='<div class="section" style="padding:10px 12px;margin-bottom:6px;"><div class="sec-label">'+sec.label+'</div><div class="sec-name" style="font-size:12px;">'+sec.name+'</div><div class="sec-desc" style="font-size:11px;">'+sec.description+'</div>';
+    if(sec.example)h+='<div class="sec-ex" style="font-size:10px;"><strong>From source video:</strong> "'+sec.example+'"</div>';
+    h+='</div>';
+  });
+  h+='<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Reusable template</div>';
+  (fm.reusableTemplate||[]).forEach(function(step,i){h+='<div class="tpl-line" style="padding:5px 0;"><div class="tpl-num">'+(i+1)+'</div><div class="tpl-text" style="font-size:11px;">'+step+'</div></div>';});
+  h+='<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
+    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="vi-inp" id="lnk-'+f.pid+'" type="text" placeholder="Paste Instagram link..." style="flex:1;" /><button class="vi-btn" onclick="addLink(\''+f.pid+'\')">Add link</button></div>'
+    +'<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;">'
+    +(isW?'':'<button class="btn btn-green btn-sm" onclick="promoteWinner(\''+f.pid+'\')">&#8594; Mark winner</button>')
+    +'<button class="btn btn-border btn-sm" onclick="removeFmt(\''+f.pid+'\')" style="color:#999;">Remove</button></div>'
+    +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
+    +'</div></div>';
+  return h;
+}
+
+function buildManualCard(f,promoteFn,removeFn){
+  var isW=f.status==='confirmed';
+  var id='manual-'+f.id;
+  var sw=buildSWHtml(id,f.name,'Manual',f.steps);
+  var h='<div class="wf-card'+(isW?' confirmed':'')+'"><div class="wf-badge '+(isW?'confirmed':'testing')+'">'+(isW?'Winner':'Testing')+'</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score" style="color:#888;">Manual format</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#999;">&#9656;</span></div>'
+    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#888;margin-bottom:10px;font-style:italic;">'+f.whyItWorks+'</div><div class="sep"></div>'
+    +'<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Steps</div>'+buildStepsH(f.steps);
+  if(f.links&&f.links.length){h+='<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>';f.links.forEach(function(lnk){h+='<div style="margin-bottom:4px;"><a href="'+lnk+'" target="_blank" style="font-size:11px;color:#1857a4;text-decoration:none;">&#8599; '+lnk+'</a></div>';});}
+  h+='<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;">'
+    +(isW?'':'<button class="btn btn-green btn-sm" onclick="'+promoteFn+'(\''+f.id+'\')">&#8594; Mark winner</button>')
+    +'<button class="btn btn-border btn-sm" onclick="'+removeFn+'(\''+f.id+'\')" style="color:#999;">Remove</button></div>'
+    +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
+    +'</div></div>';
+  return h;
+}
+
+function renderFormatsPage(){
+  var wg=document.getElementById('win-grid'); var tg=document.getElementById('test-grid');
+  var wh=WF.map(buildPreCard).join('');
+  var uw=D.userFormats.filter(function(f){return f.status==='confirmed';}); uw.forEach(function(f){wh+=buildUserCard(f);});
+  var igmw=(D.igManualFormats||[]).filter(function(f){return f.status==='confirmed';}); igmw.forEach(function(f){wh+=buildManualCard(f,'promoteIGManual','removeIGManual');});
+  wg.innerHTML=wh; document.getElementById('win-ct').textContent=WF.length+uw.length+igmw.length;
+  var th=TF.map(buildTFCard).join('');
+  var ut=D.userFormats.filter(function(f){return f.status==='testing';}); ut.forEach(function(f){th+=buildUserCard(f);});
+  var igmt=(D.igManualFormats||[]).filter(function(f){return f.status==='testing';}); igmt.forEach(function(f){th+=buildManualCard(f,'promoteIGManual','removeIGManual');});
+  if(!th)th='<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9677;</div><div class="empty-text" style="font-size:12px;">No testing formats</div></div>';
+  tg.innerHTML=th; document.getElementById('test-ct').textContent=TF.length+ut.length+igmt.length;
+  document.getElementById('fmt-ig-ct').textContent=WF.length+TF.length+uw.length+ut.length+igmw.length+igmt.length;
+  var ywg=document.getElementById('yt-win-grid'); var ytg=document.getElementById('yt-test-grid');
+  var yw=D.ytFormats.filter(function(f){return f.status==='confirmed';}); var yt2=D.ytFormats.filter(function(f){return f.status==='testing';});
+  ywg.innerHTML=yw.length?yw.map(function(f){return buildManualCard(f,'promoteYT','removeYT');}).join(''):'<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9675;</div><div class="empty-text" style="font-size:12px;">No YouTube formats yet</div><div class="empty-sub">Add a format using the form below</div></div>';
+  ytg.innerHTML=yt2.length?yt2.map(function(f){return buildManualCard(f,'promoteYT','removeYT');}).join(''):'<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9675;</div><div class="empty-text" style="font-size:12px;">No testing formats</div></div>';
+  document.getElementById('yt-win-ct').textContent=yw.length;
+  document.getElementById('yt-test-ct').textContent=yt2.length;
+  document.getElementById('fmt-yt-ct').textContent=D.ytFormats.length;
+  renderHooks();
+}
+
+function addHook(){
+  var text=document.getElementById('hook-text').value.trim();
+  var status=document.getElementById('hook-status').value;
+  var note=document.getElementById('hook-note').value.trim();
+  var link=document.getElementById('hook-link').value.trim();
+  if(!text){alert('Paste the hook text first.');return;}
+  if(!D.hooks)D.hooks=[];
+  D.hooks.push({id:'hk'+Date.now(),text:text,status:status,note:note,link:link});
+  s('hooks',JSON.stringify(D.hooks));
+  document.getElementById('hook-text').value='';
+  document.getElementById('hook-note').value='';
+  document.getElementById('hook-link').value='';
+  renderFormatsPage();
+  alert('Hook added.');
+}
+
+function promoteHook(fid){
+  var h=(D.hooks||[]).find(function(h){return h.id===fid;});
+  if(h)h.status='confirmed';
+  s('hooks',JSON.stringify(D.hooks));
+  renderHooks();
+}
+
+function removeHook(fid){
+  D.hooks=(D.hooks||[]).filter(function(h){return h.id!==fid;});
+  s('hooks',JSON.stringify(D.hooks));
+  renderHooks();
+}
+
+function renderHooks(){
+  var hAll=D.hooks||[];
+  var hWin=hAll.filter(function(h){return h.status==='confirmed';});
+  var hTest=hAll.filter(function(h){return h.status==='testing';});
+  var wg=document.getElementById('hook-win-grid');
+  var tg=document.getElementById('hook-test-grid');
+  if(wg)wg.innerHTML=hWin.length?hWin.map(buildHookCard).join(''):'<div class="empty"><div class="empty-icon">&#9632;</div><div class="empty-text">No winner hooks yet</div><div class="empty-sub">Add hooks below</div></div>';
+  if(tg)tg.innerHTML=hTest.length?hTest.map(buildHookCard).join(''):'<div class="empty"><div class="empty-icon">&#9632;</div><div class="empty-text">No testing hooks yet</div></div>';
+  var wc=document.getElementById('hook-win-ct'); if(wc)wc.textContent=hWin.length;
+  var tc=document.getElementById('hook-test-ct'); if(tc)tc.textContent=hTest.length;
+  var fc=document.getElementById('fmt-hook-ct'); if(fc)fc.textContent=hAll.length;
+}
+
+function buildHookCard(h){
+  var isW=h.status==='confirmed';
+  var o='<div class="wf-card'+(isW?' confirmed':'')+'" style="padding:14px 16px;">';
+  o+='<div class="wf-badge '+(isW?'confirmed':'testing')+'">'+(isW?'Winner':'Testing')+'</div>';
+  o+='<div style="font-size:14px;color:#1a1a1a;line-height:1.7;margin-bottom:10px;padding-right:60px;">'+h.text+'</div>';
+  if(h.note){o+='<div style="font-size:11px;color:#2d6a1f;font-weight:500;margin-bottom:6px;">'+h.note+'</div>';}
+  if(h.link){o+='<div style="margin-bottom:8px;"><a href="'+h.link+'" target="_blank" style="font-size:11px;color:#1857a4;">&#8599; Reference video</a></div>';}
+  o+='<div style="display:flex;justify-content:flex-end;gap:6px;">';
+  if(!isW){o+='<button class="btn btn-green btn-sm" onclick="promoteHook(\''+h.id+'\')">&#8594; Mark winner</button>';}
+  o+='<button class="btn btn-border btn-sm" onclick="removeHook(\''+h.id+'\')" style="color:#999;">Remove</button>';
+  o+='</div></div>';
+  return o;
+}
+
+function saveTok(){var t=document.getElementById('s-tok').value.trim();if(!t)return;D.token=t;s('tok',t);document.getElementById('s-acc').textContent='@hakeemhoang';alert('Saved. Go to Overview and expand Instagram to sync.');}
+function saveYTKey(){var k=document.getElementById('s-yt-key').value.trim();if(!k)return;D.ytKey=k;s('ytk',k);alert('YouTube key saved. Go to Overview and expand YouTube to connect.');}
+function saveAK(){var k=document.getElementById('s-ak').value.trim();if(!k)return;D.ak=k;s('ak',k);alert('Anthropic key saved.');}
+function saveAvg(){var v=parseInt(document.getElementById('s-avg').value);if(!v)return;D.manualAvg=v;s('mavg',v);recalcIG();alert('Average updated to '+fv(v)+'.');}
+function clearAll(){if(!confirm('Clear all data?'))return;localStorage.clear();location.reload();}
+
+init();
+</script>
+</body>
+</html>
