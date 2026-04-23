@@ -140,6 +140,10 @@ app.get('/api/data', auth, async (req, res) => {
       hasIGToken: !!settingsMap.ig_token,
       hasYTKey: !!settingsMap.yt_key,
       manualAvg: parseInt(settingsMap.manual_avg || '0') || 0,
+      igWeekTarget: parseInt(settingsMap.ig_week_target || '0') || 0,
+      igMonthTarget: parseInt(settingsMap.ig_month_target || '0') || 0,
+      ytWeekTarget: parseInt(settingsMap.yt_week_target || '0') || 0,
+      ytMonthTarget: parseInt(settingsMap.yt_month_target || '0') || 0,
       wflinks: settingsMap.wflinks ? JSON.parse(settingsMap.wflinks) : {},
     });
   } catch (e) {
@@ -151,11 +155,15 @@ app.get('/api/data', auth, async (req, res) => {
 
 app.put('/api/settings', auth, async (req, res) => {
   try {
-    const { igToken, ytKey, anthropicKey, manualAvg } = req.body;
+    const { igToken, ytKey, anthropicKey, manualAvg, igWeekTarget, igMonthTarget, ytWeekTarget, ytMonthTarget } = req.body;
     if (igToken !== undefined) await setSetting('ig_token', igToken);
     if (ytKey !== undefined) await setSetting('yt_key', ytKey);
     if (anthropicKey !== undefined) await setSetting('anthropic_key', anthropicKey);
     if (manualAvg !== undefined) await setSetting('manual_avg', String(manualAvg));
+    if (igWeekTarget !== undefined) await setSetting('ig_week_target', String(igWeekTarget));
+    if (igMonthTarget !== undefined) await setSetting('ig_month_target', String(igMonthTarget));
+    if (ytWeekTarget !== undefined) await setSetting('yt_week_target', String(ytWeekTarget));
+    if (ytMonthTarget !== undefined) await setSetting('yt_month_target', String(ytMonthTarget));
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });

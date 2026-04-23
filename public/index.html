@@ -148,6 +148,21 @@ textarea::placeholder{color:#5a5080;}
 .op-btn:hover{border-color:#7c3aed;color:#a78bfa;}
 .op-btn.selected{border-color:#7c3aed;background:rgba(124,58,237,0.2);color:#a78bfa;}
 .outlier-actions{display:flex;gap:8px;}
+.target-row{margin-top:14px;padding-top:12px;border-top:0.5px solid #2a2550;}
+.target-item{margin-bottom:12px;}
+.target-item:last-child{margin-bottom:0;}
+.target-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.target-label{font-size:11px;color:#7a6fa0;}
+.target-count{font-size:11px;color:#f0eaff;font-weight:500;}
+.target-bar{height:4px;background:#1a1630;border-radius:2px;overflow:hidden;margin-bottom:3px;}
+.target-bar-fill{height:100%;border-radius:2px;transition:width 0.4s;}
+.target-bar-fill.green{background:#10b981;}
+.target-bar-fill.yellow{background:#f59e0b;}
+.target-bar-fill.red{background:#ef4444;}
+.status-pill{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;}
+.status-pill.ahead{background:rgba(16,185,129,0.15);color:#10b981;border:0.5px solid rgba(16,185,129,0.3);}
+.status-pill.on-track{background:rgba(245,158,11,0.15);color:#f59e0b;border:0.5px solid rgba(245,158,11,0.3);}
+.status-pill.behind{background:rgba(239,68,68,0.12);color:#ef4444;border:0.5px solid rgba(239,68,68,0.25);}
 </style>
 </head>
 <body>
@@ -241,6 +256,7 @@ textarea::placeholder{color:#5a5080;}
           <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="ig-stat-month">0</div><div class="stat-sub">Last 30 days</div></div>
           <div class="stat-card"><div class="stat-label">Outliers marked</div><div class="stat-val green" id="ig-stat-outliers">0</div></div>
         </div>
+        <div id="ig-target-section" style="display:none;"></div>
       </div>
     </div>
   </div>
@@ -270,6 +286,7 @@ textarea::placeholder{color:#5a5080;}
           <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="yt-stat-month">0</div><div class="stat-sub">Last 30 days</div></div>
           <div class="stat-card"><div class="stat-label">Outliers marked</div><div class="stat-val green" id="yt-stat-outliers">0</div></div>
         </div>
+        <div id="yt-target-section" style="display:none;"></div>
       </div>
     </div>
   </div>
@@ -404,14 +421,38 @@ textarea::placeholder{color:#5a5080;}
   <div class="ph"><div><div class="pt">Settings</div></div></div>
   <div style="max-width:480px;">
     <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:#f0eaff;"><span class="plat-dot pd-ig"></span> Instagram token</div>
-    <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="password" class="inp" id="s-tok" placeholder="Access token" style="flex:1;" /><button class="btn btn-dark" onclick="saveTok()">Save</button></div>
-    <div style="font-size:11px;color:#7a6fa0;margin-bottom:24px;">Account: <span id="s-acc" style="color:#f0eaff;">Not connected</span> &mdash; Token stored securely on server.</div>
+    <input type="password" class="inp" id="s-tok" placeholder="Access token" style="width:100%;margin-bottom:6px;" />
+    <div style="font-size:11px;color:#7a6fa0;margin-bottom:20px;">Account: <span id="s-acc" style="color:#f0eaff;">Not connected</span> &mdash; Token stored securely on server.</div>
     <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:#f0eaff;"><span class="plat-dot pd-yt"></span> YouTube API key</div>
-    <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="text" class="inp" id="s-yt-key" placeholder="Google API key" style="flex:1;" /><button class="btn btn-dark" onclick="saveYTKey()">Save</button></div>
-    <div style="font-size:11px;color:#7a6fa0;margin-bottom:24px;">Channel: @hakeemhoang &middot; Get key at <a href="https://console.cloud.google.com" target="_blank" style="color:#a78bfa;">console.cloud.google.com</a> &mdash; Key stored securely on server.</div>
+    <input type="text" class="inp" id="s-yt-key" placeholder="Google API key" style="width:100%;margin-bottom:6px;" />
+    <div style="font-size:11px;color:#7a6fa0;margin-bottom:20px;">Channel: @hakeemhoang &middot; Get key at <a href="https://console.cloud.google.com" target="_blank" style="color:#a78bfa;">console.cloud.google.com</a> &mdash; Key stored securely on server.</div>
     <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:#f0eaff;">Anthropic API key</div>
-    <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="password" class="inp" id="s-ak" placeholder="sk-ant-..." style="flex:1;" /><button class="btn btn-dark" onclick="saveAK()">Save</button></div>
-    <div style="font-size:11px;color:#7a6fa0;margin-bottom:32px;">Free at <a href="https://console.anthropic.com" target="_blank" style="color:#a78bfa;">console.anthropic.com</a> &mdash; Key stored securely on server.</div>
+    <input type="password" class="inp" id="s-ak" placeholder="sk-ant-..." style="width:100%;margin-bottom:6px;" />
+    <div style="font-size:11px;color:#7a6fa0;margin-bottom:24px;">Free at <a href="https://console.anthropic.com" target="_blank" style="color:#a78bfa;">console.anthropic.com</a> &mdash; Key stored securely on server.</div>
+    <div style="border-top:0.5px solid #2a2550;margin-bottom:24px;"></div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:#f0eaff;"><span class="plat-dot pd-ig"></span> Instagram Targets</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <div>
+        <input type="number" class="inp" id="s-ig-week" placeholder="0" min="0" style="width:100%;margin-bottom:4px;" />
+        <div style="font-size:10px;color:#5a5080;">posts per week</div>
+      </div>
+      <div>
+        <input type="number" class="inp" id="s-ig-month" placeholder="0" min="0" style="width:100%;margin-bottom:4px;" />
+        <div style="font-size:10px;color:#5a5080;">posts per month</div>
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:#f0eaff;"><span class="plat-dot pd-yt"></span> YouTube Targets</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;">
+      <div>
+        <input type="number" class="inp" id="s-yt-week" placeholder="0" min="0" style="width:100%;margin-bottom:4px;" />
+        <div style="font-size:10px;color:#5a5080;">videos per week</div>
+      </div>
+      <div>
+        <input type="number" class="inp" id="s-yt-month" placeholder="0" min="0" style="width:100%;margin-bottom:4px;" />
+        <div style="font-size:10px;color:#5a5080;">videos per month</div>
+      </div>
+    </div>
+    <button class="btn btn-dark" onclick="saveSettings()" style="width:100%;padding:10px;">Save Settings</button>
   </div>
 </div>
 
@@ -453,6 +494,7 @@ var TF = [
 var D = {
   igPosts:[], ytVideos:[], userFormats:[], ytFormats:[], igManualFormats:[], hooks:[],
   hasIGToken:false, hasYTKey:false,
+  igWeekTarget:0, igMonthTarget:0, ytWeekTarget:0, ytMonthTarget:0,
   sel:null, igPostFilter:'all', ytPostFilter:'all', ytOutFilter:'all',
   postsPlat:'ig', outliersPlat:'ig', formatsPlat:'ig'
 };
@@ -569,6 +611,14 @@ async function loadApp() {
     D.hooks = data.hooks;
     D.hasIGToken = data.hasIGToken;
     D.hasYTKey = data.hasYTKey;
+    D.igWeekTarget = data.igWeekTarget || 0;
+    D.igMonthTarget = data.igMonthTarget || 0;
+    D.ytWeekTarget = data.ytWeekTarget || 0;
+    D.ytMonthTarget = data.ytMonthTarget || 0;
+    if (D.igWeekTarget) document.getElementById('s-ig-week').value = D.igWeekTarget;
+    if (D.igMonthTarget) document.getElementById('s-ig-month').value = D.igMonthTarget;
+    if (D.ytWeekTarget) document.getElementById('s-yt-week').value = D.ytWeekTarget;
+    if (D.ytMonthTarget) document.getElementById('s-yt-month').value = D.ytMonthTarget;
     var wfl = data.wflinks || {};
     WF.forEach(function(f){ if(wfl[f.id]) f.links = wfl[f.id]; });
     TF.forEach(function(f){ if(wfl['tf-'+f.id]) f.links = wfl['tf-'+f.id]; });
@@ -687,6 +737,7 @@ function updateIGUI() {
   document.getElementById('ig-stat-outliers').textContent=ol;
   var now=new Date();
   document.getElementById('ig-stat-week-dates').textContent=daysAgo(7).toLocaleDateString('en-US',{month:'short',day:'numeric'})+' - '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  renderTargetProgress();
 }
 
 function updateYTUI() {
@@ -702,6 +753,7 @@ function updateYTUI() {
   document.getElementById('yt-stat-week').textContent=w;
   document.getElementById('yt-stat-month').textContent=m;
   document.getElementById('yt-stat-outliers').textContent=ol;
+  renderTargetProgress();
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
@@ -1114,31 +1166,57 @@ async function removeHook(fid) {
 
 // ── Settings ──────────────────────────────────────────────────────────────────
 
-async function saveTok() {
-  var t=document.getElementById('s-tok').value.trim(); if(!t)return;
+async function saveSettings() {
+  var tok=document.getElementById('s-tok').value.trim();
+  var ytKey=document.getElementById('s-yt-key').value.trim();
+  var ak=document.getElementById('s-ak').value.trim();
+  var igW=parseInt(document.getElementById('s-ig-week').value)||0;
+  var igM=parseInt(document.getElementById('s-ig-month').value)||0;
+  var ytW=parseInt(document.getElementById('s-yt-week').value)||0;
+  var ytM=parseInt(document.getElementById('s-yt-month').value)||0;
+  var payload={igWeekTarget:igW,igMonthTarget:igM,ytWeekTarget:ytW,ytMonthTarget:ytM};
+  if(tok) payload.igToken=tok;
+  if(ytKey) payload.ytKey=ytKey;
+  if(ak) payload.anthropicKey=ak;
   try {
-    await api('PUT', '/api/settings', { igToken:t });
-    D.hasIGToken=true;
-    document.getElementById('s-acc').textContent='@hakeemhoang';
-    alert('Saved. Go to Overview and expand Instagram to sync.');
+    await api('PUT','/api/settings',payload);
+    D.igWeekTarget=igW; D.igMonthTarget=igM; D.ytWeekTarget=ytW; D.ytMonthTarget=ytM;
+    if(tok){ D.hasIGToken=true; document.getElementById('s-acc').textContent='@hakeemhoang'; }
+    if(ytKey) D.hasYTKey=true;
+    renderTargetProgress();
+    alert('Settings saved.');
   } catch(e){ alert('Error: '+e.message); }
 }
 
-async function saveYTKey() {
-  var k=document.getElementById('s-yt-key').value.trim(); if(!k)return;
-  try {
-    await api('PUT', '/api/settings', { ytKey:k });
-    D.hasYTKey=true;
-    alert('YouTube key saved. Go to Overview and expand YouTube to connect.');
-  } catch(e){ alert('Error: '+e.message); }
+function buildTargetBar(label, count, target) {
+  var pct=Math.min(Math.round((count/target)*100),100);
+  var cls=pct>=100?'green':pct>=70?'yellow':'red';
+  var pill=pct>=100?'ahead':pct>=70?'on-track':'behind';
+  var pillTxt=pct>=100?'Ahead':pct>=70?'On track':'Behind';
+  return '<div class="target-item">'
+    +'<div class="target-header"><span class="target-label">'+label+'</span>'
+    +'<span class="target-count">'+count+' / '+target+'</span></div>'
+    +'<div class="target-bar"><div class="target-bar-fill '+cls+'" style="width:'+pct+'%"></div></div>'
+    +'<span class="status-pill '+pill+'">'+pillTxt+'</span>'
+    +'</div>';
 }
 
-async function saveAK() {
-  var k=document.getElementById('s-ak').value.trim(); if(!k)return;
-  try {
-    await api('PUT', '/api/settings', { anthropicKey:k });
-    alert('Anthropic key saved.');
-  } catch(e){ alert('Error: '+e.message); }
+function renderPlatTarget(sectionId,weekCount,monthCount,weekTarget,monthTarget,weekLabel,monthLabel) {
+  var sec=document.getElementById(sectionId);
+  if(!sec) return;
+  if(!weekTarget&&!monthTarget){ sec.style.display='none'; return; }
+  var h='<div class="target-row">';
+  if(weekTarget) h+=buildTargetBar(weekLabel,weekCount,weekTarget);
+  if(monthTarget) h+=buildTargetBar(monthLabel,monthCount,monthTarget);
+  h+='</div>';
+  sec.innerHTML=h; sec.style.display='block';
+}
+
+function renderTargetProgress() {
+  var igW=inDays(D.igPosts,7).length, igM=inDays(D.igPosts,30).length;
+  var ytW=inDays(D.ytVideos,7).length, ytM=inDays(D.ytVideos,30).length;
+  renderPlatTarget('ig-target-section',igW,igM,D.igWeekTarget,D.igMonthTarget,'Weekly posts','Monthly posts');
+  renderPlatTarget('yt-target-section',ytW,ytM,D.ytWeekTarget,D.ytMonthTarget,'Weekly videos','Monthly videos');
 }
 
 // ── Format cards ──────────────────────────────────────────────────────────────
