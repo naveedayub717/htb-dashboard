@@ -7,153 +7,156 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',system-ui,sans-serif;background:#f7f7f5;color:#1a1a1a;min-height:100vh;font-size:13px;}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:200px;background:#fff;border-right:0.5px solid #e5e5e3;display:flex;flex-direction:column;z-index:100;}
-.logo{padding:20px 16px 16px;border-bottom:0.5px solid #e5e5e3;}
-.logo-mark{font-size:14px;font-weight:600;color:#1a1a1a;}
-.logo-sub{font-size:10px;color:#999;margin-top:1px;letter-spacing:0.06em;text-transform:uppercase;}
+body{font-family:'Inter',system-ui,sans-serif;background:#0e0b1f;color:#f0eaff;min-height:100vh;font-size:13px;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:200px;background:#13102a;border-right:0.5px solid #2a2550;display:flex;flex-direction:column;z-index:100;}
+.logo{padding:20px 16px 16px;border-bottom:0.5px solid #2a2550;}
+.logo-mark{font-size:14px;font-weight:600;color:#f0eaff;}
+.logo-sub{font-size:10px;color:#7a6fa0;margin-top:1px;letter-spacing:0.06em;text-transform:uppercase;}
 .nav{padding:8px 0;flex:1;}
-.ni{display:flex;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;color:#666;font-size:12px;transition:all 0.12s;border-left:2px solid transparent;user-select:none;}
-.ni:hover{color:#1a1a1a;background:#f7f7f5;}
-.ni.active{color:#1a1a1a;border-left-color:#1a1a1a;background:#f7f7f5;font-weight:500;}
-.main{margin-left:200px;padding:24px 28px;min-height:100vh;background:#f7f7f5;}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;color:#7a6fa0;font-size:12px;transition:all 0.12s;border-left:2px solid transparent;user-select:none;}
+.ni:hover{color:#f0eaff;background:rgba(124,58,237,0.08);}
+.ni.active{color:#f0eaff;border-left-color:#7c3aed;background:rgba(124,58,237,0.12);font-weight:500;}
+.main{margin-left:200px;padding:24px 28px;min-height:100vh;background:#0e0b1f;}
 .page{display:none;}.page.active{display:block;}
 .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.pt{font-size:17px;font-weight:600;color:#1a1a1a;}
-.ps{font-size:12px;color:#999;margin-top:2px;}
+.pt{font-size:17px;font-weight:600;color:#f0eaff;}
+.ps{font-size:12px;color:#7a6fa0;margin-top:2px;}
 .btn{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all 0.12s;padding:7px 14px;border-radius:7px;}
-.btn-dark{background:#1a1a1a;color:#fff;}.btn-dark:hover{background:#333;}
-.btn-border{background:#fff;color:#666;border:0.5px solid #d5d5d3;}.btn-border:hover{color:#1a1a1a;border-color:#999;}
-.btn-green{background:#eaf3de;color:#2d6a1f;border:0.5px solid #c0dd97;}
+.btn-dark{background:#7c3aed;color:#fff;}.btn-dark:hover{background:#6d28d9;}
+.btn-border{background:#13102a;color:#9b8ec4;border:0.5px solid #2a2550;}.btn-border:hover{color:#f0eaff;border-color:#7c3aed;}
+.btn-green{background:rgba(16,185,129,0.12);color:#10b981;border:0.5px solid rgba(16,185,129,0.3);}
 .btn-sm{padding:5px 10px;font-size:11px;}
-.inp{font-family:'Inter',sans-serif;font-size:12px;background:#f7f7f5;border:0.5px solid #d5d5d3;border-radius:7px;padding:8px 12px;color:#1a1a1a;outline:none;transition:border 0.12s;}
-.inp:focus{border-color:#1a1a1a;background:#fff;}
-.inp::placeholder{color:#bbb;}
-textarea{font-family:'Inter',sans-serif;font-size:11px;background:#f7f7f5;border:0.5px solid #d5d5d3;border-radius:6px;padding:8px 10px;color:#1a1a1a;line-height:1.5;outline:none;resize:vertical;min-height:70px;width:100%;}
-textarea:focus{border-color:#1a1a1a;background:#fff;}
-textarea::placeholder{color:#bbb;}
+.inp{font-family:'Inter',sans-serif;font-size:12px;background:#0e0b1f;border:0.5px solid #2a2550;border-radius:7px;padding:8px 12px;color:#f0eaff;outline:none;transition:border 0.12s;}
+.inp:focus{border-color:#7c3aed;}
+.inp::placeholder{color:#5a5080;}
+textarea{font-family:'Inter',sans-serif;font-size:11px;background:#0e0b1f;border:0.5px solid #2a2550;border-radius:6px;padding:8px 10px;color:#f0eaff;line-height:1.5;outline:none;resize:vertical;min-height:70px;width:100%;}
+textarea:focus{border-color:#7c3aed;}
+textarea::placeholder{color:#5a5080;}
 .plat-tabs{display:flex;gap:6px;margin-bottom:16px;}
-.plat-tab{font-size:11px;padding:5px 12px;border-radius:20px;border:0.5px solid #d5d5d3;color:#666;background:#fff;cursor:pointer;transition:all 0.12s;user-select:none;display:flex;align-items:center;gap:5px;}
-.plat-tab:hover{color:#1a1a1a;border-color:#999;}
-.plat-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;font-weight:500;}
+.plat-tab{font-size:11px;padding:5px 12px;border-radius:20px;border:0.5px solid #2a2550;color:#7a6fa0;background:#13102a;cursor:pointer;transition:all 0.12s;user-select:none;display:flex;align-items:center;gap:5px;}
+.plat-tab:hover{color:#f0eaff;border-color:#7c3aed;}
+.plat-tab.active{background:#7c3aed;color:#fff;border-color:#7c3aed;font-weight:500;}
 .plat-count{font-size:9px;padding:1px 5px;border-radius:8px;margin-left:2px;}
 .plat-tab.active .plat-count{background:rgba(255,255,255,0.2);color:#fff;}
-.plat-tab:not(.active) .plat-count{background:#f0f0ee;color:#888;}
+.plat-tab:not(.active) .plat-count{background:#1a1630;color:#7a6fa0;}
 .plat-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;}
 .pd-ig{background:#e1306c;}.pd-yt{background:#ff0000;}
-.plat-section{background:#fff;border:0.5px solid #e5e5e3;border-radius:10px;margin-bottom:10px;overflow:hidden;}
+.plat-section{background:#13102a;border:0.5px solid #2a2550;border-radius:10px;margin-bottom:10px;overflow:hidden;}
 .plat-section-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
-.plat-section-header:hover{background:#fafafa;}
+.plat-section-header:hover{background:#14112c;}
 .psh-left{display:flex;align-items:center;gap:10px;}
-.psh-title{font-size:13px;font-weight:500;color:#1a1a1a;}
-.psh-sub{font-size:11px;color:#999;margin-top:1px;}
+.psh-title{font-size:13px;font-weight:500;color:#f0eaff;}
+.psh-sub{font-size:11px;color:#7a6fa0;margin-top:1px;}
 .psh-stats{display:flex;gap:14px;align-items:center;}
-.psh-stat{font-size:11px;color:#666;}
-.psh-stat strong{color:#1a1a1a;font-weight:500;}
-.psh-stat.green strong{color:#2d6a1f;}
-.plat-section-body{padding:0 16px 14px;border-top:0.5px solid #f0f0ee;}
+.psh-stat{font-size:11px;color:#7a6fa0;}
+.psh-stat strong{color:#f0eaff;font-weight:500;}
+.psh-stat.green strong{color:#10b981;}
+.plat-section-body{padding:0 16px 14px;border-top:0.5px solid #2a2550;}
 .connect-inline{display:flex;gap:8px;align-items:center;padding-top:12px;}
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
-.stat-card{background:#f7f7f5;border-radius:8px;padding:12px 14px;}
-.stat-label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;}
-.stat-val{font-size:20px;font-weight:600;color:#1a1a1a;line-height:1;}
-.stat-val.green{color:#2d6a1f;}
-.stat-sub{font-size:10px;color:#bbb;margin-top:2px;}
+.stat-card{background:#0e0b1f;border-radius:8px;padding:12px 14px;border:0.5px solid #2a2550;}
+.stat-label{font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;}
+.stat-val{font-size:20px;font-weight:600;color:#f0eaff;line-height:1;}
+.stat-val.green{color:#10b981;}
+.stat-sub{font-size:10px;color:#5a5080;margin-top:2px;}
 .post-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.post-card{background:#fff;border:0.5px solid #e5e5e3;border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;}
-.post-card:hover{border-color:#999;transform:translateY(-1px);}
-.post-card.selected{border-color:#1a1a1a;box-shadow:0 0 0 1px #1a1a1a;}
-.thumb{width:100%;aspect-ratio:9/13;background:#e5e5e3;position:relative;overflow:hidden;}
+.post-card{background:#13102a;border:0.5px solid #2a2550;border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;}
+.post-card:hover{border-color:#7c3aed;transform:translateY(-1px);}
+.post-card.selected{border-color:#7c3aed;box-shadow:0 0 0 1px #7c3aed;}
+.post-card.outlier-marked{border:1.5px solid #7c3aed;}
+.post-card.outlier-marked:hover{box-shadow:0 0 0 1px #7c3aed;}
+.thumb{width:100%;aspect-ratio:9/13;background:#1a1630;position:relative;overflow:hidden;}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
-.thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:20px;}
-.thumb-ph.yt{background:#ffebee;color:#c62828;}
+.thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#5a5080;font-size:20px;}
+.thumb-ph.yt{background:#1a0808;color:#c62828;}
 .thumb-badges{position:absolute;top:6px;left:6px;right:6px;display:flex;justify-content:space-between;align-items:flex-start;}
 .tb{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;}
-.tb-mult{background:#2d6a1f;color:#fff;}
+.tb-outlier{background:#7c3aed;color:#fff;}
 .tb-plat-ig{background:#e1306c;color:#fff;}
 .tb-plat-yt{background:#ff0000;color:#fff;}
-.tb-new{background:#1857a4;color:#fff;}
+.tb-new{background:#2563eb;color:#fff;}
 .cb{padding:10px;}
-.cb-caption{font-size:11px;color:#1a1a1a;line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.cb-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.cb-views{font-size:12px;font-weight:500;color:#2d6a1f;}
-.cb-views-empty{font-size:12px;color:#bbb;}
-.cb-date{font-size:10px;color:#bbb;}
-.vbar{height:2px;background:#f0f0ee;border-radius:1px;overflow:hidden;margin-bottom:6px;}
-.vbar-fill{height:100%;background:#2d6a1f;border-radius:1px;}
-.vbar-fill.yt{background:#ff0000;}
+.cb-caption{font-size:11px;color:#d4ccf0;line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.cb-row{display:flex;align-items:center;justify-content:flex-end;margin-bottom:4px;}
+.cb-date{font-size:10px;color:#5a5080;}
 .cb-tags{display:flex;gap:4px;flex-wrap:wrap;}
-.ctag{font-size:9px;padding:2px 6px;border-radius:3px;border:0.5px solid #e5e5e3;color:#888;}
-.ctag-mult{border-color:#c0dd97;color:#2d6a1f;background:#f0f8e8;}
-.ctag-mult-yt{border-color:#ffcdd2;color:#c62828;background:#ffebee;}
-.ctag-win{border-color:#c0dd97;color:#2d6a1f;background:#f0f8e8;}
-.ctag-test{border-color:#d5d5d3;color:#888;background:#f7f7f5;}
-.ctag-fmt{border-color:#b5d4f4;color:#1857a4;background:#e6f1fb;}
-.vi-row{display:flex;gap:5px;margin-top:6px;}
-.vi-inp{flex:1;font-family:'Inter',sans-serif;font-size:11px;padding:4px 8px;border:0.5px solid #d5d5d3;border-radius:5px;background:#f7f7f5;color:#1a1a1a;outline:none;}
-.vi-inp:focus{border-color:#1a1a1a;background:#fff;}
-.vi-inp::placeholder{color:#bbb;}
-.vi-btn{font-family:'Inter',sans-serif;font-size:10px;font-weight:500;padding:4px 9px;border:0.5px solid #d5d5d3;border-radius:5px;background:#fff;color:#666;cursor:pointer;}
-.fmt-panel{background:#fff;border:0.5px solid #e5e5e3;border-radius:10px;padding:20px;margin-top:16px;}
+.ctag{font-size:9px;padding:2px 6px;border-radius:3px;border:0.5px solid #2a2550;color:#7a6fa0;}
+.ctag-outlier{border-color:rgba(124,58,237,0.5);color:#a78bfa;background:rgba(124,58,237,0.12);}
+.ctag-win{border-color:rgba(16,185,129,0.3);color:#10b981;background:rgba(16,185,129,0.1);}
+.ctag-test{border-color:#2a2550;color:#7a6fa0;background:#1a1630;}
+.ctag-fmt{border-color:rgba(124,58,237,0.3);color:#a78bfa;background:rgba(124,58,237,0.1);}
+.outlier-btn{font-family:'Inter',sans-serif;font-size:10px;font-weight:500;padding:5px 9px;border-radius:5px;background:#13102a;border:0.5px solid #2a2550;color:#7a6fa0;cursor:pointer;width:100%;margin-top:7px;transition:all 0.12s;text-align:center;}
+.outlier-btn:hover{border-color:#7c3aed;color:#a78bfa;}
+.outlier-btn.is-outlier{border-color:rgba(124,58,237,0.5);color:#a78bfa;background:rgba(124,58,237,0.1);}
+.fmt-panel{background:#13102a;border:0.5px solid #2a2550;border-radius:10px;padding:20px;margin-top:16px;}
 .fp-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:16px;}
-.fp-title{font-size:15px;font-weight:600;color:#1a1a1a;}
-.fp-meta{font-size:11px;color:#999;margin-top:3px;}
-.why-box{font-size:12px;color:#2d6a1f;padding:10px 12px;background:#f0f8e8;border-radius:7px;border:0.5px solid #c0dd97;margin-bottom:14px;line-height:1.5;}
-.match-box{font-size:12px;color:#1857a4;padding:10px 12px;background:#e6f1fb;border-radius:7px;border:0.5px solid #b5d4f4;margin-bottom:14px;line-height:1.5;}
-.section{background:#f7f7f5;border:0.5px solid #e5e5e3;border-radius:8px;padding:12px 14px;border-left:2px solid #1a1a1a;margin-bottom:8px;}
-.sec-label{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#999;font-weight:600;margin-bottom:2px;}
-.sec-name{font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:4px;}
-.sec-desc{font-size:12px;color:#666;line-height:1.6;}
-.sec-ex{margin-top:7px;padding:7px 10px;background:#fff;border-radius:5px;font-size:11px;color:#666;font-style:italic;border:0.5px solid #e5e5e3;}
-.tpl-box{background:#f7f7f5;border:0.5px solid #e5e5e3;border-radius:8px;padding:14px;margin-top:12px;}
-.tpl-label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:10px;}
-.tpl-line{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:0.5px solid #e5e5e3;}
+.fp-title{font-size:15px;font-weight:600;color:#f0eaff;}
+.fp-meta{font-size:11px;color:#7a6fa0;margin-top:3px;}
+.why-box{font-size:12px;color:#10b981;padding:10px 12px;background:rgba(16,185,129,0.08);border-radius:7px;border:0.5px solid rgba(16,185,129,0.25);margin-bottom:14px;line-height:1.5;}
+.match-box{font-size:12px;color:#a78bfa;padding:10px 12px;background:rgba(124,58,237,0.1);border-radius:7px;border:0.5px solid rgba(124,58,237,0.25);margin-bottom:14px;line-height:1.5;}
+.section{background:#0e0b1f;border:0.5px solid #2a2550;border-radius:8px;padding:12px 14px;border-left:2px solid #7c3aed;margin-bottom:8px;}
+.sec-label{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#7a6fa0;font-weight:600;margin-bottom:2px;}
+.sec-name{font-size:13px;font-weight:500;color:#f0eaff;margin-bottom:4px;}
+.sec-desc{font-size:12px;color:#9b8ec4;line-height:1.6;}
+.sec-ex{margin-top:7px;padding:7px 10px;background:#13102a;border-radius:5px;font-size:11px;color:#9b8ec4;font-style:italic;border:0.5px solid #2a2550;}
+.tpl-box{background:#0e0b1f;border:0.5px solid #2a2550;border-radius:8px;padding:14px;margin-top:12px;}
+.tpl-label{font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:10px;}
+.tpl-line{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:0.5px solid #2a2550;}
 .tpl-line:last-child{border-bottom:none;}
-.tpl-num{width:18px;height:18px;border-radius:50%;background:#1a1a1a;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;flex-shrink:0;margin-top:1px;}
-.tpl-text{font-size:12px;color:#666;line-height:1.5;}
-.wf-card{background:#fff;border:0.5px solid #e5e5e3;border-radius:10px;padding:16px;margin-bottom:8px;position:relative;}
-.wf-card.confirmed{border-color:#c0dd97;}.wf-card.yt-confirmed{border-color:#ffcdd2;}
+.tpl-num{width:18px;height:18px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#fff;flex-shrink:0;margin-top:1px;}
+.tpl-text{font-size:12px;color:#9b8ec4;line-height:1.5;}
+.wf-card{background:#13102a;border:0.5px solid #2a2550;border-radius:10px;padding:16px;margin-bottom:8px;position:relative;}
+.wf-card.confirmed{border-color:rgba(16,185,129,0.4);}.wf-card.yt-confirmed{border-color:rgba(239,68,68,0.4);}
 .wf-badge{position:absolute;top:-1px;right:10px;font-size:9px;font-weight:600;padding:2px 8px;border-radius:0 0 5px 5px;letter-spacing:0.04em;text-transform:uppercase;}
-.wf-badge.confirmed{background:#2d6a1f;color:#fff;}.wf-badge.yt-confirmed{background:#c62828;color:#fff;}.wf-badge.testing{background:#e5e5e3;color:#666;}
-.wf-name{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:3px;}
-.wf-score{font-size:11px;color:#2d6a1f;margin-bottom:4px;font-weight:500;}
-.wf-step{display:flex;gap:7px;font-size:11px;color:#666;line-height:1.4;margin-bottom:5px;}
-.wf-step-n{width:16px;height:16px;border-radius:50%;background:#f0f0ee;border:0.5px solid #e5e5e3;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:#888;flex-shrink:0;margin-top:1px;}
-.wf-rule{font-size:11px;color:#888;padding:3px 0;border-bottom:0.5px solid #f0f0ee;line-height:1.4;}
+.wf-badge.confirmed{background:#10b981;color:#fff;}.wf-badge.yt-confirmed{background:#c62828;color:#fff;}.wf-badge.testing{background:#2a2550;color:#9b8ec4;}
+.wf-name{font-size:13px;font-weight:600;color:#f0eaff;margin-bottom:3px;}
+.wf-score{font-size:11px;color:#10b981;margin-bottom:4px;font-weight:500;}
+.wf-step{display:flex;gap:7px;font-size:11px;color:#9b8ec4;line-height:1.4;margin-bottom:5px;}
+.wf-step-n{width:16px;height:16px;border-radius:50%;background:#1a1630;border:0.5px solid #2a2550;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:#7a6fa0;flex-shrink:0;margin-top:1px;}
+.wf-rule{font-size:11px;color:#7a6fa0;padding:3px 0;border-bottom:0.5px solid #2a2550;line-height:1.4;}
 .wf-rule:last-child{border-bottom:none;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
-.sec-hd-title{font-size:13px;font-weight:500;color:#1a1a1a;}
-.count-pill{font-size:10px;padding:1px 7px;border-radius:10px;background:#f0f0ee;color:#888;border:0.5px solid #e5e5e3;}
+.sec-hd-title{font-size:13px;font-weight:500;color:#f0eaff;}
+.count-pill{font-size:10px;padding:1px 7px;border-radius:10px;background:#1a1630;color:#7a6fa0;border:0.5px solid #2a2550;}
 .filters{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
-.pill{font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid #d5d5d3;color:#666;background:#fff;cursor:pointer;transition:all 0.12s;user-select:none;}
-.pill:hover{color:#1a1a1a;border-color:#999;}
-.pill.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;font-weight:500;}
+.pill{font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid #2a2550;color:#7a6fa0;background:#13102a;cursor:pointer;transition:all 0.12s;user-select:none;}
+.pill:hover{color:#f0eaff;border-color:#7c3aed;}
+.pill.active{background:#7c3aed;color:#fff;border-color:#7c3aed;font-weight:500;}
 .empty{text-align:center;padding:40px 20px;}
 .empty-icon{font-size:24px;opacity:0.25;margin-bottom:10px;}
-.empty-text{font-size:13px;color:#666;margin-bottom:4px;font-weight:500;}
-.empty-sub{font-size:12px;color:#bbb;}
-.load-overlay{position:fixed;inset:0;background:rgba(247,247,245,0.9);display:flex;align-items:center;justify-content:center;z-index:1000;}
-.load-box{background:#fff;border:0.5px solid #e5e5e3;border-radius:12px;padding:28px 36px;text-align:center;}
-.spinner{width:28px;height:28px;border:1.5px solid #e5e5e3;border-top-color:#1a1a1a;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px;}
+.empty-text{font-size:13px;color:#9b8ec4;margin-bottom:4px;font-weight:500;}
+.empty-sub{font-size:12px;color:#5a5080;}
+.load-overlay{position:fixed;inset:0;background:rgba(14,11,31,0.92);display:flex;align-items:center;justify-content:center;z-index:1000;}
+.load-box{background:#13102a;border:0.5px solid #2a2550;border-radius:12px;padding:28px 36px;text-align:center;}
+.spinner{width:28px;height:28px;border:1.5px solid #2a2550;border-top-color:#7c3aed;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 14px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.sep{border:none;border-top:0.5px solid #e5e5e3;margin:10px 0;}
-.divider{border:none;border-top:0.5px solid #e5e5e3;margin:20px 0;}
-.sel{font-family:'Inter',sans-serif;font-size:11px;background:#fff;border:0.5px solid #d5d5d3;border-radius:6px;padding:5px 10px;color:#666;outline:none;cursor:pointer;}
-.sw-box{display:none;margin-top:12px;background:#f7f7f5;border:0.5px solid #e5e5e3;border-radius:8px;padding:14px;}
-.az-note{font-size:11px;color:#2d6a1f;padding:7px 10px;background:#f0f8e8;border-radius:6px;border:0.5px solid #c0dd97;margin-bottom:10px;}
-.az-label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;font-weight:600;}
-.az-caption{font-size:11px;color:#666;padding:8px;background:#f7f7f5;border-radius:6px;margin-bottom:10px;line-height:1.5;border:0.5px solid #e5e5e3;}
-.add-fmt-box{background:#fff;border:0.5px solid #e5e5e3;border-radius:10px;padding:16px;margin-bottom:10px;}
+.sep{border:none;border-top:0.5px solid #2a2550;margin:10px 0;}
+.divider{border:none;border-top:0.5px solid #2a2550;margin:20px 0;}
+.sel{font-family:'Inter',sans-serif;font-size:11px;background:#0e0b1f;border:0.5px solid #2a2550;border-radius:6px;padding:5px 10px;color:#9b8ec4;outline:none;cursor:pointer;}
+.sw-box{display:none;margin-top:12px;background:#0e0b1f;border:0.5px solid #2a2550;border-radius:8px;padding:14px;}
+.az-note{font-size:11px;color:#10b981;padding:7px 10px;background:rgba(16,185,129,0.08);border-radius:6px;border:0.5px solid rgba(16,185,129,0.25);margin-bottom:10px;}
+.az-label{font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px;font-weight:600;}
+.az-caption{font-size:11px;color:#9b8ec4;padding:8px;background:#0e0b1f;border-radius:6px;margin-bottom:10px;line-height:1.5;border:0.5px solid #2a2550;}
+.add-fmt-box{background:#13102a;border:0.5px solid #2a2550;border-radius:10px;padding:16px;margin-bottom:10px;}
+.outlier-overlay{position:fixed;inset:0;background:rgba(14,11,31,0.8);display:none;align-items:center;justify-content:center;z-index:2000;}
+.outlier-picker{background:#13102a;border:1px solid #2a2550;border-radius:12px;padding:22px;width:300px;box-shadow:0 8px 40px rgba(0,0,0,0.6);}
+.outlier-picker-title{font-size:14px;font-weight:600;color:#f0eaff;margin-bottom:3px;}
+.outlier-picker-sub{font-size:11px;color:#7a6fa0;margin-bottom:16px;}
+.outlier-presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.op-btn{font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;border:1.5px solid #2a2550;color:#9b8ec4;background:#0e0b1f;cursor:pointer;transition:all 0.12s;}
+.op-btn:hover{border-color:#7c3aed;color:#a78bfa;}
+.op-btn.selected{border-color:#7c3aed;background:rgba(124,58,237,0.2);color:#a78bfa;}
+.outlier-actions{display:flex;gap:8px;}
 </style>
 </head>
 <body>
 
 <!-- Auth overlay -->
-<div id="auth-overlay" style="position:fixed;inset:0;background:#f7f7f5;display:flex;align-items:center;justify-content:center;z-index:9999;">
-  <div style="background:#fff;border:0.5px solid #e5e5e3;border-radius:12px;padding:36px 40px;width:360px;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
-    <div style="font-size:16px;font-weight:600;margin-bottom:4px;">HTB Content Intelligence</div>
-    <div style="font-size:12px;color:#999;margin-bottom:24px;" id="auth-subtitle">Sign in to continue</div>
+<div id="auth-overlay" style="position:fixed;inset:0;background:#0e0b1f;display:flex;align-items:center;justify-content:center;z-index:9999;">
+  <div style="background:#13102a;border:0.5px solid #2a2550;border-radius:12px;padding:36px 40px;width:360px;box-shadow:0 4px 24px rgba(0,0,0,0.5);">
+    <div style="font-size:16px;font-weight:600;margin-bottom:4px;color:#f0eaff;">HTB Content Intelligence</div>
+    <div style="font-size:12px;color:#7a6fa0;margin-bottom:24px;" id="auth-subtitle">Sign in to continue</div>
     <div style="margin-bottom:10px;">
       <div class="az-label">Email</div>
       <input type="email" class="inp" id="auth-email" placeholder="you@example.com" style="width:100%;margin-top:4px;" />
@@ -162,10 +165,29 @@ textarea::placeholder{color:#bbb;}
       <div class="az-label">Password</div>
       <input type="password" class="inp" id="auth-password" placeholder="Password" style="width:100%;margin-top:4px;" onkeydown="if(event.key==='Enter')doAuth()" />
     </div>
-    <div id="auth-err" style="display:none;font-size:11px;color:#c0392b;background:#fdf2f2;border:0.5px solid #f5c6c6;border-radius:6px;padding:7px 10px;margin-bottom:12px;"></div>
+    <div id="auth-err" style="display:none;font-size:11px;color:#f87171;background:rgba(239,68,68,0.1);border:0.5px solid rgba(239,68,68,0.3);border-radius:6px;padding:7px 10px;margin-bottom:12px;"></div>
     <button class="btn btn-dark" id="auth-btn" style="width:100%;padding:9px;font-size:13px;" onclick="doAuth()">Sign in</button>
-    <div style="text-align:center;margin-top:14px;font-size:11px;color:#999;">
-      <span id="auth-toggle-text">No account? </span><span style="color:#1857a4;cursor:pointer;font-weight:500;" onclick="toggleAuthMode()" id="auth-toggle-link">Register</span>
+    <div style="text-align:center;margin-top:14px;font-size:11px;color:#7a6fa0;">
+      <span id="auth-toggle-text">No account? </span><span style="color:#a78bfa;cursor:pointer;font-weight:500;" onclick="toggleAuthMode()" id="auth-toggle-link">Register</span>
+    </div>
+  </div>
+</div>
+
+<!-- Outlier picker modal -->
+<div class="outlier-overlay" id="outlier-overlay">
+  <div class="outlier-picker">
+    <div class="outlier-picker-title">Mark as Outlier</div>
+    <div class="outlier-picker-sub">Select the performance multiplier for this post</div>
+    <div class="outlier-presets">
+      <button class="op-btn" onclick="selectOutlierMult('2x',this)">2x</button>
+      <button class="op-btn" onclick="selectOutlierMult('3x',this)">3x</button>
+      <button class="op-btn" onclick="selectOutlierMult('4x',this)">4x</button>
+      <button class="op-btn" onclick="selectOutlierMult('5x',this)">5x</button>
+      <button class="op-btn" onclick="selectOutlierMult('6x+',this)">6x+</button>
+    </div>
+    <div class="outlier-actions">
+      <button class="btn btn-dark" style="flex:1;" onclick="confirmOutlier()">Add to Outliers</button>
+      <button class="btn btn-border" onclick="closeOutlierPicker()">Cancel</button>
     </div>
   </div>
 </div>
@@ -179,8 +201,8 @@ textarea::placeholder{color:#bbb;}
     <div class="ni" onclick="nav('formats',this)">&#9671; &nbsp;Winning Formats</div>
     <div class="ni" onclick="nav('settings',this)">&#9676; &nbsp;Settings</div>
   </nav>
-  <div style="padding:12px 16px;border-top:0.5px solid #e5e5e3;">
-    <div style="font-size:10px;color:#bbb;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="sidebar-email"></div>
+  <div style="padding:12px 16px;border-top:0.5px solid #2a2550;">
+    <div style="font-size:10px;color:#5a5080;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="sidebar-email"></div>
     <button class="btn btn-border btn-sm" onclick="logout()" style="width:100%;font-size:10px;">Log out</button>
   </div>
 </aside>
@@ -201,7 +223,7 @@ textarea::placeholder{color:#bbb;}
           <div class="psh-stat">Month <strong id="igs-month">0</strong></div>
           <div class="psh-stat green">Outliers <strong id="igs-out">0</strong></div>
         </div>
-        <span id="ig-arrow" style="font-size:12px;color:#999;">&#9656;</span>
+        <span id="ig-arrow" style="font-size:12px;color:#7a6fa0;">&#9656;</span>
       </div>
     </div>
     <div id="ig-body" style="display:none;">
@@ -210,13 +232,13 @@ textarea::placeholder{color:#bbb;}
           <input type="password" class="inp" id="ig-tok-inp" placeholder="Paste Instagram access token..." style="flex:1;" />
           <button class="btn btn-dark" onclick="connectIG()">Connect</button>
         </div>
-        <div style="font-size:11px;color:#999;margin-top:6px;">Token stored securely on server.</div>
+        <div style="font-size:11px;color:#7a6fa0;margin-top:6px;">Token stored securely on server.</div>
       </div>
       <div id="ig-stats-area" style="display:none;">
         <div class="stats-row">
           <div class="stat-card"><div class="stat-label">This week</div><div class="stat-val green" id="ig-stat-week">0</div><div class="stat-sub" id="ig-stat-week-dates">Last 7 days</div></div>
           <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="ig-stat-month">0</div><div class="stat-sub">Last 30 days</div></div>
-          <div class="stat-card"><div class="stat-label">Avg views</div><div class="stat-val" id="ig-stat-avg">-</div><div class="stat-sub">Baseline (1x)</div></div>
+          <div class="stat-card"><div class="stat-label">Outliers marked</div><div class="stat-val green" id="ig-stat-outliers">0</div><div class="stat-sub">Manually marked</div></div>
         </div>
       </div>
     </div>
@@ -230,7 +252,7 @@ textarea::placeholder{color:#bbb;}
           <div class="psh-stat">Month <strong id="yts-month">0</strong></div>
           <div class="psh-stat green">Outliers <strong id="yts-out">0</strong></div>
         </div>
-        <span id="yt-arrow" style="font-size:12px;color:#999;">&#9656;</span>
+        <span id="yt-arrow" style="font-size:12px;color:#7a6fa0;">&#9656;</span>
       </div>
     </div>
     <div id="yt-body" style="display:none;">
@@ -239,13 +261,13 @@ textarea::placeholder{color:#bbb;}
           <input type="text" class="inp" id="yt-key-inp" placeholder="Paste Google API key..." style="flex:1;" />
           <button class="btn btn-dark" onclick="connectYT()">Connect</button>
         </div>
-        <div style="font-size:11px;color:#999;margin-top:6px;">Get a free key at <a href="https://console.cloud.google.com" target="_blank" style="color:#1857a4;">console.cloud.google.com</a> &rarr; YouTube Data API v3.</div>
+        <div style="font-size:11px;color:#7a6fa0;margin-top:6px;">Get a free key at <a href="https://console.cloud.google.com" target="_blank" style="color:#a78bfa;">console.cloud.google.com</a> &rarr; YouTube Data API v3.</div>
       </div>
       <div id="yt-stats-area" style="display:none;">
         <div class="stats-row">
           <div class="stat-card"><div class="stat-label">This week</div><div class="stat-val green" id="yt-stat-week">0</div><div class="stat-sub">Last 7 days</div></div>
           <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="yt-stat-month">0</div><div class="stat-sub">Last 30 days</div></div>
-          <div class="stat-card"><div class="stat-label">Avg views</div><div class="stat-val" id="yt-stat-avg">-</div><div class="stat-sub">Auto-calculated</div></div>
+          <div class="stat-card"><div class="stat-label">Outliers marked</div><div class="stat-val green" id="yt-stat-outliers">0</div><div class="stat-sub">Manually marked</div></div>
         </div>
       </div>
     </div>
@@ -254,21 +276,20 @@ textarea::placeholder{color:#bbb;}
 
 <div class="page" id="page-posts">
   <div class="ph">
-    <div><div class="pt">All Posts</div><div class="ps">View counts sync automatically on refresh. Use the input to override manually.</div></div>
+    <div><div class="pt">All Posts</div><div class="ps">Click Mark Outlier on any card to flag high-performing posts.</div></div>
   </div>
   <div class="plat-tabs" id="posts-plat-tabs">
     <div class="plat-tab active" onclick="switchPostsPlat('ig',this)"><span class="plat-dot pd-ig"></span> Instagram <span class="plat-count" id="posts-ig-ct">0</span></div>
     <div class="plat-tab" onclick="switchPostsPlat('yt',this)"><span class="plat-dot pd-yt"></span> YouTube <span class="plat-count" id="posts-yt-ct">0</span></div>
   </div>
   <div class="filters" id="ig-post-filters">
-    <span style="font-size:11px;color:#999;margin-right:2px;">Show:</span>
+    <span style="font-size:11px;color:#7a6fa0;margin-right:2px;">Show:</span>
     <div class="pill active" onclick="filterIGPosts('all',this)">All</div>
     <div class="pill" onclick="filterIGPosts('week',this)">This week</div>
-    <div class="pill" onclick="filterIGPosts('noviews',this)">No views yet</div>
-    <div class="pill" onclick="filterIGPosts('hasviews',this)">Views logged</div>
+    <div class="pill" onclick="filterIGPosts('outliers',this)">Outliers only</div>
   </div>
   <div class="filters" id="yt-post-filters" style="display:none;">
-    <span style="font-size:11px;color:#999;margin-right:2px;">Type:</span>
+    <span style="font-size:11px;color:#7a6fa0;margin-right:2px;">Type:</span>
     <div class="pill active" onclick="filterYTPosts('all',this)">All</div>
     <div class="pill" onclick="filterYTPosts('long',this)">Long form (3min+)</div>
     <div class="pill" onclick="filterYTPosts('short',this)">Shorts (under 3min)</div>
@@ -278,15 +299,14 @@ textarea::placeholder{color:#bbb;}
 
 <div class="page" id="page-outliers">
   <div class="ph">
-    <div><div class="pt">Outliers</div><div class="ps">Posts performing above average. Click any post to extract its format.</div></div>
-    <select class="sel" id="mult-sel" onchange="renderOutliers()"><option value="1.5">1.5x and above</option><option value="2">2x and above</option><option value="3">3x and above</option></select>
+    <div><div class="pt">Outliers</div><div class="ps">Posts manually marked as outliers. Click any post to extract its format.</div></div>
   </div>
   <div class="plat-tabs" id="out-plat-tabs">
     <div class="plat-tab active" onclick="switchOutliersPlat('ig',this)"><span class="plat-dot pd-ig"></span> Instagram <span class="plat-count" id="out-ig-ct">0</span></div>
     <div class="plat-tab" onclick="switchOutliersPlat('yt',this)"><span class="plat-dot pd-yt"></span> YouTube <span class="plat-count" id="out-yt-ct">0</span></div>
   </div>
   <div class="filters" id="yt-out-filters" style="display:none;">
-    <span style="font-size:11px;color:#999;margin-right:2px;">Type:</span>
+    <span style="font-size:11px;color:#7a6fa0;margin-right:2px;">Type:</span>
     <div class="pill active" onclick="filterYTOutliers('all',this)">All</div>
     <div class="pill" onclick="filterYTOutliers('long',this)">Long form (3min+)</div>
     <div class="pill" onclick="filterYTOutliers('short',this)">Shorts (under 3min)</div>
@@ -304,11 +324,11 @@ textarea::placeholder{color:#bbb;}
   </div>
   <div id="formats-ig">
     <div class="grid2">
-      <div><div class="sec-hd"><span class="sec-hd-title" style="color:#2d6a1f;">Confirmed winners</span><span class="count-pill" id="win-ct">3</span></div><div id="win-grid"></div></div>
+      <div><div class="sec-hd"><span class="sec-hd-title" style="color:#10b981;">Confirmed winners</span><span class="count-pill" id="win-ct">3</span></div><div id="win-grid"></div></div>
       <div><div class="sec-hd"><span class="sec-hd-title">Testing</span><span class="count-pill" id="test-ct">1</span></div><div id="test-grid"></div></div>
     </div>
     <div class="divider"></div>
-    <div class="sec-hd" style="cursor:pointer;user-select:none;" onclick="toggleAddBox('ig')"><span class="sec-hd-title">Add Instagram Format Manually</span><span id="ig-add-arrow" style="font-size:11px;color:#999;margin-left:auto;">&#9656; Expand</span></div>
+    <div class="sec-hd" style="cursor:pointer;user-select:none;" onclick="toggleAddBox('ig')"><span class="sec-hd-title">Add Instagram Format Manually</span><span id="ig-add-arrow" style="font-size:11px;color:#7a6fa0;margin-left:auto;">&#9656; Expand</span></div>
     <div id="ig-add-box" style="display:none;"><div class="add-fmt-box">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
         <div><div class="az-label">Format name</div><input type="text" class="inp" id="ig-mfmt-name" placeholder="e.g. Before-After Identity Flip" style="width:100%;margin-top:4px;" /></div>
@@ -322,11 +342,11 @@ textarea::placeholder{color:#bbb;}
   </div>
   <div id="formats-yt" style="display:none;">
     <div class="grid2">
-      <div><div class="sec-hd"><span class="sec-hd-title" style="color:#c62828;">YouTube Winners</span><span class="count-pill" id="yt-win-ct">0</span></div><div id="yt-win-grid"></div></div>
+      <div><div class="sec-hd"><span class="sec-hd-title" style="color:#ef4444;">YouTube Winners</span><span class="count-pill" id="yt-win-ct">0</span></div><div id="yt-win-grid"></div></div>
       <div><div class="sec-hd"><span class="sec-hd-title">YouTube Testing</span><span class="count-pill" id="yt-test-ct">0</span></div><div id="yt-test-grid"></div></div>
     </div>
     <div class="divider"></div>
-    <div class="sec-hd" style="cursor:pointer;user-select:none;" onclick="toggleAddBox('yt')"><span class="sec-hd-title">Add YouTube Format</span><span id="yt-add-arrow" style="font-size:11px;color:#999;margin-left:auto;">&#9656; Expand</span></div>
+    <div class="sec-hd" style="cursor:pointer;user-select:none;" onclick="toggleAddBox('yt')"><span class="sec-hd-title">Add YouTube Format</span><span id="yt-add-arrow" style="font-size:11px;color:#7a6fa0;margin-left:auto;">&#9656; Expand</span></div>
     <div id="yt-add-box" style="display:none;"><div class="add-fmt-box">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
         <div><div class="az-label">Format name</div><input type="text" class="inp" id="yt-mfmt-name" placeholder="e.g. Long-form Story Arc" style="width:100%;margin-top:4px;" /></div>
@@ -342,7 +362,7 @@ textarea::placeholder{color:#bbb;}
   <div id="formats-hooks" style="display:none;">
     <div class="grid2">
       <div>
-        <div class="sec-hd"><span class="sec-hd-title" style="color:#2d6a1f;">Winner hooks</span><span class="count-pill" id="hook-win-ct">0</span></div>
+        <div class="sec-hd"><span class="sec-hd-title" style="color:#10b981;">Winner hooks</span><span class="count-pill" id="hook-win-ct">0</span></div>
         <div id="hook-win-grid"><div class="empty"><div class="empty-icon">&#9632;</div><div class="empty-text">No winner hooks yet</div><div class="empty-sub">Add hooks below</div></div></div>
       </div>
       <div>
@@ -353,7 +373,7 @@ textarea::placeholder{color:#bbb;}
     <div class="divider"></div>
     <div class="sec-hd" style="cursor:pointer;user-select:none;" onclick="toggleAddBox('hook')">
       <span class="sec-hd-title">Add Hook</span>
-      <span id="hook-add-arrow" style="font-size:11px;color:#999;margin-left:auto;">&#9656; Expand</span>
+      <span id="hook-add-arrow" style="font-size:11px;color:#7a6fa0;margin-left:auto;">&#9656; Expand</span>
     </div>
     <div id="hook-add-box" style="display:none;">
       <div class="add-fmt-box">
@@ -372,25 +392,22 @@ textarea::placeholder{color:#bbb;}
 <div class="page" id="page-settings">
   <div class="ph"><div><div class="pt">Settings</div></div></div>
   <div style="max-width:480px;">
-    <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span class="plat-dot pd-ig"></span> Instagram token</div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:#f0eaff;"><span class="plat-dot pd-ig"></span> Instagram token</div>
     <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="password" class="inp" id="s-tok" placeholder="Access token" style="flex:1;" /><button class="btn btn-dark" onclick="saveTok()">Save</button></div>
-    <div style="font-size:11px;color:#999;margin-bottom:24px;">Account: <span id="s-acc" style="color:#1a1a1a;">Not connected</span> &mdash; Token stored securely on server.</div>
-    <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span class="plat-dot pd-yt"></span> YouTube API key</div>
+    <div style="font-size:11px;color:#7a6fa0;margin-bottom:24px;">Account: <span id="s-acc" style="color:#f0eaff;">Not connected</span> &mdash; Token stored securely on server.</div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px;color:#f0eaff;"><span class="plat-dot pd-yt"></span> YouTube API key</div>
     <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="text" class="inp" id="s-yt-key" placeholder="Google API key" style="flex:1;" /><button class="btn btn-dark" onclick="saveYTKey()">Save</button></div>
-    <div style="font-size:11px;color:#999;margin-bottom:24px;">Channel: @hakeemhoang &middot; Get key at <a href="https://console.cloud.google.com" target="_blank" style="color:#1857a4;">console.cloud.google.com</a> &mdash; Key stored securely on server.</div>
-    <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Anthropic API key</div>
+    <div style="font-size:11px;color:#7a6fa0;margin-bottom:24px;">Channel: @hakeemhoang &middot; Get key at <a href="https://console.cloud.google.com" target="_blank" style="color:#a78bfa;">console.cloud.google.com</a> &mdash; Key stored securely on server.</div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:#f0eaff;">Anthropic API key</div>
     <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="password" class="inp" id="s-ak" placeholder="sk-ant-..." style="flex:1;" /><button class="btn btn-dark" onclick="saveAK()">Save</button></div>
-    <div style="font-size:11px;color:#999;margin-bottom:24px;">Free at <a href="https://console.anthropic.com" target="_blank" style="color:#1857a4;">console.anthropic.com</a> &mdash; Key stored securely on server.</div>
-    <div style="font-size:13px;font-weight:500;margin-bottom:10px;">Manual average views (Instagram)</div>
-    <div style="display:flex;gap:8px;margin-bottom:6px;"><input type="number" class="inp" id="s-avg" placeholder="e.g. 20000" style="width:180px;" /><button class="btn btn-border btn-sm" onclick="saveAvg()">Save</button></div>
-    <div style="font-size:11px;color:#999;margin-bottom:32px;">Leave blank to auto-calculate.</div>
+    <div style="font-size:11px;color:#7a6fa0;margin-bottom:32px;">Free at <a href="https://console.anthropic.com" target="_blank" style="color:#a78bfa;">console.anthropic.com</a> &mdash; Key stored securely on server.</div>
   </div>
 </div>
 
 </main>
 
 <div class="load-overlay" id="loader" style="display:none;">
-  <div class="load-box"><div class="spinner"></div><div style="font-size:13px;font-weight:500;" id="load-t">Loading...</div><div style="font-size:11px;color:#999;margin-top:4px;" id="load-s"></div></div>
+  <div class="load-box"><div class="spinner"></div><div style="font-size:13px;font-weight:500;color:#f0eaff;" id="load-t">Loading...</div><div style="font-size:11px;color:#7a6fa0;margin-top:4px;" id="load-s"></div></div>
 </div>
 
 <script>
@@ -398,6 +415,7 @@ var TOKEN = localStorage.getItem('htb_token') || '';
 var USER_EMAIL = localStorage.getItem('htb_email') || '';
 var AUTH_MODE = 'login';
 var SW = {};
+var OUTLIER_PICK = { pid: null, plat: null, mult: null };
 
 var WF = [
   {id:"origin-story-arc",name:"Origin Story Arc",type:"Talking Head",status:"confirmed",score:"4x outlier",month:"March",platform:"ig",
@@ -423,8 +441,7 @@ var TF = [
 
 var D = {
   igPosts:[], ytVideos:[], userFormats:[], ytFormats:[], igManualFormats:[], hooks:[],
-  hasIGToken:false, hasYTKey:false, manualAvg:0,
-  igAvg:20000, ytAvg:0, ytAvgLong:0, ytAvgShort:0,
+  hasIGToken:false, hasYTKey:false,
   sel:null, igPostFilter:'all', ytPostFilter:'all', ytOutFilter:'all',
   postsPlat:'ig', outliersPlat:'ig', formatsPlat:'ig'
 };
@@ -505,11 +522,11 @@ function handleWSMessage(msg) {
   switch(msg.type) {
     case 'igPosts':
       D.igPosts = msg.data;
-      recalcIG(); if(D.igPosts.length) updateIGUI();
+      if(D.igPosts.length) updateIGUI();
       renderAll(); break;
     case 'ytVideos':
       D.ytVideos = msg.data;
-      recalcYT(); if(D.ytVideos.length) updateYTUI();
+      if(D.ytVideos.length) updateYTUI();
       renderAll(); break;
     case 'formats':
       D.userFormats = msg.data; renderFormatsPage(); break;
@@ -541,14 +558,11 @@ async function loadApp() {
     D.hooks = data.hooks;
     D.hasIGToken = data.hasIGToken;
     D.hasYTKey = data.hasYTKey;
-    D.manualAvg = data.manualAvg || 0;
     var wfl = data.wflinks || {};
     WF.forEach(function(f){ if(wfl[f.id]) f.links = wfl[f.id]; });
     TF.forEach(function(f){ if(wfl['tf-'+f.id]) f.links = wfl['tf-'+f.id]; });
-    recalcIG(); recalcYT();
     if(D.igPosts.length || D.hasIGToken) updateIGUI();
     if(D.ytVideos.length || D.hasYTKey) updateYTUI();
-    if(D.manualAvg) document.getElementById('s-avg').value = D.manualAvg;
     renderAll(); renderFormatsPage();
     connectWS();
   } catch(e) {
@@ -562,7 +576,7 @@ async function loadApp() {
 }
 
 function init() {
-  if (!TOKEN) { return; } // auth overlay already visible
+  if (!TOKEN) { return; }
   document.getElementById('auth-overlay').style.display = 'none';
   loadApp();
 }
@@ -615,7 +629,7 @@ async function fetchIGPosts() {
   try {
     var data = await api('POST', '/api/ig/sync');
     D.igPosts = data.posts;
-    recalcIG(); updateIGUI(); renderAll(); hideLoad();
+    updateIGUI(); renderAll(); hideLoad();
   } catch(e){ hideLoad(); alert('Instagram error: '+e.message); }
 }
 
@@ -634,30 +648,13 @@ async function fetchYTPosts() {
   try {
     var data = await api('POST', '/api/yt/sync');
     D.ytVideos = data.videos;
-    recalcYT(); updateYTUI(); renderAll(); hideLoad();
+    updateYTUI(); renderAll(); hideLoad();
   } catch(e){ hideLoad(); alert('YouTube error: '+e.message); }
 }
 
-// ── Calculations ──────────────────────────────────────────────────────────────
-
-function recalcIG() {
-  if(D.manualAvg){ D.igAvg=D.manualAvg; return; }
-  var w=D.igPosts.filter(function(p){ return p.views>0; });
-  D.igAvg=w.length?Math.round(w.reduce(function(a,p){ return a+p.views; },0)/w.length):20000;
-}
-
-function recalcYT() {
-  var all=D.ytVideos.filter(function(v){ return v.views>0; });
-  D.ytAvg=all.length?Math.round(all.reduce(function(a,v){ return a+v.views; },0)/all.length):0;
-  var longs=D.ytVideos.filter(function(v){ return v.views>0&&v.vtype==='long'; });
-  D.ytAvgLong=longs.length?Math.round(longs.reduce(function(a,v){ return a+v.views; },0)/longs.length):0;
-  var shorts=D.ytVideos.filter(function(v){ return v.views>0&&v.vtype==='short'; });
-  D.ytAvgShort=shorts.length?Math.round(shorts.reduce(function(a,v){ return a+v.views; },0)/shorts.length):0;
-}
+// ── Utility ───────────────────────────────────────────────────────────────────
 
 function fv(n){ if(!n)return'0'; if(n>=1000000)return(n/1000000).toFixed(1)+'M'; if(n>=1000)return(n/1000).toFixed(1)+'K'; return n.toString(); }
-function mxIG(v){ return D.igAvg?Math.round((v/D.igAvg)*10)/10:0; }
-function mxYT(v,vtype){ var avg=vtype==='long'?(D.ytAvgLong||D.ytAvg):(D.ytAvgShort||D.ytAvg); return avg?Math.round((v/avg)*10)/10:0; }
 function daysAgo(d){ var dt=new Date(); dt.setDate(dt.getDate()-d); return dt; }
 function inDays(arr,d){ return arr.filter(function(p){ return new Date(p.ts)>=daysAgo(d); }); }
 
@@ -670,13 +667,13 @@ function updateIGUI() {
   document.getElementById('ig-header-stats').style.display='flex';
   document.getElementById('s-acc').textContent='@hakeemhoang';
   var w=inDays(D.igPosts,7).length, m=inDays(D.igPosts,30).length;
-  var ol=D.igPosts.filter(function(p){ return p.views>0&&mxIG(p.views)>=1.5; }).length;
+  var ol=D.igPosts.filter(function(p){ return p.outlierMult; }).length;
   document.getElementById('igs-week').textContent=w;
   document.getElementById('igs-month').textContent=m;
   document.getElementById('igs-out').textContent=ol;
   document.getElementById('ig-stat-week').textContent=w;
   document.getElementById('ig-stat-month').textContent=m;
-  document.getElementById('ig-stat-avg').textContent=D.igPosts.filter(function(p){ return p.views>0; }).length?fv(D.igAvg):'-';
+  document.getElementById('ig-stat-outliers').textContent=ol;
   var now=new Date();
   document.getElementById('ig-stat-week-dates').textContent=daysAgo(7).toLocaleDateString('en-US',{month:'short',day:'numeric'})+' - '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
@@ -687,13 +684,13 @@ function updateYTUI() {
   document.getElementById('yt-stats-area').style.display='block';
   document.getElementById('yt-header-stats').style.display='flex';
   var w=inDays(D.ytVideos,7).length, m=inDays(D.ytVideos,30).length;
-  var ol=D.ytAvg?D.ytVideos.filter(function(v){ return mxYT(v.views,v.vtype)>=1.5; }).length:0;
+  var ol=D.ytVideos.filter(function(v){ return v.outlierMult; }).length;
   document.getElementById('yts-week').textContent=w;
   document.getElementById('yts-month').textContent=m;
   document.getElementById('yts-out').textContent=ol;
   document.getElementById('yt-stat-week').textContent=w;
   document.getElementById('yt-stat-month').textContent=m;
-  document.getElementById('yt-stat-avg').textContent=D.ytAvg?fv(D.ytAvg):'-';
+  document.getElementById('yt-stat-outliers').textContent=ol;
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
@@ -757,86 +754,113 @@ function renderAllPosts() {
     var sorted=D.igPosts.slice().sort(function(a,b){ return new Date(b.ts)-new Date(a.ts); });
     var w7=daysAgo(7);
     if(D.igPostFilter==='week') sorted=sorted.filter(function(p){ return new Date(p.ts)>=w7; });
-    else if(D.igPostFilter==='noviews') sorted=sorted.filter(function(p){ return !p.views; });
-    else if(D.igPostFilter==='hasviews') sorted=sorted.filter(function(p){ return p.views>0; });
-    g.innerHTML=sorted.map(function(p){ return buildCard(p,true,0,new Date(p.ts)>=w7); }).join('');
+    else if(D.igPostFilter==='outliers') sorted=sorted.filter(function(p){ return p.outlierMult; });
+    g.innerHTML=sorted.map(function(p){ return buildCard(p,true,new Date(p.ts)>=w7); }).join('');
   } else {
     if(!D.ytVideos.length){ g.innerHTML=emptyH('Connect YouTube in Overview first'); return; }
     var sorted=D.ytVideos.slice().sort(function(a,b){ return new Date(b.ts)-new Date(a.ts); });
     if(D.ytPostFilter==='long') sorted=sorted.filter(function(v){ return v.vtype==='long'; });
     else if(D.ytPostFilter==='short') sorted=sorted.filter(function(v){ return v.vtype==='short'; });
-    g.innerHTML=sorted.map(function(p){ return buildCard(p,false,0,false); }).join('');
+    g.innerHTML=sorted.map(function(p){ return buildCard(p,true,false); }).join('');
   }
 }
 
 function renderOutliers() {
-  var sel=document.getElementById('mult-sel');
-  var min=sel?parseFloat(sel.value):1.5;
   var g=document.getElementById('out-grid');
   if(D.outliersPlat==='ig') {
-    var ol=D.igPosts.filter(function(p){ return p.views>0&&mxIG(p.views)>=min; }).sort(function(a,b){ return b.views-a.views; });
+    var ol=D.igPosts.filter(function(p){ return p.outlierMult; });
     document.getElementById('out-ig-ct').textContent=ol.length;
-    if(!ol.length){ g.innerHTML=emptyH('No Instagram outliers yet. Enter view counts in All Posts first.'); return; }
-    var maxV=Math.max.apply(null,ol.map(function(p){ return p.views; }));
-    g.innerHTML=ol.map(function(p){ return buildCard(p,false,maxV,false); }).join('');
+    if(!ol.length){ g.innerHTML=emptyH('No outliers marked yet. Use Mark Outlier on posts in All Posts.'); return; }
+    g.innerHTML=ol.map(function(p){ return buildCard(p,false,false); }).join('');
   } else {
-    if(!D.ytAvg){ g.innerHTML=emptyH('Connect YouTube in Overview first.'); return; }
     var pool=D.ytVideos;
     if(D.ytOutFilter==='long') pool=pool.filter(function(v){ return v.vtype==='long'; });
     else if(D.ytOutFilter==='short') pool=pool.filter(function(v){ return v.vtype==='short'; });
-    var ol=pool.filter(function(v){ return mxYT(v.views,v.vtype)>=min; }).sort(function(a,b){ return b.views-a.views; });
+    var ol=pool.filter(function(v){ return v.outlierMult; });
     document.getElementById('out-yt-ct').textContent=ol.length;
-    if(!ol.length){ g.innerHTML=emptyH('No YouTube outliers at this threshold.'); return; }
-    var maxV=Math.max.apply(null,ol.map(function(v){ return v.views; }));
-    g.innerHTML=ol.map(function(v){ return buildCard(v,false,maxV,false); }).join('');
+    if(!ol.length){ g.innerHTML=emptyH('No YouTube outliers marked yet.'); return; }
+    g.innerHTML=ol.map(function(v){ return buildCard(v,false,false); }).join('');
   }
 }
 
 function updateOutCounts() {
-  var min=1.5;
-  document.getElementById('out-ig-ct').textContent=D.igPosts.filter(function(p){ return p.views>0&&mxIG(p.views)>=min; }).length;
-  document.getElementById('out-yt-ct').textContent=D.ytAvg?D.ytVideos.filter(function(v){ return mxYT(v.views,v.vtype)>=min; }).length:0;
+  document.getElementById('out-ig-ct').textContent=D.igPosts.filter(function(p){ return p.outlierMult; }).length;
+  document.getElementById('out-yt-ct').textContent=D.ytVideos.filter(function(v){ return v.outlierMult; }).length;
 }
 
 function emptyH(msg){ return '<div class="empty" style="grid-column:1/-1;"><div class="empty-icon">&#9675;</div><div class="empty-text">Nothing here yet</div><div class="empty-sub">'+msg+'</div></div>'; }
 
-function buildCard(p,showInp,maxV,isNew) {
+function buildCard(p, showOutlierBtn, isNew) {
   var isYT=p.plat==='yt';
-  var m=isYT?mxYT(p.views,p.vtype):mxIG(p.views);
   var title=(p.caption||'No caption').substring(0,90);
   var date=new Date(p.ts).toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  var barW=maxV&&p.views?Math.round((p.views/maxV)*100):0;
   var selClass=D.sel===p.id?' selected':'';
+  var outlierClass=p.outlierMult?' outlier-marked':'';
   var platBadge=isYT?'tb-plat-yt':'tb-plat-ig';
   var platLabel=isYT?'YT':'IG';
   var thumbPh=isYT?'thumb-ph yt':'thumb-ph';
   var thumbH=p.thumb?('<img src="'+p.thumb+'" loading="lazy" onerror="this.parentElement.innerHTML=\'<div class='+thumbPh+'>&#9654;</div>\'">'):'<div class="'+thumbPh+'">&#9654;</div>';
-  var multB=(p.views>0&&m>=1.5)?('<span class="tb tb-mult">'+m+'x</span>'):'';
+  var outlierBadge=p.outlierMult?('<span class="tb tb-outlier">'+p.outlierMult+'</span>'):'';
   var newB=isNew?'<div style="position:absolute;bottom:6px;left:6px;"><span class="tb tb-new">This week</span></div>':'';
-  var viewsH=p.views>0?('<span class="cb-views">'+fv(p.views)+' views</span>'):'<span class="cb-views-empty">No views yet</span>';
-  var vbarH=(maxV&&p.views)?('<div class="vbar"><div class="vbar-fill'+(isYT?' yt':'')+'" style="width:'+barW+'%"></div></div>'):'';
-  var inpH=showInp?('<div class="vi-row" onclick="event.stopPropagation()"><input class="vi-inp" id="vi-'+p.id+'" type="number" placeholder="Override views manually..." value="'+(p.views||'')+'" /><button class="vi-btn" onclick="saveViews(\''+p.id+'\')">Save</button></div>'):'';
-  var mClass=isYT?'ctag ctag-mult-yt':'ctag ctag-mult';
-  var multTag=(p.views>0&&m>=1.5)?('<span class="'+mClass+'">'+m+'x avg</span>'):'';
+  var outlierTag=p.outlierMult?('<span class="ctag ctag-outlier">'+p.outlierMult+' outlier</span>'):'';
   var fmtTag=p.format?('<span class="ctag ctag-fmt">'+(p.format.matchedFormat||'Analyzed')+'</span>'):'';
   var winTag=p.fStatus==='confirmed'?'<span class="ctag ctag-win">Winner</span>':'';
   var testTag=p.fStatus==='testing'?'<span class="ctag ctag-test">Testing</span>':'';
-  return '<div class="post-card'+selClass+'" onclick="selectPost(\''+p.id+'\',\''+p.plat+'\')">'
-    +'<div class="thumb">'+thumbH+'<div class="thumb-badges"><span class="tb '+platBadge+'">'+platLabel+'</span>'+multB+'</div>'+newB+'</div>'
+  var btnLabel=p.outlierMult?'&#10003; Marked Outlier':'Mark Outlier';
+  var btnClass='outlier-btn'+(p.outlierMult?' is-outlier':'');
+  var outlierBtnH=showOutlierBtn?('<button class="'+btnClass+'" onclick="event.stopPropagation();openOutlierPicker(\''+p.id+'\',\''+p.plat+'\')">'+btnLabel+'</button>'):'';
+  return '<div class="post-card'+selClass+outlierClass+'" onclick="selectPost(\''+p.id+'\',\''+p.plat+'\')">'
+    +'<div class="thumb">'+thumbH+'<div class="thumb-badges"><span class="tb '+platBadge+'">'+platLabel+'</span>'+outlierBadge+'</div>'+newB+'</div>'
     +'<div class="cb"><div class="cb-caption">'+title+'</div>'
-    +'<div class="cb-row">'+viewsH+'<span class="cb-date">'+date+'</span></div>'
-    +vbarH+inpH
-    +'<div class="cb-tags" style="margin-top:5px;">'+multTag+fmtTag+winTag+testTag+'</div>'
+    +'<div class="cb-row"><span class="cb-date">'+date+'</span></div>'
+    +'<div class="cb-tags" style="margin-top:4px;">'+outlierTag+fmtTag+winTag+testTag+'</div>'
+    +outlierBtnH
     +'</div></div>';
 }
 
-async function saveViews(pid) {
-  var inp=document.getElementById('vi-'+pid); if(!inp)return;
-  var val=parseInt(inp.value); if(!val||val<0){ alert('Enter a valid number.'); return; }
-  try {
-    await api('PUT', '/api/ig-posts/'+pid+'/views', { views: val });
-  } catch(e){ alert('Error saving: '+e.message); }
+// ── Outlier picker ────────────────────────────────────────────────────────────
+
+function openOutlierPicker(pid, plat) {
+  var posts=plat==='yt'?D.ytVideos:D.igPosts;
+  var post=posts.find(function(p){ return p.id===pid; }); if(!post)return;
+  if(post.outlierMult) {
+    if(confirm('Remove outlier mark ('+post.outlierMult+') from this post?')) {
+      removeOutlierMark(pid, plat);
+    }
+    return;
+  }
+  OUTLIER_PICK.pid=pid; OUTLIER_PICK.plat=plat; OUTLIER_PICK.mult=null;
+  document.querySelectorAll('.op-btn').forEach(function(b){ b.classList.remove('selected'); });
+  document.getElementById('outlier-overlay').style.display='flex';
 }
+
+function selectOutlierMult(mult, el) {
+  OUTLIER_PICK.mult=mult;
+  document.querySelectorAll('.op-btn').forEach(function(b){ b.classList.remove('selected'); });
+  if(el) el.classList.add('selected');
+}
+
+async function confirmOutlier() {
+  if(!OUTLIER_PICK.mult){ alert('Select a multiplier first.'); return; }
+  var url=(OUTLIER_PICK.plat==='yt'?'/api/yt-videos/':'/api/ig-posts/')+OUTLIER_PICK.pid+'/outlier';
+  try {
+    await api('PUT', url, { mult: OUTLIER_PICK.mult });
+    closeOutlierPicker();
+  } catch(e){ alert('Error: '+e.message); }
+}
+
+async function removeOutlierMark(pid, plat) {
+  var url=(plat==='yt'?'/api/yt-videos/':'/api/ig-posts/')+pid+'/outlier';
+  try { await api('PUT', url, { mult: null }); }
+  catch(e){ alert('Error: '+e.message); }
+}
+
+function closeOutlierPicker() {
+  document.getElementById('outlier-overlay').style.display='none';
+  OUTLIER_PICK.pid=null; OUTLIER_PICK.plat=null; OUTLIER_PICK.mult=null;
+}
+
+// ── Post selection & format analysis ─────────────────────────────────────────
 
 function selectPost(pid, plat) {
   var posts=plat==='yt'?D.ytVideos:D.igPosts;
@@ -860,15 +884,15 @@ function selectPost(pid, plat) {
   var pan=document.getElementById('fmt-panel');
   det.style.display='block';
   setTimeout(function(){ det.scrollIntoView({behavior:'smooth',block:'start'}); },150);
-  if(plat==='yt'){ pan.innerHTML='<div style="padding:20px;font-size:13px;color:#666;">YouTube format analysis is manual. Go to <strong>Winning Formats &rarr; YouTube</strong> to add this format.</div>'; return; }
+  if(plat==='yt'){ pan.innerHTML='<div style="padding:20px;font-size:13px;color:#9b8ec4;">YouTube format analysis is manual. Go to <strong style="color:#f0eaff;">Winning Formats &rarr; YouTube</strong> to add this format.</div>'; return; }
   if(post.format){ renderFormatPanel(post); return; }
   showAnalysisPanel(post, pan);
 }
 
 function showAnalysisPanel(post, pan) {
   var cap=(post.caption||'').substring(0,500);
-  pan.innerHTML='<div style="padding:20px;"><div style="font-size:13px;font-weight:500;margin-bottom:6px;">Analyze format</div>'
-    +'<div style="font-size:12px;color:#888;margin-bottom:10px;">Caption pre-loaded. Paste full transcript for deeper analysis.</div>'
+  pan.innerHTML='<div style="padding:20px;"><div style="font-size:13px;font-weight:500;margin-bottom:6px;color:#f0eaff;">Analyze format</div>'
+    +'<div style="font-size:12px;color:#9b8ec4;margin-bottom:10px;">Caption pre-loaded. Paste full transcript for deeper analysis.</div>'
     +'<div class="az-note">Tip: Copy auto-captions from Instagram and paste below for best results.</div>'
     +'<div class="az-label">Caption</div><div class="az-caption">'+(cap||'No caption available')+'</div>'
     +'<div class="az-label" style="margin-top:4px;">Full transcript (optional)</div>'
@@ -883,13 +907,13 @@ async function runAI(pid) {
   var content=(trEl?trEl.value.trim():'')||post.caption||'';
   if(!content){ alert('No content to analyze.'); return; }
   var pan=document.getElementById('fmt-panel');
-  pan.innerHTML='<div style="text-align:center;padding:40px;"><div class="spinner" style="margin:0 auto 16px;"></div><div style="font-size:13px;font-weight:500;">Reading script and extracting format...</div></div>';
+  pan.innerHTML='<div style="text-align:center;padding:40px;"><div class="spinner" style="margin:0 auto 16px;"></div><div style="font-size:13px;font-weight:500;color:#f0eaff;">Reading script and extracting format...</div></div>';
   try {
     var data=await api('POST', '/api/analyze', { postId: pid, content: content });
     post.format=data.format;
     renderFormatPanel(post); renderOutliers();
   } catch(e) {
-    pan.innerHTML='<div style="padding:20px;color:#c0392b;font-size:12px;">Failed: '+e.message+'<br><br><button class="btn btn-border btn-sm" onclick="selectPost(\''+pid+'\',\'ig\')">Retry</button></div>';
+    pan.innerHTML='<div style="padding:20px;color:#f87171;font-size:12px;">Failed: '+e.message+'<br><br><button class="btn btn-border btn-sm" onclick="selectPost(\''+pid+'\',\'ig\')">Retry</button></div>';
   }
 }
 
@@ -898,7 +922,7 @@ function renderFormatPanel(post) {
   var pan=document.getElementById('fmt-panel');
   var swId='panel-'+post.id;
   SW[swId]={formatName:f.name,formatType:f.hookType,steps:f.reusableTemplate||[]};
-  var h='<div class="fp-hd"><div><div class="fp-title">'+f.name+'</div><div class="fp-meta">'+fv(post.views)+' views - '+mxIG(post.views)+'x - '+f.pillar+' - Hook: '+f.hookType+'</div></div>'
+  var h='<div class="fp-hd"><div><div class="fp-title">'+f.name+'</div><div class="fp-meta">'+f.pillar+' &middot; Hook: '+f.hookType+'</div></div>'
     +'<div style="display:flex;gap:6px;flex-shrink:0;"><button class="btn btn-border btn-sm" onclick="addFmt(\''+post.id+'\',\'testing\')">+ Testing</button><button class="btn btn-dark btn-sm" onclick="addFmt(\''+post.id+'\',\'confirmed\')">Mark winner</button></div></div>';
   if(!f.isNewFormat)h+='<div class="match-box">Matches: <strong>'+f.matchedFormat+'</strong></div>';
   h+='<div class="why-box">Why it worked: '+f.whyItWorks+'</div>';
@@ -917,7 +941,7 @@ function renderFormatPanel(post) {
 async function addFmt(pid, status) {
   var post=D.igPosts.find(function(p){ return p.id===pid; }); if(!post||!post.format)return;
   try {
-    await api('POST', '/api/formats', { pid:pid, status:status, format:post.format, views:post.views });
+    await api('POST', '/api/formats', { pid:pid, status:status, format:post.format, views:0 });
     alert(status==='confirmed'?'Marked as winning format.':'Added to testing.');
   } catch(e){ alert('Error: '+e.message); }
 }
@@ -1106,15 +1130,6 @@ async function saveAK() {
   } catch(e){ alert('Error: '+e.message); }
 }
 
-async function saveAvg() {
-  var v=parseInt(document.getElementById('s-avg').value); if(!v)return;
-  try {
-    await api('PUT', '/api/settings', { manualAvg:v });
-    D.manualAvg=v; recalcIG();
-    alert('Average updated to '+fv(v)+'.');
-  } catch(e){ alert('Error: '+e.message); }
-}
-
 // ── Format cards ──────────────────────────────────────────────────────────────
 
 function toggleCard(id){ var b=document.getElementById('wfc-'+id); var a=document.getElementById('wfa-'+id); if(!b)return; var open=b.style.display!=='none'; b.style.display=open?'none':'block'; if(a)a.innerHTML=open?'&#9656;':'&#9660;'; }
@@ -1130,17 +1145,17 @@ function buildLinksH(links, pid, isTF, addFnName, rmFnName) {
   if(links&&links.length){
     links.forEach(function(lnk,i){
       var rmFn=rmBase+'(\''+pid+'\','+i+')';
-      h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;"><a href="'+lnk+'" target="_blank" style="font-size:11px;color:#1857a4;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">&#8599; '+lnk+'</a><button onclick="'+rmFn+'" style="font-size:10px;color:#bbb;background:none;border:none;cursor:pointer;">&#10005;</button></div>';
+      h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;"><a href="'+lnk+'" target="_blank" style="font-size:11px;color:#a78bfa;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">&#8599; '+lnk+'</a><button onclick="'+rmFn+'" style="font-size:10px;color:#5a5080;background:none;border:none;cursor:pointer;">&#10005;</button></div>';
     });
-  } else { h='<div style="font-size:11px;color:#bbb;margin-bottom:6px;">No reference links yet.</div>'; }
+  } else { h='<div style="font-size:11px;color:#5a5080;margin-bottom:6px;">No reference links yet.</div>'; }
   return h;
 }
 
 function buildSWHtml(fid, fmtName, fmtType, steps) {
   SW[fid]={formatName:fmtName,formatType:fmtType,steps:steps};
   return '<div id="sw-'+fid+'" class="sw-box">'
-    +'<div style="font-size:12px;font-weight:500;margin-bottom:4px;">Write a script in this format</div>'
-    +'<div style="font-size:11px;color:#888;margin-bottom:10px;">Paste your idea or brain dump. AI writes a full script in the <strong>'+fmtName+'</strong> format using Hakeems voice.</div>'
+    +'<div style="font-size:12px;font-weight:500;margin-bottom:4px;color:#f0eaff;">Write a script in this format</div>'
+    +'<div style="font-size:11px;color:#9b8ec4;margin-bottom:10px;">Paste your idea or brain dump. AI writes a full script in the <strong style="color:#f0eaff;">'+fmtName+'</strong> format using Hakeems voice.</div>'
     +'<textarea id="sw-inp-'+fid+'" placeholder="e.g. I want to talk about how barbers undercharge because they are afraid of losing clients..."></textarea>'
     +'<div style="display:flex;gap:6px;margin-top:8px;"><button class="btn btn-dark" style="font-size:11px;padding:6px 14px;" onclick="generateScript(\''+fid+'\')">Generate script</button>'
     +'<button class="btn btn-border btn-sm" style="font-size:11px;" onclick="document.getElementById(\'sw-'+fid+'\').style.display=\'none\'">Cancel</button></div>'
@@ -1154,20 +1169,20 @@ async function generateScript(fid) {
   if(!inp||!out)return;
   var idea=inp.value.trim(); if(!idea){ alert('Paste your idea first.'); return; }
   out.style.display='block';
-  out.innerHTML='<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:0 auto 10px;width:20px;height:20px;border-width:1.5px;"></div><div style="font-size:11px;color:#999;">Writing script in '+meta.formatName+' format...</div></div>';
+  out.innerHTML='<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:0 auto 10px;width:20px;height:20px;border-width:1.5px;"></div><div style="font-size:11px;color:#9b8ec4;">Writing script in '+meta.formatName+' format...</div></div>';
   try {
     var data=await api('POST', '/api/generate-script', { formatName:meta.formatName, formatType:meta.formatType, steps:meta.steps, idea:idea });
     var script=data.script;
     var formatted=script.split('\n').map(function(line){
       line=line.trim(); if(!line)return '<div style="height:8px;"></div>';
-      if(/^(HOOK|SHAME|GRIND|TURNING|CLIMB|RESULT|LESSON|BODY|CLOSE|PAIR|LEFT|RIGHT|VISUAL|CTA|REFRAME|POINT|OPEN|QUESTION|ANSWER|SETUP|SCENE)/i.test(line)&&line.length<60) return '<div style="font-size:10px;font-weight:600;color:#999;text-transform:uppercase;letter-spacing:0.08em;margin-top:14px;margin-bottom:4px;">'+line+'</div>';
-      if(line.charAt(0)==='[') return '<div style="font-size:11px;color:#1857a4;font-style:italic;padding:4px 0;">'+line+'</div>';
-      return '<div style="font-size:12px;color:#1a1a1a;line-height:1.7;padding:1px 0;">'+line+'</div>';
+      if(/^(HOOK|SHAME|GRIND|TURNING|CLIMB|RESULT|LESSON|BODY|CLOSE|PAIR|LEFT|RIGHT|VISUAL|CTA|REFRAME|POINT|OPEN|QUESTION|ANSWER|SETUP|SCENE)/i.test(line)&&line.length<60) return '<div style="font-size:10px;font-weight:600;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.08em;margin-top:14px;margin-bottom:4px;">'+line+'</div>';
+      if(line.charAt(0)==='[') return '<div style="font-size:11px;color:#a78bfa;font-style:italic;padding:4px 0;">'+line+'</div>';
+      return '<div style="font-size:12px;color:#f0eaff;line-height:1.7;padding:1px 0;">'+line+'</div>';
     }).join('');
     var sid='sw-script-'+fid;
-    out.innerHTML='<div style="background:#fff;border:0.5px solid #e5e5e3;border-radius:8px;padding:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:11px;font-weight:600;color:#2d6a1f;">Script ready</div><button class="btn btn-border btn-sm" style="font-size:10px;" onclick="copyScript(\''+sid+'\')">Copy</button></div><div id="'+sid+'">'+formatted+'</div></div>';
+    out.innerHTML='<div style="background:#0e0b1f;border:0.5px solid #2a2550;border-radius:8px;padding:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:11px;font-weight:600;color:#10b981;">Script ready</div><button class="btn btn-border btn-sm" style="font-size:10px;" onclick="copyScript(\''+sid+'\')">Copy</button></div><div id="'+sid+'">'+formatted+'</div></div>';
   } catch(e){
-    out.innerHTML='<div style="font-size:11px;color:#c0392b;padding:10px;">Failed: '+e.message+'<br><br><button class="btn btn-border btn-sm" onclick="generateScript(\''+fid+'\')">Retry</button></div>';
+    out.innerHTML='<div style="font-size:11px;color:#f87171;padding:10px;">Failed: '+e.message+'<br><br><button class="btn btn-border btn-sm" onclick="generateScript(\''+fid+'\')">Retry</button></div>';
   }
 }
 
@@ -1178,12 +1193,12 @@ function buildPreCard(f) {
   var sw=buildSWHtml(id,f.name,f.type,f.steps);
   var lh=buildLinksH(f.links||[],'pre-'+f.id,false,'addPreLink','removePreLink');
   var h='<div class="wf-card confirmed"><div class="wf-badge confirmed">Winner</div>'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score">'+f.score+' - '+f.type+' - '+f.month+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#999;">&#9656;</span></div>'
-    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#888;margin-bottom:10px;font-style:italic;">'+f.description+'</div><div class="sep"></div>'
-    +'<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>'+buildStepsH(f.steps)
-    +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
-    +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
-    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="vi-inp" id="plnk-'+f.id+'" type="text" placeholder="Paste reference link..." style="flex:1;" /><button class="vi-btn" onclick="addPreLink(\''+f.id+'\')">Add link</button></div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score">'+f.score+' &middot; '+f.type+' &middot; '+f.month+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
+    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#9b8ec4;margin-bottom:10px;font-style:italic;">'+f.description+'</div><div class="sep"></div>'
+    +'<div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>'+buildStepsH(f.steps)
+    +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
+    +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
+    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="inp" id="plnk-'+f.id+'" type="text" placeholder="Paste reference link..." style="flex:1;font-size:11px;padding:5px 9px;" /><button class="btn btn-border btn-sm" onclick="addPreLink(\''+f.id+'\')">Add link</button></div>'
     +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
     +'</div></div>';
   return h;
@@ -1194,12 +1209,12 @@ function buildTFCard(f) {
   var sw=buildSWHtml(id,f.name,f.type,f.steps);
   var lh=buildLinksH(f.links||[],f.id,true);
   var h='<div class="wf-card"><div class="wf-badge testing">Testing</div>'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score" style="color:#888;">'+f.score+' - '+f.type+' - '+f.month+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#999;">&#9656;</span></div>'
-    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#888;margin-bottom:10px;font-style:italic;">'+f.description+'</div><div class="sep"></div>'
-    +'<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>'+buildStepsH(f.steps)
-    +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
-    +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
-    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="vi-inp" id="tlnk-'+f.id+'" type="text" placeholder="Paste Instagram link..." style="flex:1;" /><button class="vi-btn" onclick="addTFLink(\''+f.id+'\')">Add link</button></div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score" style="color:#9b8ec4;">'+f.score+' &middot; '+f.type+' &middot; '+f.month+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
+    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#9b8ec4;margin-bottom:10px;font-style:italic;">'+f.description+'</div><div class="sep"></div>'
+    +'<div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>'+buildStepsH(f.steps)
+    +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
+    +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
+    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="inp" id="tlnk-'+f.id+'" type="text" placeholder="Paste Instagram link..." style="flex:1;font-size:11px;padding:5px 9px;" /><button class="btn btn-border btn-sm" onclick="addTFLink(\''+f.id+'\')">Add link</button></div>'
     +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
     +'</div></div>';
   return h;
@@ -1211,21 +1226,21 @@ function buildUserCard(f) {
   var lh=buildLinksH(f.links||[],f.pid,false);
   var sw=buildSWHtml(id,fm.name,fm.hookType,fm.reusableTemplate||[]);
   var h='<div class="wf-card'+(isW?' confirmed':'')+'"><div class="wf-badge '+(isW?'confirmed':'testing')+'">'+(isW?'Winner':'Testing')+'</div>'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+fm.name+'</div><div class="wf-score">'+fv(f.views)+' views - '+mxIG(f.views)+'x</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#999;">&#9656;</span></div>'
-    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#888;margin-bottom:10px;font-style:italic;">'+fm.whyItWorks+'</div><div class="sep"></div>'
-    +'<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>';
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+fm.name+'</div><div class="wf-score" style="color:#a78bfa;">AI analyzed format</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
+    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#9b8ec4;margin-bottom:10px;font-style:italic;">'+fm.whyItWorks+'</div><div class="sep"></div>'
+    +'<div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>';
   fm.sections.forEach(function(sec){
     h+='<div class="section" style="padding:10px 12px;margin-bottom:6px;"><div class="sec-label">'+sec.label+'</div><div class="sec-name" style="font-size:12px;">'+sec.name+'</div><div class="sec-desc" style="font-size:11px;">'+sec.description+'</div>';
     if(sec.example)h+='<div class="sec-ex" style="font-size:10px;"><strong>From source video:</strong> "'+sec.example+'"</div>';
     h+='</div>';
   });
-  h+='<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Reusable template</div>';
+  h+='<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Reusable template</div>';
   (fm.reusableTemplate||[]).forEach(function(step,i){ h+='<div class="tpl-line" style="padding:5px 0;"><div class="tpl-num">'+(i+1)+'</div><div class="tpl-text" style="font-size:11px;">'+step+'</div></div>'; });
-  h+='<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
-    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="vi-inp" id="lnk-'+f.pid+'" type="text" placeholder="Paste Instagram link..." style="flex:1;" /><button class="vi-btn" onclick="addLink(\''+f.pid+'\')">Add link</button></div>'
+  h+='<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
+    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="inp" id="lnk-'+f.pid+'" type="text" placeholder="Paste Instagram link..." style="flex:1;font-size:11px;padding:5px 9px;" /><button class="btn btn-border btn-sm" onclick="addLink(\''+f.pid+'\')">Add link</button></div>'
     +'<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;">'
     +(isW?'':'<button class="btn btn-green btn-sm" onclick="promoteWinner(\''+f.pid+'\')">&#8594; Mark winner</button>')
-    +'<button class="btn btn-border btn-sm" onclick="removeFmt(\''+f.pid+'\')" style="color:#999;">Remove</button></div>'
+    +'<button class="btn btn-border btn-sm" onclick="removeFmt(\''+f.pid+'\')" style="color:#7a6fa0;">Remove</button></div>'
     +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
     +'</div></div>';
   return h;
@@ -1236,13 +1251,13 @@ function buildManualCard(f, promoteFn, removeFn) {
   var id='manual-'+f.id;
   var sw=buildSWHtml(id,f.name,'Manual',f.steps);
   var h='<div class="wf-card'+(isW?' confirmed':'')+'"><div class="wf-badge '+(isW?'confirmed':'testing')+'">'+(isW?'Winner':'Testing')+'</div>'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score" style="color:#888;">Manual format</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#999;">&#9656;</span></div>'
-    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#888;margin-bottom:10px;font-style:italic;">'+f.whyItWorks+'</div><div class="sep"></div>'
-    +'<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Steps</div>'+buildStepsH(f.steps);
-  if(f.links&&f.links.length){ h+='<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'; f.links.forEach(function(lnk){ h+='<div style="margin-bottom:4px;"><a href="'+lnk+'" target="_blank" style="font-size:11px;color:#1857a4;text-decoration:none;">&#8599; '+lnk+'</a></div>'; }); }
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score" style="color:#9b8ec4;">Manual format</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
+    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#9b8ec4;margin-bottom:10px;font-style:italic;">'+f.whyItWorks+'</div><div class="sep"></div>'
+    +'<div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Steps</div>'+buildStepsH(f.steps);
+  if(f.links&&f.links.length){ h+='<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'; f.links.forEach(function(lnk){ h+='<div style="margin-bottom:4px;"><a href="'+lnk+'" target="_blank" style="font-size:11px;color:#a78bfa;text-decoration:none;">&#8599; '+lnk+'</a></div>'; }); }
   h+='<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;">'
     +(isW?'':'<button class="btn btn-green btn-sm" onclick="'+promoteFn+'(\''+f.id+'\')">&#8594; Mark winner</button>')
-    +'<button class="btn btn-border btn-sm" onclick="'+removeFn+'(\''+f.id+'\')" style="color:#999;">Remove</button></div>'
+    +'<button class="btn btn-border btn-sm" onclick="'+removeFn+'(\''+f.id+'\')" style="color:#7a6fa0;">Remove</button></div>'
     +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
     +'</div></div>';
   return h;
@@ -1287,12 +1302,12 @@ function buildHookCard(h) {
   var isW=h.status==='confirmed';
   var o='<div class="wf-card'+(isW?' confirmed':'')+'" style="padding:14px 16px;">';
   o+='<div class="wf-badge '+(isW?'confirmed':'testing')+'">'+(isW?'Winner':'Testing')+'</div>';
-  o+='<div style="font-size:14px;color:#1a1a1a;line-height:1.7;margin-bottom:10px;padding-right:60px;">'+h.text+'</div>';
-  if(h.note){o+='<div style="font-size:11px;color:#2d6a1f;font-weight:500;margin-bottom:6px;">'+h.note+'</div>';}
-  if(h.link){o+='<div style="margin-bottom:8px;"><a href="'+h.link+'" target="_blank" style="font-size:11px;color:#1857a4;">&#8599; Reference video</a></div>';}
+  o+='<div style="font-size:14px;color:#f0eaff;line-height:1.7;margin-bottom:10px;padding-right:60px;">'+h.text+'</div>';
+  if(h.note){o+='<div style="font-size:11px;color:#10b981;font-weight:500;margin-bottom:6px;">'+h.note+'</div>';}
+  if(h.link){o+='<div style="margin-bottom:8px;"><a href="'+h.link+'" target="_blank" style="font-size:11px;color:#a78bfa;">&#8599; Reference video</a></div>';}
   o+='<div style="display:flex;justify-content:flex-end;gap:6px;">';
   if(!isW){o+='<button class="btn btn-green btn-sm" onclick="promoteHook(\''+h.id+'\')">&#8594; Mark winner</button>';}
-  o+='<button class="btn btn-border btn-sm" onclick="removeHook(\''+h.id+'\')" style="color:#999;">Remove</button>';
+  o+='<button class="btn btn-border btn-sm" onclick="removeHook(\''+h.id+'\')" style="color:#7a6fa0;">Remove</button>';
   o+='</div></div>';
   return o;
 }

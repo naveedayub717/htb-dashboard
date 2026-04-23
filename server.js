@@ -118,8 +118,8 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/data', auth, async (req, res) => {
   try {
     const [posts, videos, fmts, igManual, ytFmts, hooks, settings] = await Promise.all([
-      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", plat FROM ig_posts ORDER BY ts DESC'),
-      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, duration, vtype, plat FROM yt_videos ORDER BY ts DESC'),
+      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'),
+      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, duration, vtype, outlier_mult AS "outlierMult", plat FROM yt_videos ORDER BY ts DESC'),
       pool.query('SELECT pid, status, format, views, links, added FROM formats ORDER BY added'),
       pool.query('SELECT id, name, status, why_it_works AS "whyItWorks", steps, links, added FROM ig_manual_formats ORDER BY added'),
       pool.query('SELECT id, name, status, why_it_works AS "whyItWorks", steps, links, added FROM yt_formats ORDER BY added'),
@@ -221,7 +221,7 @@ app.post('/api/ig/sync', auth, async (req, res) => {
     }
 
     const { rows: updated } = await pool.query(
-      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", plat FROM ig_posts ORDER BY ts DESC'
+      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'
     );
     broadcast({ type: 'igPosts', data: updated });
     res.json({ posts: updated });
@@ -289,7 +289,7 @@ app.post('/api/yt/sync', auth, async (req, res) => {
     }
 
     const { rows: updated } = await pool.query(
-      'SELECT id, caption, thumb, ts, views, likes, comments, duration, vtype, plat FROM yt_videos ORDER BY ts DESC'
+      'SELECT id, caption, thumb, ts, views, likes, comments, duration, vtype, outlier_mult AS "outlierMult", plat FROM yt_videos ORDER BY ts DESC'
     );
     broadcast({ type: 'ytVideos', data: updated });
     res.json({ videos: updated });
@@ -305,7 +305,7 @@ app.put('/api/ig-posts/:id/views', auth, async (req, res) => {
     const { views } = req.body;
     await pool.query('UPDATE ig_posts SET views=$1 WHERE id=$2', [views, req.params.id]);
     const { rows } = await pool.query(
-      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", plat FROM ig_posts ORDER BY ts DESC'
+      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'
     );
     broadcast({ type: 'igPosts', data: rows });
     res.json({ ok: true });
@@ -362,7 +362,7 @@ Return ONLY valid JSON:
     await pool.query('UPDATE ig_posts SET format=$1 WHERE id=$2', [JSON.stringify(fmt), postId]);
 
     const { rows: updated } = await pool.query(
-      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", plat FROM ig_posts ORDER BY ts DESC'
+      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'
     );
     broadcast({ type: 'igPosts', data: updated });
     res.json({ format: fmt });
@@ -425,7 +425,7 @@ app.post('/api/formats', auth, async (req, res) => {
 
     const [fmts, posts] = await Promise.all([
       pool.query('SELECT pid, status, format, views, links, added FROM formats ORDER BY added'),
-      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", plat FROM ig_posts ORDER BY ts DESC'),
+      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'),
     ]);
     broadcast({ type: 'formats', data: fmts.rows });
     broadcast({ type: 'igPosts', data: posts.rows });
@@ -443,7 +443,7 @@ app.put('/api/formats/:pid', auth, async (req, res) => {
 
     const [fmts, posts] = await Promise.all([
       pool.query('SELECT pid, status, format, views, links, added FROM formats ORDER BY added'),
-      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", plat FROM ig_posts ORDER BY ts DESC'),
+      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'),
     ]);
     broadcast({ type: 'formats', data: fmts.rows });
     broadcast({ type: 'igPosts', data: posts.rows });
@@ -460,7 +460,7 @@ app.delete('/api/formats/:pid', auth, async (req, res) => {
 
     const [fmts, posts] = await Promise.all([
       pool.query('SELECT pid, status, format, views, links, added FROM formats ORDER BY added'),
-      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", plat FROM ig_posts ORDER BY ts DESC'),
+      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'),
     ]);
     broadcast({ type: 'formats', data: fmts.rows });
     broadcast({ type: 'igPosts', data: posts.rows });
@@ -607,6 +607,36 @@ app.delete('/api/hooks/:id', auth, async (req, res) => {
     await pool.query('DELETE FROM hooks WHERE id=$1', [req.params.id]);
     const { rows } = await pool.query('SELECT id, text, status, note, link, added FROM hooks ORDER BY added');
     broadcast({ type: 'hooks', data: rows });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ── Outlier marking ───────────────────────────────────────────────────────────
+
+app.put('/api/ig-posts/:id/outlier', auth, async (req, res) => {
+  try {
+    const { mult } = req.body;
+    await pool.query('UPDATE ig_posts SET outlier_mult=$1 WHERE id=$2', [mult || null, req.params.id]);
+    const { rows } = await pool.query(
+      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'
+    );
+    broadcast({ type: 'igPosts', data: rows });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.put('/api/yt-videos/:id/outlier', auth, async (req, res) => {
+  try {
+    const { mult } = req.body;
+    await pool.query('UPDATE yt_videos SET outlier_mult=$1 WHERE id=$2', [mult || null, req.params.id]);
+    const { rows } = await pool.query(
+      'SELECT id, caption, thumb, ts, views, likes, comments, duration, vtype, outlier_mult AS "outlierMult", plat FROM yt_videos ORDER BY ts DESC'
+    );
+    broadcast({ type: 'ytVideos', data: rows });
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });
