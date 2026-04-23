@@ -238,7 +238,7 @@ textarea::placeholder{color:#5a5080;}
         <div class="stats-row">
           <div class="stat-card"><div class="stat-label">This week</div><div class="stat-val green" id="ig-stat-week">0</div><div class="stat-sub" id="ig-stat-week-dates">Last 7 days</div></div>
           <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="ig-stat-month">0</div><div class="stat-sub">Last 30 days</div></div>
-          <div class="stat-card"><div class="stat-label">Outliers marked</div><div class="stat-val green" id="ig-stat-outliers">0</div><div class="stat-sub">Manually marked</div></div>
+          <div class="stat-card"><div class="stat-label">Outliers marked</div><div class="stat-val green" id="ig-stat-outliers">0</div></div>
         </div>
       </div>
     </div>
@@ -267,7 +267,7 @@ textarea::placeholder{color:#5a5080;}
         <div class="stats-row">
           <div class="stat-card"><div class="stat-label">This week</div><div class="stat-val green" id="yt-stat-week">0</div><div class="stat-sub">Last 7 days</div></div>
           <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="yt-stat-month">0</div><div class="stat-sub">Last 30 days</div></div>
-          <div class="stat-card"><div class="stat-label">Outliers marked</div><div class="stat-val green" id="yt-stat-outliers">0</div><div class="stat-sub">Manually marked</div></div>
+          <div class="stat-card"><div class="stat-label">Outliers marked</div><div class="stat-val green" id="yt-stat-outliers">0</div></div>
         </div>
       </div>
     </div>
@@ -1251,7 +1251,7 @@ function buildManualCard(f, promoteFn, removeFn) {
   var id='manual-'+f.id;
   var sw=buildSWHtml(id,f.name,'Manual',f.steps);
   var h='<div class="wf-card'+(isW?' confirmed':'')+'"><div class="wf-badge '+(isW?'confirmed':'testing')+'">'+(isW?'Winner':'Testing')+'</div>'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score" style="color:#9b8ec4;">Manual format</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
     +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#9b8ec4;margin-bottom:10px;font-style:italic;">'+f.whyItWorks+'</div><div class="sep"></div>'
     +'<div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Steps</div>'+buildStepsH(f.steps);
   if(f.links&&f.links.length){ h+='<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'; f.links.forEach(function(lnk){ h+='<div style="margin-bottom:4px;"><a href="'+lnk+'" target="_blank" style="font-size:11px;color:#a78bfa;text-decoration:none;">&#8599; '+lnk+'</a></div>'; }); }
