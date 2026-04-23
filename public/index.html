@@ -747,8 +747,9 @@ function updateYTUI() {
   document.getElementById('yt-connect-area').style.display='none';
   document.getElementById('yt-stats-area').style.display='block';
   document.getElementById('yt-header-stats').style.display='flex';
-  var w=inDays(D.ytVideos,7).length, m=inDays(D.ytVideos,30).length;
-  var ol=D.ytVideos.filter(function(v){ return v.outlierMult; }).length;
+  var longForm=D.ytVideos.filter(function(v){ return (v.duration||0)>180; });
+  var w=inDays(longForm,7).length, m=inDays(longForm,30).length;
+  var ol=longForm.filter(function(v){ return v.outlierMult; }).length;
   document.getElementById('yts-week').textContent=w;
   document.getElementById('yts-month').textContent=m;
   document.getElementById('yts-out').textContent=ol;
@@ -1222,7 +1223,8 @@ function renderPlatTarget(sectionId,weekCount,monthCount,weekTarget,monthTarget,
 
 function renderTargetProgress() {
   var igW=inDays(D.igPosts,7).length, igM=inDays(D.igPosts,30).length;
-  var ytW=inDays(D.ytVideos,7).length, ytM=inDays(D.ytVideos,30).length;
+  var longForm=D.ytVideos.filter(function(v){ return (v.duration||0)>180; });
+  var ytW=inDays(longForm,7).length, ytM=inDays(longForm,30).length;
   renderPlatTarget('ig-target-section',igW,igM,D.igWeekTarget,D.igMonthTarget,'Weekly posts','Monthly posts');
   renderPlatTarget('yt-target-section',ytW,ytM,D.ytWeekTarget,D.ytMonthTarget,'Weekly videos','Monthly videos');
 }
