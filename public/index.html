@@ -148,21 +148,23 @@ textarea::placeholder{color:#5a5080;}
 .op-btn:hover{border-color:#7c3aed;color:#a78bfa;}
 .op-btn.selected{border-color:#7c3aed;background:rgba(124,58,237,0.2);color:#a78bfa;}
 .outlier-actions{display:flex;gap:8px;}
-.target-row{margin-top:14px;padding-top:12px;border-top:0.5px solid #2a2550;}
-.target-item{margin-bottom:12px;}
-.target-item:last-child{margin-bottom:0;}
-.target-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
-.target-label{font-size:11px;color:#7a6fa0;}
-.target-count{font-size:11px;color:#f0eaff;font-weight:500;}
-.target-bar{height:4px;background:#1a1630;border-radius:2px;overflow:hidden;margin-bottom:3px;}
-.target-bar-fill{height:100%;border-radius:2px;transition:width 0.4s;}
+.target-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.target-card{background:#13102a;border:0.5px solid #2a2550;border-radius:8px;padding:14px;}
+.target-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.target-card-label{font-size:11px;color:#7a6fa0;}
+.target-bar{height:5px;background:#1a1630;border-radius:3px;overflow:hidden;margin-bottom:12px;}
+.target-bar-fill{height:100%;border-radius:3px;transition:width 0.4s;}
 .target-bar-fill.green{background:#10b981;}
-.target-bar-fill.yellow{background:#f59e0b;}
-.target-bar-fill.red{background:#ef4444;}
+.target-bar-fill.red{background:#f87171;}
+.target-card-bottom{display:flex;align-items:baseline;justify-content:space-between;}
+.target-posted{font-size:18px;font-weight:600;color:#f0eaff;line-height:1;}
+.target-posted-sub{font-size:9px;color:#5a5080;margin-left:3px;}
+.target-goal{font-size:11px;color:#7a6fa0;}
+.target-goal strong{color:#f0eaff;font-weight:600;}
 .status-pill{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;}
 .status-pill.ahead{background:rgba(16,185,129,0.15);color:#10b981;border:0.5px solid rgba(16,185,129,0.3);}
-.status-pill.on-track{background:rgba(245,158,11,0.15);color:#f59e0b;border:0.5px solid rgba(245,158,11,0.3);}
-.status-pill.behind{background:rgba(239,68,68,0.12);color:#ef4444;border:0.5px solid rgba(239,68,68,0.25);}
+.status-pill.on-track{background:rgba(16,185,129,0.15);color:#10b981;border:0.5px solid rgba(16,185,129,0.3);}
+.status-pill.behind{background:rgba(248,113,113,0.12);color:#f87171;border:0.5px solid rgba(248,113,113,0.25);}
 </style>
 </head>
 <body>
@@ -1188,26 +1190,28 @@ async function saveSettings() {
   } catch(e){ alert('Error: '+e.message); }
 }
 
-function buildTargetBar(label, count, target) {
+function buildTargetCard(label, count, target) {
   var pct=Math.min(Math.round((count/target)*100),100);
-  var cls=pct>=100?'green':pct>=70?'yellow':'red';
+  var barCls=pct>=70?'green':'red';
   var pill=pct>=100?'ahead':pct>=70?'on-track':'behind';
   var pillTxt=pct>=100?'Ahead':pct>=70?'On track':'Behind';
-  return '<div class="target-item">'
-    +'<div class="target-header"><span class="target-label">'+label+'</span>'
-    +'<span class="target-count">'+count+' / '+target+'</span></div>'
-    +'<div class="target-bar"><div class="target-bar-fill '+cls+'" style="width:'+pct+'%"></div></div>'
-    +'<span class="status-pill '+pill+'">'+pillTxt+'</span>'
-    +'</div>';
+  return '<div class="target-card">'
+    +'<div class="target-card-top"><span class="target-card-label">'+label+'</span>'
+    +'<span class="status-pill '+pill+'">'+pillTxt+'</span></div>'
+    +'<div class="target-bar"><div class="target-bar-fill '+barCls+'" style="width:'+pct+'%"></div></div>'
+    +'<div class="target-card-bottom">'
+    +'<div><span class="target-posted">'+count+'</span><span class="target-posted-sub">posted</span></div>'
+    +'<span class="target-goal">Target <strong>'+target+'</strong></span>'
+    +'</div></div>';
 }
 
 function renderPlatTarget(sectionId,weekCount,monthCount,weekTarget,monthTarget,weekLabel,monthLabel) {
   var sec=document.getElementById(sectionId);
   if(!sec) return;
   if(!weekTarget&&!monthTarget){ sec.style.display='none'; return; }
-  var h='<div class="target-row">';
-  if(weekTarget) h+=buildTargetBar(weekLabel,weekCount,weekTarget);
-  if(monthTarget) h+=buildTargetBar(monthLabel,monthCount,monthTarget);
+  var h='<div class="target-grid">';
+  if(weekTarget) h+=buildTargetCard(weekLabel,weekCount,weekTarget);
+  if(monthTarget) h+=buildTargetCard(monthLabel,monthCount,monthTarget);
   h+='</div>';
   sec.innerHTML=h; sec.style.display='block';
 }
