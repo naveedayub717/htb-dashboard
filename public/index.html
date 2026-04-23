@@ -874,12 +874,13 @@ function buildCard(p, showOutlierBtn, isNew) {
   var btnLabel=p.outlierMult?'&#10003; Marked Outlier':'Mark Outlier';
   var btnClass='outlier-btn'+(p.outlierMult?' is-outlier':'');
   var outlierBtnH=showOutlierBtn?('<button class="'+btnClass+'" onclick="event.stopPropagation();openOutlierPicker(\''+p.id+'\',\''+p.plat+'\')">'+btnLabel+'</button>'):'';
+  var igLinkH=(!showOutlierBtn&&!isYT&&p.permalink)?('<a href="'+p.permalink+'" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="display:block;margin-top:7px;font-size:10px;color:#a78bfa;text-decoration:none;text-align:center;">View on Instagram &#8599;</a>'):'';
   return '<div class="post-card'+selClass+outlierClass+'" onclick="selectPost(\''+p.id+'\',\''+p.plat+'\')">'
     +'<div class="thumb">'+thumbH+'<div class="thumb-badges"><span class="tb '+platBadge+'">'+platLabel+'</span>'+outlierBadge+'</div>'+newB+'</div>'
     +'<div class="cb"><div class="cb-caption">'+title+'</div>'
     +'<div class="cb-row"><span class="cb-date">'+date+'</span></div>'
     +'<div class="cb-tags" style="margin-top:4px;">'+outlierTag+fmtTag+winTag+testTag+'</div>'
-    +outlierBtnH
+    +outlierBtnH+igLinkH
     +'</div></div>';
 }
 
@@ -962,7 +963,10 @@ function showAnalysisPanel(post, pan) {
     +'<div class="az-label">Caption</div><div class="az-caption">'+(cap||'No caption available')+'</div>'
     +'<div class="az-label" style="margin-top:4px;">Full transcript (optional)</div>'
     +'<textarea id="tr-'+post.id+'" placeholder="Paste full video script or auto-captions here..."></textarea>'
-    +'<button class="btn btn-dark" style="margin-top:10px;" onclick="runAI(\''+post.id+'\')">Analyze with AI</button>'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-top:10px;">'
+    +'<button class="btn btn-dark" onclick="runAI(\''+post.id+'\')">Analyze with AI</button>'
+    +(post.permalink?('<a href="'+post.permalink+'" target="_blank" rel="noopener" style="font-size:11px;color:#a78bfa;text-decoration:none;">View on Instagram &#8599;</a>'):'')
+    +'</div>'
     +'</div>';
 }
 

@@ -118,7 +118,7 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/data', auth, async (req, res) => {
   try {
     const [posts, videos, fmts, igManual, ytFmts, hooks, settings] = await Promise.all([
-      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'),
+      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", permalink, plat FROM ig_posts ORDER BY ts DESC'),
       pool.query('SELECT id, caption, thumb, ts, views, likes, comments, duration, vtype, outlier_mult AS "outlierMult", plat FROM yt_videos ORDER BY ts DESC'),
       pool.query('SELECT pid, status, format, views, links, added FROM formats ORDER BY added'),
       pool.query('SELECT id, name, status, why_it_works AS "whyItWorks", steps, links, added FROM ig_manual_formats ORDER BY added'),
@@ -194,7 +194,7 @@ app.post('/api/ig/sync', auth, async (req, res) => {
     existing.forEach(p => { ex[p.id] = p; });
 
     let all = [];
-    let url = `https://graph.instagram.com/${me.id}/media?fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count,video_views&limit=50&access_token=${token}`;
+    let url = `https://graph.instagram.com/${me.id}/media?fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count,video_views,permalink&limit=50&access_token=${token}`;
 
     while (url && all.length < 600) {
       const data = await apiFetch(url);
@@ -212,6 +212,7 @@ app.post('/api/ig/sync', auth, async (req, res) => {
           comments: p.comments_count || 0,
           format: ex[p.id]?.format || null,
           f_status: ex[p.id]?.f_status || null,
+          permalink: p.permalink || '',
         });
       });
       url = data.paging?.next || null;
@@ -219,17 +220,17 @@ app.post('/api/ig/sync', auth, async (req, res) => {
 
     for (const p of all) {
       await pool.query(
-        `INSERT INTO ig_posts (id, caption, thumb, ts, views, likes, comments, format, f_status, plat)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'ig')
+        `INSERT INTO ig_posts (id, caption, thumb, ts, views, likes, comments, format, f_status, plat, permalink)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'ig',$10)
          ON CONFLICT (id) DO UPDATE SET caption=$2, thumb=$3, ts=$4,
            views = CASE WHEN $5 > 0 THEN $5 ELSE ig_posts.views END,
-           likes=$6, comments=$7`,
-        [p.id, p.caption, p.thumb, p.ts, p.views, p.likes, p.comments, p.format ? JSON.stringify(p.format) : null, p.f_status]
+           likes=$6, comments=$7, permalink=$10`,
+        [p.id, p.caption, p.thumb, p.ts, p.views, p.likes, p.comments, p.format ? JSON.stringify(p.format) : null, p.f_status, p.permalink]
       );
     }
 
     const { rows: updated } = await pool.query(
-      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'
+      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", permalink, plat FROM ig_posts ORDER BY ts DESC'
     );
     broadcast({ type: 'igPosts', data: updated });
     res.json({ posts: updated });
@@ -313,7 +314,7 @@ app.put('/api/ig-posts/:id/views', auth, async (req, res) => {
     const { views } = req.body;
     await pool.query('UPDATE ig_posts SET views=$1 WHERE id=$2', [views, req.params.id]);
     const { rows } = await pool.query(
-      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'
+      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", permalink, plat FROM ig_posts ORDER BY ts DESC'
     );
     broadcast({ type: 'igPosts', data: rows });
     res.json({ ok: true });
@@ -370,7 +371,7 @@ Return ONLY valid JSON:
     await pool.query('UPDATE ig_posts SET format=$1 WHERE id=$2', [JSON.stringify(fmt), postId]);
 
     const { rows: updated } = await pool.query(
-      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'
+      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", permalink, plat FROM ig_posts ORDER BY ts DESC'
     );
     broadcast({ type: 'igPosts', data: updated });
     res.json({ format: fmt });
@@ -433,7 +434,7 @@ app.post('/api/formats', auth, async (req, res) => {
 
     const [fmts, posts] = await Promise.all([
       pool.query('SELECT pid, status, format, views, links, added FROM formats ORDER BY added'),
-      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'),
+      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", permalink, plat FROM ig_posts ORDER BY ts DESC'),
     ]);
     broadcast({ type: 'formats', data: fmts.rows });
     broadcast({ type: 'igPosts', data: posts.rows });
@@ -451,7 +452,7 @@ app.put('/api/formats/:pid', auth, async (req, res) => {
 
     const [fmts, posts] = await Promise.all([
       pool.query('SELECT pid, status, format, views, links, added FROM formats ORDER BY added'),
-      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'),
+      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", permalink, plat FROM ig_posts ORDER BY ts DESC'),
     ]);
     broadcast({ type: 'formats', data: fmts.rows });
     broadcast({ type: 'igPosts', data: posts.rows });
@@ -468,7 +469,7 @@ app.delete('/api/formats/:pid', auth, async (req, res) => {
 
     const [fmts, posts] = await Promise.all([
       pool.query('SELECT pid, status, format, views, links, added FROM formats ORDER BY added'),
-      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'),
+      pool.query('SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", permalink, plat FROM ig_posts ORDER BY ts DESC'),
     ]);
     broadcast({ type: 'formats', data: fmts.rows });
     broadcast({ type: 'igPosts', data: posts.rows });
@@ -628,7 +629,7 @@ app.put('/api/ig-posts/:id/outlier', auth, async (req, res) => {
     const { mult } = req.body;
     await pool.query('UPDATE ig_posts SET outlier_mult=$1 WHERE id=$2', [mult || null, req.params.id]);
     const { rows } = await pool.query(
-      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", plat FROM ig_posts ORDER BY ts DESC'
+      'SELECT id, caption, thumb, ts, views, likes, comments, format, f_status AS "fStatus", outlier_mult AS "outlierMult", permalink, plat FROM ig_posts ORDER BY ts DESC'
     );
     broadcast({ type: 'igPosts', data: rows });
     res.json({ ok: true });
