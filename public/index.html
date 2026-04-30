@@ -165,7 +165,12 @@ textarea::placeholder{color:#5a5080;}
 .status-pill.ahead{background:rgba(16,185,129,0.15);color:#10b981;border:0.5px solid rgba(16,185,129,0.3);}
 .status-pill.on-track{background:rgba(16,185,129,0.15);color:#10b981;border:0.5px solid rgba(16,185,129,0.3);}
 .status-pill.behind{background:rgba(248,113,113,0.12);color:#f87171;border:0.5px solid rgba(248,113,113,0.25);}
+.chart-card{background:#13102a;border:0.5px solid #2a2550;border-radius:12px;padding:20px 24px 24px;}
+.chart-card-title{font-size:14px;font-weight:600;color:#f0eaff;margin-bottom:3px;}
+.chart-card-sub{font-size:11px;color:#7a6fa0;margin-bottom:18px;}
+.chart-wrap{position:relative;height:280px;}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -213,6 +218,7 @@ textarea::placeholder{color:#5a5080;}
   <div class="logo"><div class="logo-mark">HTB</div><div class="logo-sub">Content Intelligence</div></div>
   <nav class="nav">
     <div class="ni active" onclick="nav('overview',this)">&#9672; &nbsp;Overview</div>
+    <div class="ni" onclick="nav('analytics',this);loadAnalytics()">&#9674; &nbsp;Analytics</div>
     <div class="ni" onclick="nav('posts',this)">&#9675; &nbsp;All Posts</div>
     <div class="ni" onclick="nav('outliers',this)">&#9677; &nbsp;Outliers</div>
     <div class="ni" onclick="nav('formats',this)">&#9671; &nbsp;Winning Formats</div>
@@ -290,6 +296,24 @@ textarea::placeholder{color:#5a5080;}
         </div>
         <div id="yt-target-section" style="display:none;"></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-analytics">
+  <div class="ph">
+    <div><div class="pt">Analytics</div><div class="ps">Content performance over the last 12 months</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <div class="chart-card">
+      <div class="chart-card-title">Posts per month</div>
+      <div class="chart-card-sub">Instagram vs YouTube</div>
+      <div class="chart-wrap"><canvas id="chart-posts-per-month"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">YouTube views per month</div>
+      <div class="chart-card-sub">Long form only</div>
+      <div class="chart-wrap"><canvas id="chart-yt-views"></canvas></div>
     </div>
   </div>
 </div>
@@ -1413,6 +1437,102 @@ function buildHookCard(h) {
   o+='<button class="btn btn-border btn-sm" onclick="removeHook(\''+h.id+'\')" style="color:#7a6fa0;">Remove</button>';
   o+='</div></div>';
   return o;
+}
+
+// ── Analytics ─────────────────────────────────────────────────────────────────
+
+var _analyticsCharts = {};
+var _analyticsLoaded = false;
+
+function _fmtMonth(ym) {
+  var p = ym.split('-');
+  return new Date(+p[0], +p[1]-1, 1).toLocaleDateString('en-US', {month:'short', year:'2-digit'});
+}
+
+function _fmtViews(v) {
+  if (v >= 1000000) return (v/1000000).toFixed(1).replace(/\.0$/,'') + 'M';
+  if (v >= 1000) return (v/1000).toFixed(1).replace(/\.0$/,'') + 'K';
+  return String(v);
+}
+
+var _chartDefaults = {
+  scales: {
+    x: { ticks: { color:'#7a6fa0', font:{size:10} }, grid: { color:'rgba(42,37,80,0.5)' }, border:{color:'rgba(42,37,80,0.5)'} },
+    y: { beginAtZero:true, ticks: { color:'#7a6fa0', font:{size:10} }, grid: { color:'rgba(42,37,80,0.5)' }, border:{color:'rgba(42,37,80,0.5)'} }
+  },
+  tooltipBase: { backgroundColor:'#1a1630', borderColor:'#2a2550', borderWidth:1, titleColor:'#f0eaff', bodyColor:'#9b8ec4', padding:10 }
+};
+
+async function loadAnalytics() {
+  if (_analyticsLoaded) return;
+  try {
+    var data = await api('GET', '/api/analytics');
+    var labels = data.months.map(_fmtMonth);
+
+    if (_analyticsCharts.posts) _analyticsCharts.posts.destroy();
+    if (_analyticsCharts.views) _analyticsCharts.views.destroy();
+
+    var sc = _chartDefaults.scales;
+    var tb = _chartDefaults.tooltipBase;
+
+    _analyticsCharts.posts = new Chart(
+      document.getElementById('chart-posts-per-month').getContext('2d'),
+      {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            { label:'Instagram', data:data.igCounts, backgroundColor:'rgba(124,58,237,0.7)', borderColor:'#7c3aed', borderWidth:1, borderRadius:3 },
+            { label:'YouTube',   data:data.ytCounts, backgroundColor:'rgba(16,185,129,0.7)',  borderColor:'#10b981', borderWidth:1, borderRadius:3 }
+          ]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          interaction:{ mode:'index', intersect:false },
+          plugins: {
+            legend:{ labels:{ color:'#9b8ec4', font:{size:11}, boxWidth:12 } },
+            tooltip: Object.assign({}, tb, { callbacks:{ label:function(c){ return ' '+c.dataset.label+': '+c.parsed.y+' posts'; } } })
+          },
+          scales: {
+            x: sc.x,
+            y: Object.assign({}, sc.y, { ticks: Object.assign({}, sc.y.ticks, { stepSize:1 }) })
+          }
+        }
+      }
+    );
+
+    _analyticsCharts.views = new Chart(
+      document.getElementById('chart-yt-views').getContext('2d'),
+      {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label:'Views', data:data.ytViews,
+            borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.12)',
+            borderWidth:2, pointBackgroundColor:'#3b82f6',
+            pointRadius:4, pointHoverRadius:6,
+            fill:true, tension:0.3
+          }]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins: {
+            legend:{ display:false },
+            tooltip: Object.assign({}, tb, { callbacks:{ label:function(c){ return ' '+_fmtViews(c.parsed.y)+' views'; } } })
+          },
+          scales: {
+            x: sc.x,
+            y: Object.assign({}, sc.y, { ticks: Object.assign({}, sc.y.ticks, { callback:function(v){ return _fmtViews(v); } }) })
+          }
+        }
+      }
+    );
+
+    _analyticsLoaded = true;
+  } catch(e) {
+    console.error('Analytics error:', e);
+  }
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────

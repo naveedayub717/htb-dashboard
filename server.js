@@ -652,6 +652,53 @@ app.put('/api/yt-videos/:id/outlier', auth, async (req, res) => {
   }
 });
 
+// ── Analytics ─────────────────────────────────────────────────────────────────
+
+app.get('/api/analytics', auth, async (req, res) => {
+  try {
+    const months = [];
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(1);
+      d.setMonth(d.getMonth() - i);
+      months.push(d.toISOString().slice(0, 7));
+    }
+    const cutoff = months[0] + '-01';
+
+    const [igRes, ytRes, ytViewsRes] = await Promise.all([
+      pool.query(
+        `SELECT TO_CHAR(DATE_TRUNC('month', ts), 'YYYY-MM') AS month, COUNT(*)::int AS count
+         FROM ig_posts WHERE ts >= $1::date GROUP BY month`,
+        [cutoff]
+      ),
+      pool.query(
+        `SELECT TO_CHAR(DATE_TRUNC('month', ts), 'YYYY-MM') AS month, COUNT(*)::int AS count
+         FROM yt_videos WHERE ts >= $1::date GROUP BY month`,
+        [cutoff]
+      ),
+      pool.query(
+        `SELECT TO_CHAR(DATE_TRUNC('month', ts), 'YYYY-MM') AS month, COALESCE(SUM(views),0)::int AS views
+         FROM yt_videos WHERE ts >= $1::date AND duration > 180 GROUP BY month`,
+        [cutoff]
+      ),
+    ]);
+
+    const igMap = {}, ytMap = {}, ytViewsMap = {};
+    igRes.rows.forEach(r => { igMap[r.month] = r.count; });
+    ytRes.rows.forEach(r => { ytMap[r.month] = r.count; });
+    ytViewsRes.rows.forEach(r => { ytViewsMap[r.month] = r.views; });
+
+    res.json({
+      months,
+      igCounts: months.map(m => igMap[m] || 0),
+      ytCounts: months.map(m => ytMap[m] || 0),
+      ytViews:  months.map(m => ytViewsMap[m] || 0),
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── Serve SPA ─────────────────────────────────────────────────────────────────
 
 app.get('*', (req, res) => {
