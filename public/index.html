@@ -255,7 +255,7 @@ textarea::placeholder{color:#5a5080;}
       <div id="ig-stats-area" style="display:none;">
         <div class="stats-row">
           <div class="stat-card"><div class="stat-label">This week</div><div class="stat-val green" id="ig-stat-week">0</div><div class="stat-sub" id="ig-stat-week-dates">Last 7 days</div></div>
-          <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="ig-stat-month">0</div><div class="stat-sub">Last 30 days</div></div>
+          <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="ig-stat-month">0</div><div class="stat-sub" id="ig-stat-month-dates">-</div></div>
           <div class="stat-card"><div class="stat-label">Outliers marked</div><div class="stat-val green" id="ig-stat-outliers">0</div></div>
         </div>
         <div id="ig-target-section" style="display:none;"></div>
@@ -285,7 +285,7 @@ textarea::placeholder{color:#5a5080;}
       <div id="yt-stats-area" style="display:none;">
         <div class="stats-row">
           <div class="stat-card"><div class="stat-label">This week</div><div class="stat-val green" id="yt-stat-week">0</div><div class="stat-sub">Last 7 days</div></div>
-          <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="yt-stat-month">0</div><div class="stat-sub">Last 30 days</div></div>
+          <div class="stat-card"><div class="stat-label">This month</div><div class="stat-val" id="yt-stat-month">0</div><div class="stat-sub" id="yt-stat-month-dates">-</div></div>
           <div class="stat-card"><div class="stat-label">Outliers marked</div><div class="stat-val green" id="yt-stat-outliers">0</div></div>
         </div>
         <div id="yt-target-section" style="display:none;"></div>
@@ -720,6 +720,8 @@ async function fetchYTPosts() {
 function fv(n){ if(!n)return'0'; if(n>=1000000)return(n/1000000).toFixed(1)+'M'; if(n>=1000)return(n/1000).toFixed(1)+'K'; return n.toString(); }
 function daysAgo(d){ var dt=new Date(); dt.setDate(dt.getDate()-d); return dt; }
 function inDays(arr,d){ return arr.filter(function(p){ return new Date(p.ts)>=daysAgo(d); }); }
+function inCurrentMonth(arr){ var now=new Date(), s=new Date(now.getFullYear(),now.getMonth(),1), e=new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59,999); return arr.filter(function(p){ var t=new Date(p.ts); return t>=s&&t<=e; }); }
+function monthRangeLabel(){ var now=new Date(), mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][now.getMonth()], last=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(); return mn+' 1 - '+mn+' '+last; }
 
 // ── UI updates ────────────────────────────────────────────────────────────────
 
@@ -729,7 +731,7 @@ function updateIGUI() {
   document.getElementById('ig-stats-area').style.display='block';
   document.getElementById('ig-header-stats').style.display='flex';
   document.getElementById('s-acc').textContent='@hakeemhoang';
-  var w=inDays(D.igPosts,7).length, m=inDays(D.igPosts,30).length;
+  var w=inDays(D.igPosts,7).length, m=inCurrentMonth(D.igPosts).length;
   var ol=D.igPosts.filter(function(p){ return p.outlierMult; }).length;
   document.getElementById('igs-week').textContent=w;
   document.getElementById('igs-month').textContent=m;
@@ -739,6 +741,7 @@ function updateIGUI() {
   document.getElementById('ig-stat-outliers').textContent=ol;
   var now=new Date();
   document.getElementById('ig-stat-week-dates').textContent=daysAgo(7).toLocaleDateString('en-US',{month:'short',day:'numeric'})+' - '+now.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('ig-stat-month-dates').textContent=monthRangeLabel();
   renderTargetProgress();
 }
 
@@ -748,7 +751,7 @@ function updateYTUI() {
   document.getElementById('yt-stats-area').style.display='block';
   document.getElementById('yt-header-stats').style.display='flex';
   var longForm=D.ytVideos.filter(function(v){ return (v.duration||0)>180; });
-  var w=inDays(longForm,7).length, m=inDays(longForm,30).length;
+  var w=inDays(longForm,7).length, m=inCurrentMonth(longForm).length;
   var ol=longForm.filter(function(v){ return v.outlierMult; }).length;
   document.getElementById('yts-week').textContent=w;
   document.getElementById('yts-month').textContent=m;
@@ -756,6 +759,7 @@ function updateYTUI() {
   document.getElementById('yt-stat-week').textContent=w;
   document.getElementById('yt-stat-month').textContent=m;
   document.getElementById('yt-stat-outliers').textContent=ol;
+  document.getElementById('yt-stat-month-dates').textContent=monthRangeLabel();
   renderTargetProgress();
 }
 
@@ -1195,38 +1199,58 @@ async function saveSettings() {
   } catch(e){ alert('Error: '+e.message); }
 }
 
-function buildTargetCard(label, count, target) {
+function buildTargetCard(label, count, target, projection) {
   var pct=Math.min(Math.round((count/target)*100),100);
   var barCls=pct>=70?'green':'red';
   var pill=pct>=100?'ahead':pct>=70?'on-track':'behind';
   var pillTxt=pct>=100?'Ahead':pct>=70?'On track':'Behind';
+  var barHtml, projNoteHtml='';
+  if(projection!=null){
+    var projPct=Math.min(Math.round((projection/target)*100),100);
+    var isAhead=projection>=target;
+    var projColor=isAhead?'#3b82f6':'#f97316';
+    var projFaded=isAhead?'rgba(59,130,246,0.25)':'rgba(249,115,22,0.25)';
+    var unit=label.toLowerCase().indexOf('video')>=0?'videos':'posts';
+    barHtml='<div class="target-bar" style="position:relative;">'
+      +'<div style="position:absolute;top:0;left:0;height:100%;width:'+projPct+'%;background:'+projFaded+';border-radius:3px;"></div>'
+      +'<div class="target-bar-fill '+barCls+'" style="position:absolute;top:0;left:0;height:100%;width:'+pct+'%;z-index:1;"></div>'
+      +'</div>';
+    projNoteHtml='<div style="font-size:10px;color:'+projColor+';margin-top:8px;line-height:1.4;">'
+      +'At current pace you will hit approximately <strong>'+projection+'</strong> '+unit+' by month end. Target is '+target+'.'
+      +'</div>';
+  } else {
+    barHtml='<div class="target-bar"><div class="target-bar-fill '+barCls+'" style="width:'+pct+'%"></div></div>';
+  }
   return '<div class="target-card">'
     +'<div class="target-card-top"><span class="target-card-label">'+label+'</span>'
     +'<span class="status-pill '+pill+'">'+pillTxt+'</span></div>'
-    +'<div class="target-bar"><div class="target-bar-fill '+barCls+'" style="width:'+pct+'%"></div></div>'
+    +barHtml
     +'<div class="target-card-bottom">'
     +'<div><span class="target-posted">'+count+'</span><span class="target-posted-sub">posted</span></div>'
     +'<span class="target-goal">Target <strong>'+target+'</strong></span>'
-    +'</div></div>';
+    +'</div>'+projNoteHtml+'</div>';
 }
 
-function renderPlatTarget(sectionId,weekCount,monthCount,weekTarget,monthTarget,weekLabel,monthLabel) {
+function renderPlatTarget(sectionId,weekCount,monthCount,weekTarget,monthTarget,weekLabel,monthLabel,projection) {
   var sec=document.getElementById(sectionId);
   if(!sec) return;
   if(!weekTarget&&!monthTarget){ sec.style.display='none'; return; }
   var h='<div class="target-grid">';
-  if(weekTarget) h+=buildTargetCard(weekLabel,weekCount,weekTarget);
-  if(monthTarget) h+=buildTargetCard(monthLabel,monthCount,monthTarget);
+  if(weekTarget) h+=buildTargetCard(weekLabel,weekCount,weekTarget,null);
+  if(monthTarget) h+=buildTargetCard(monthLabel,monthCount,monthTarget,projection!=null?projection:null);
   h+='</div>';
   sec.innerHTML=h; sec.style.display='block';
 }
 
 function renderTargetProgress() {
-  var igW=inDays(D.igPosts,7).length, igM=inDays(D.igPosts,30).length;
+  var igW=inDays(D.igPosts,7).length, igM=inCurrentMonth(D.igPosts).length;
   var longForm=D.ytVideos.filter(function(v){ return (v.duration||0)>180; });
-  var ytW=inDays(longForm,7).length, ytM=inDays(longForm,30).length;
-  renderPlatTarget('ig-target-section',igW,igM,D.igWeekTarget,D.igMonthTarget,'Weekly posts','Monthly posts');
-  renderPlatTarget('yt-target-section',ytW,ytM,D.ytWeekTarget,D.ytMonthTarget,'Weekly videos','Monthly videos');
+  var ytW=inDays(longForm,7).length, ytM=inCurrentMonth(longForm).length;
+  var now=new Date(), daysElapsed=now.getDate(), totalDays=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  var igProj=daysElapsed>0?Math.round(igM/daysElapsed*totalDays):igM;
+  var ytProj=daysElapsed>0?Math.round(ytM/daysElapsed*totalDays):ytM;
+  renderPlatTarget('ig-target-section',igW,igM,D.igWeekTarget,D.igMonthTarget,'Weekly posts','Monthly posts',igProj);
+  renderPlatTarget('yt-target-section',ytW,ytM,D.ytWeekTarget,D.ytMonthTarget,'Weekly videos','Monthly videos',ytProj);
 }
 
 // ── Format cards ──────────────────────────────────────────────────────────────
