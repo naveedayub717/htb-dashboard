@@ -673,7 +673,7 @@ app.get('/api/analytics', auth, async (req, res) => {
       ),
       pool.query(
         `SELECT TO_CHAR(DATE_TRUNC('month', ts), 'YYYY-MM') AS month, COUNT(*)::int AS count
-         FROM yt_videos WHERE ts >= $1::date GROUP BY month`,
+         FROM yt_videos WHERE ts >= $1::date AND duration > 240 GROUP BY month`,
         [cutoff]
       ),
       pool.query(
