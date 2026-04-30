@@ -1199,45 +1199,28 @@ async function saveSettings() {
   } catch(e){ alert('Error: '+e.message); }
 }
 
-function buildTargetCard(label, count, target, projection) {
+function buildTargetCard(label, count, target) {
   var pct=Math.min(Math.round((count/target)*100),100);
   var barCls=pct>=70?'green':'red';
   var pill=pct>=100?'ahead':pct>=70?'on-track':'behind';
   var pillTxt=pct>=100?'Ahead':pct>=70?'On track':'Behind';
-  var barHtml, projNoteHtml='';
-  if(projection!=null){
-    var projPct=Math.min(Math.round((projection/target)*100),100);
-    var isAhead=projection>=target;
-    var projColor=isAhead?'#3b82f6':'#f97316';
-    var projFaded=isAhead?'rgba(59,130,246,0.25)':'rgba(249,115,22,0.25)';
-    var unit=label.toLowerCase().indexOf('video')>=0?'videos':'posts';
-    barHtml='<div class="target-bar" style="position:relative;">'
-      +'<div style="position:absolute;top:0;left:0;height:100%;width:'+projPct+'%;background:'+projFaded+';border-radius:3px;"></div>'
-      +'<div class="target-bar-fill '+barCls+'" style="position:absolute;top:0;left:0;height:100%;width:'+pct+'%;z-index:1;"></div>'
-      +'</div>';
-    projNoteHtml='<div style="font-size:10px;color:'+projColor+';margin-top:8px;line-height:1.4;">'
-      +'At current pace you will hit approximately <strong>'+projection+'</strong> '+unit+' by month end. Target is '+target+'.'
-      +'</div>';
-  } else {
-    barHtml='<div class="target-bar"><div class="target-bar-fill '+barCls+'" style="width:'+pct+'%"></div></div>';
-  }
   return '<div class="target-card">'
     +'<div class="target-card-top"><span class="target-card-label">'+label+'</span>'
     +'<span class="status-pill '+pill+'">'+pillTxt+'</span></div>'
-    +barHtml
+    +'<div class="target-bar"><div class="target-bar-fill '+barCls+'" style="width:'+pct+'%"></div></div>'
     +'<div class="target-card-bottom">'
     +'<div><span class="target-posted">'+count+'</span><span class="target-posted-sub">posted</span></div>'
     +'<span class="target-goal">Target <strong>'+target+'</strong></span>'
-    +'</div>'+projNoteHtml+'</div>';
+    +'</div></div>';
 }
 
-function renderPlatTarget(sectionId,weekCount,monthCount,weekTarget,monthTarget,weekLabel,monthLabel,projection) {
+function renderPlatTarget(sectionId,weekCount,monthCount,weekTarget,monthTarget,weekLabel,monthLabel) {
   var sec=document.getElementById(sectionId);
   if(!sec) return;
   if(!weekTarget&&!monthTarget){ sec.style.display='none'; return; }
   var h='<div class="target-grid">';
-  if(weekTarget) h+=buildTargetCard(weekLabel,weekCount,weekTarget,null);
-  if(monthTarget) h+=buildTargetCard(monthLabel,monthCount,monthTarget,projection!=null?projection:null);
+  if(weekTarget) h+=buildTargetCard(weekLabel,weekCount,weekTarget);
+  if(monthTarget) h+=buildTargetCard(monthLabel,monthCount,monthTarget);
   h+='</div>';
   sec.innerHTML=h; sec.style.display='block';
 }
@@ -1246,11 +1229,8 @@ function renderTargetProgress() {
   var igW=inDays(D.igPosts,7).length, igM=inCurrentMonth(D.igPosts).length;
   var longForm=D.ytVideos.filter(function(v){ return (v.duration||0)>180; });
   var ytW=inDays(longForm,7).length, ytM=inCurrentMonth(longForm).length;
-  var now=new Date(), daysElapsed=now.getDate(), totalDays=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-  var igProj=daysElapsed>0?Math.round(igM/daysElapsed*totalDays):igM;
-  var ytProj=daysElapsed>0?Math.round(ytM/daysElapsed*totalDays):ytM;
-  renderPlatTarget('ig-target-section',igW,igM,D.igWeekTarget,D.igMonthTarget,'Weekly posts','Monthly posts',igProj);
-  renderPlatTarget('yt-target-section',ytW,ytM,D.ytWeekTarget,D.ytMonthTarget,'Weekly videos','Monthly videos',ytProj);
+  renderPlatTarget('ig-target-section',igW,igM,D.igWeekTarget,D.igMonthTarget,'Weekly posts','Monthly posts');
+  renderPlatTarget('yt-target-section',ytW,ytM,D.ytWeekTarget,D.ytMonthTarget,'Weekly videos','Monthly videos');
 }
 
 // ── Format cards ──────────────────────────────────────────────────────────────
