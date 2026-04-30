@@ -169,21 +169,22 @@ textarea::placeholder{color:#5a5080;}
 .chart-card-title{font-size:14px;font-weight:600;color:#f0eaff;margin-bottom:3px;}
 .chart-card-sub{font-size:11px;color:#7a6fa0;margin-bottom:18px;}
 .chart-wrap{position:relative;height:280px;}
-.ads-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
-.ads-card{background:#13102a;border:0.5px solid #2a2550;border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.15s;}
-.ads-card:hover{border-color:#7c3aed;transform:translateY(-2px);box-shadow:0 4px 20px rgba(124,58,237,0.12);}
-.ads-thumb{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1630 0%,#0e0b1f 100%);display:flex;align-items:center;justify-content:center;}
-.ads-winner-badge{position:absolute;top:10px;left:10px;font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;background:#f59e0b;color:#1a0a00;letter-spacing:0.05em;text-transform:uppercase;}
-.ads-rank-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;width:24px;height:24px;border-radius:50%;background:rgba(14,11,31,0.75);color:#f0eaff;display:flex;align-items:center;justify-content:center;border:1px solid rgba(240,234,255,0.2);}
-.ads-card-body{padding:14px 16px 16px;}
-.ads-card-name{font-size:12px;font-weight:500;color:#f0eaff;margin-bottom:12px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:33px;}
-.ads-metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:14px;}
-.ads-metric-val{font-size:15px;font-weight:600;color:#f0eaff;margin-top:2px;line-height:1;}
-.ads-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:11px;border-top:0.5px solid #2a2550;}
-.ads-status-pill{font-size:9px;font-weight:600;padding:3px 9px;border-radius:10px;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;}
+.ads-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px;}
+.ads-card{background:#13102a;border:0.5px solid #2a2550;border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;}
+.ads-card:hover{border-color:#7c3aed;transform:translateY(-1px);box-shadow:0 4px 16px rgba(124,58,237,0.1);}
+.ads-thumb{position:relative;width:100%;height:140px;background:linear-gradient(160deg,#1a1630 0%,#0e0b1f 100%);background-size:cover;background-position:center;overflow:hidden;}
+.ads-winner-badge{position:absolute;top:7px;left:7px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:#f59e0b;color:#1a0a00;letter-spacing:0.05em;text-transform:uppercase;}
+.ads-rank-badge{position:absolute;top:7px;right:7px;font-size:9px;font-weight:700;width:20px;height:20px;border-radius:50%;background:rgba(14,11,31,0.75);color:#f0eaff;display:flex;align-items:center;justify-content:center;border:1px solid rgba(240,234,255,0.2);}
+.ads-card-body{padding:10px 10px 11px;}
+.ads-card-name{font-size:11px;font-weight:500;color:#f0eaff;margin-bottom:9px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.ads-metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 8px;margin-bottom:10px;}
+.ads-metrics-grid .stat-label{margin-bottom:1px;}
+.ads-metric-val{font-size:13px;font-weight:600;color:#f0eaff;line-height:1;}
+.ads-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:0.5px solid #2a2550;}
+.ads-status-pill{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;}
 .ads-status-pill.winning{background:rgba(16,185,129,0.15);color:#10b981;border:0.5px solid rgba(16,185,129,0.3);}
 .ads-status-pill.testing{background:rgba(124,58,237,0.1);color:#a78bfa;border:0.5px solid rgba(124,58,237,0.3);}
-.ads-action-text{font-size:11px;font-weight:500;}
+.ads-action-text{font-size:10px;font-weight:500;}
 .ads-action-text.scale{color:#10b981;}
 .ads-action-text.keep{color:#a78bfa;}
 .ads-action-text.monitor{color:#5a5080;}
@@ -1550,9 +1551,7 @@ async function loadAds(force) {
       card.className = 'ads-card';
       card.onclick = function() { window.open('https://adsmanager.facebook.com/adsmanager/manage/ads?act=1492877368066743', '_blank'); };
 
-      var thumbStyle = c.thumbnail
-        ? 'background-image:url(' + c.thumbnail + ');background-size:cover;background-position:center;'
-        : '';
+      var thumbStyle = c.thumbnail ? 'background-image:url(' + c.thumbnail + ');' : '';
       var thumbHtml = '<div class="ads-thumb" style="' + thumbStyle + '">'
         + (rank === 1 ? '<div class="ads-winner-badge">Winner</div>' : '')
         + '<div class="ads-rank-badge">' + rank + '</div>'
