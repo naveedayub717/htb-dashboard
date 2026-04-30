@@ -173,7 +173,6 @@ textarea::placeholder{color:#5a5080;}
 .ads-card{background:#13102a;border:0.5px solid #2a2550;border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.15s;}
 .ads-card:hover{border-color:#7c3aed;transform:translateY(-2px);box-shadow:0 4px 20px rgba(124,58,237,0.12);}
 .ads-thumb{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1630 0%,#0e0b1f 100%);display:flex;align-items:center;justify-content:center;}
-.ads-play-btn{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;padding-left:3px;}
 .ads-winner-badge{position:absolute;top:10px;left:10px;font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;background:#f59e0b;color:#1a0a00;letter-spacing:0.05em;text-transform:uppercase;}
 .ads-rank-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;width:24px;height:24px;border-radius:50%;background:rgba(14,11,31,0.75);color:#f0eaff;display:flex;align-items:center;justify-content:center;border:1px solid rgba(240,234,255,0.2);}
 .ads-card-body{padding:14px 16px 16px;}
@@ -1549,12 +1548,14 @@ async function loadAds(force) {
 
       var card = document.createElement('div');
       card.className = 'ads-card';
-      card.onclick = function() { openAdVideo(c.id); };
+      card.onclick = function() { window.open('https://adsmanager.facebook.com/adsmanager/manage/ads?act=1492877368066743', '_blank'); };
 
-      var thumbHtml = '<div class="ads-thumb">'
+      var thumbStyle = c.thumbnail
+        ? 'background-image:url(' + c.thumbnail + ');background-size:cover;background-position:center;'
+        : '';
+      var thumbHtml = '<div class="ads-thumb" style="' + thumbStyle + '">'
         + (rank === 1 ? '<div class="ads-winner-badge">Winner</div>' : '')
         + '<div class="ads-rank-badge">' + rank + '</div>'
-        + '<div class="ads-play-btn">&#9654;</div>'
         + '</div>';
 
       var bodyHtml = '<div class="ads-card-body">'
@@ -1605,15 +1606,6 @@ async function loadAds(force) {
     } else {
       console.error('Ads error:', e);
     }
-  }
-}
-
-async function openAdVideo(adId) {
-  try {
-    var res = await api('GET', '/api/ads/video/' + adId);
-    window.open(res.url, '_blank');
-  } catch(e) {
-    alert('Could not load video: ' + e.message);
   }
 }
 

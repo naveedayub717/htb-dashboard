@@ -724,10 +724,16 @@ app.get('/api/ads', auth, async (req, res) => {
     const chartStart = new Date(yr, mo - 5, 1);
     const chartSince = `${chartStart.getFullYear()}-${String(chartStart.getMonth() + 1).padStart(2, '0')}-01`;
 
-    const [insRes, chartRes] = await Promise.all([
+    const [insRes, chartRes, adsRes] = await Promise.all([
       apiFetch(`${base}/insights?level=ad&fields=ad_id,ad_name,spend,impressions,clicks,actions,cost_per_action_type&time_range={"since":"${since}","until":"${until}"}&limit=500&access_token=${token}`),
       apiFetch(`${base}/insights?level=ad&fields=ad_id,date_start&time_range={"since":"${chartSince}","until":"${until}"}&time_increment=monthly&limit=1000&access_token=${token}`),
+      apiFetch(`${base}/ads?fields=id,creative{thumbnail_url,image_url}&limit=500&access_token=${token}`),
     ]);
+
+    const thumbMap = {};
+    (adsRes.data || []).forEach(ad => {
+      thumbMap[ad.id] = ad.creative?.thumbnail_url || ad.creative?.image_url || null;
+    });
 
     const LEAD_TYPES = ['lead', 'onsite_conversion.lead_grouped', 'offsite_conversion.fb_pixel_lead'];
 
@@ -737,6 +743,7 @@ app.get('/api/ads', auth, async (req, res) => {
       return {
         id:          ad.ad_id,
         name:        ad.ad_name,
+        thumbnail:   thumbMap[ad.ad_id] || null,
         spend:       parseFloat(ad.spend || 0),
         leads:       parseInt(leadAct?.value || 0),
         cpl:         parseFloat(cplAct?.value || 0),
@@ -769,25 +776,6 @@ app.get('/api/ads', auth, async (req, res) => {
       chartMonths:    Object.keys(chartMonthCounts),
       chartAdCounts:  Object.values(chartMonthCounts),
     });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-app.get('/api/ads/video/:adId', auth, async (req, res) => {
-  try {
-    const token = await getSetting('meta_ads_token');
-    if (!token) return res.status(400).json({ error: 'No Meta Ads token configured.' });
-
-    const adData = await apiFetch(`https://graph.facebook.com/v19.0/${req.params.adId}?fields=creative{video_id}&access_token=${token}`);
-    const videoId = adData.creative?.video_id;
-    if (!videoId) return res.status(404).json({ error: 'No video found for this ad.' });
-
-    const videoData = await apiFetch(`https://graph.facebook.com/v19.0/${videoId}?fields=source&access_token=${token}`);
-    const url = videoData.source;
-    if (!url) return res.status(404).json({ error: 'No video URL available.' });
-
-    res.json({ url });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
