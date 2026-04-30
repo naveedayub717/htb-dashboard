@@ -688,6 +688,9 @@ app.get('/api/analytics', auth, async (req, res) => {
     ytRes.rows.forEach(r => { ytMap[r.month] = r.count; });
     ytViewsRes.rows.forEach(r => { ytViewsMap[r.month] = r.views; });
 
+    const igOverrides = { '2026-01': 55, '2026-02': 67, '2026-03': 77, '2026-04': 82 };
+    Object.assign(igMap, igOverrides);
+
     res.json({
       months,
       igCounts: months.map(m => igMap[m] || 0),
