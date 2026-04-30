@@ -774,6 +774,25 @@ app.get('/api/ads', auth, async (req, res) => {
   }
 });
 
+app.get('/api/ads/video/:adId', auth, async (req, res) => {
+  try {
+    const token = await getSetting('meta_ads_token');
+    if (!token) return res.status(400).json({ error: 'No Meta Ads token configured.' });
+
+    const adData = await apiFetch(`https://graph.facebook.com/v19.0/${req.params.adId}?fields=creative{video_id}&access_token=${token}`);
+    const videoId = adData.creative?.video_id;
+    if (!videoId) return res.status(404).json({ error: 'No video found for this ad.' });
+
+    const videoData = await apiFetch(`https://graph.facebook.com/v19.0/${videoId}?fields=source&access_token=${token}`);
+    const url = videoData.source;
+    if (!url) return res.status(404).json({ error: 'No video URL available.' });
+
+    res.json({ url });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── Serve SPA ─────────────────────────────────────────────────────────────────
 
 app.get('*', (req, res) => {

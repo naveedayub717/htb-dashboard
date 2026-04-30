@@ -169,11 +169,25 @@ textarea::placeholder{color:#5a5080;}
 .chart-card-title{font-size:14px;font-weight:600;color:#f0eaff;margin-bottom:3px;}
 .chart-card-sub{font-size:11px;color:#7a6fa0;margin-bottom:18px;}
 .chart-wrap{position:relative;height:280px;}
-.ads-creative-card{background:#13102a;border:0.5px solid #2a2550;border-radius:10px;padding:16px 20px;}
-.ads-creative-name{font-size:13px;font-weight:500;color:#f0eaff;}
-.ads-status-pill{font-size:9px;font-weight:600;padding:3px 9px;border-radius:10px;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
+.ads-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+.ads-card{background:#13102a;border:0.5px solid #2a2550;border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.15s;}
+.ads-card:hover{border-color:#7c3aed;transform:translateY(-2px);box-shadow:0 4px 20px rgba(124,58,237,0.12);}
+.ads-thumb{position:relative;width:100%;aspect-ratio:9/16;background:linear-gradient(160deg,#1a1630 0%,#0e0b1f 100%);display:flex;align-items:center;justify-content:center;}
+.ads-play-btn{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;padding-left:3px;}
+.ads-winner-badge{position:absolute;top:10px;left:10px;font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;background:#f59e0b;color:#1a0a00;letter-spacing:0.05em;text-transform:uppercase;}
+.ads-rank-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;width:24px;height:24px;border-radius:50%;background:rgba(14,11,31,0.75);color:#f0eaff;display:flex;align-items:center;justify-content:center;border:1px solid rgba(240,234,255,0.2);}
+.ads-card-body{padding:14px 16px 16px;}
+.ads-card-name{font-size:12px;font-weight:500;color:#f0eaff;margin-bottom:12px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:33px;}
+.ads-metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:14px;}
+.ads-metric-val{font-size:15px;font-weight:600;color:#f0eaff;margin-top:2px;line-height:1;}
+.ads-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:11px;border-top:0.5px solid #2a2550;}
+.ads-status-pill{font-size:9px;font-weight:600;padding:3px 9px;border-radius:10px;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;}
 .ads-status-pill.winning{background:rgba(16,185,129,0.15);color:#10b981;border:0.5px solid rgba(16,185,129,0.3);}
 .ads-status-pill.testing{background:rgba(124,58,237,0.1);color:#a78bfa;border:0.5px solid rgba(124,58,237,0.3);}
+.ads-action-text{font-size:11px;font-weight:500;}
+.ads-action-text.scale{color:#10b981;}
+.ads-action-text.keep{color:#a78bfa;}
+.ads-action-text.monitor{color:#5a5080;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -448,7 +462,7 @@ textarea::placeholder{color:#5a5080;}
     <div class="empty"><div class="empty-icon">&#9651;</div><div class="empty-text">No Meta Ads token</div><div class="empty-sub">Add your Meta Ads token in Settings to see data.</div></div>
   </div>
   <div id="ads-content" style="display:none;">
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;">
       <div class="stat-card">
         <div class="stat-label">Total Leads</div>
         <div class="stat-val" id="ads-total-leads">—</div>
@@ -456,7 +470,7 @@ textarea::placeholder{color:#5a5080;}
       </div>
       <div class="stat-card">
         <div class="stat-label">Calls Booked</div>
-        <input type="number" class="inp" id="ads-calls-booked" placeholder="0" min="0" style="width:100%;margin-top:6px;font-size:20px;font-weight:600;color:#f0eaff;padding:4px 0;border:none;background:transparent;outline:none;" oninput="saveCallsBooked(this)" />
+        <input type="number" class="inp" id="ads-calls-booked" placeholder="0" min="0" style="width:100%;margin-top:4px;font-size:20px;font-weight:600;color:#f0eaff;padding:4px 0;border:none;background:transparent;outline:none;" oninput="saveCallsBooked(this)" />
         <div class="stat-sub">Manual entry</div>
       </div>
       <div class="stat-card">
@@ -470,16 +484,13 @@ textarea::placeholder{color:#5a5080;}
         <div class="stat-sub">This month</div>
       </div>
     </div>
-    <div style="margin-bottom:24px;">
-      <div class="sec-hd" style="margin-bottom:12px;">
-        <div class="sec-hd-title">Ad Creatives</div>
-        <div class="count-pill" id="ads-creative-count">0</div>
-        <span style="font-size:11px;color:#5a5080;margin-left:4px;">ranked by leads</span>
-      </div>
-      <div id="ads-creatives-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    <div style="margin-bottom:8px;">
+      <div style="font-size:15px;font-weight:600;color:#f0eaff;margin-bottom:3px;">Winning creatives this month</div>
+      <div style="font-size:12px;color:#7a6fa0;margin-bottom:20px;">Ranked by highest leads generated</div>
+      <div class="ads-grid" id="ads-grid"></div>
     </div>
     <div class="chart-card" style="max-width:560px;">
-      <div class="chart-card-title">Ads per month</div>
+      <div class="chart-card-title">Ads posted per month</div>
       <div class="chart-card-sub">Active ad creatives — last 6 months</div>
       <div class="chart-wrap"><canvas id="chart-ads-per-month"></canvas></div>
     </div>
@@ -1509,40 +1520,59 @@ var _analyticsLoaded = false;
 
 var _adsLoaded = false;
 var _adsChart = null;
+var _adsData = null;
 
 async function loadAds(force) {
   if (_adsLoaded && !force) return;
   try {
     var data = await api('GET', '/api/ads');
     _adsLoaded = true;
+    _adsData = data;
     document.getElementById('ads-empty').style.display = 'none';
     document.getElementById('ads-content').style.display = 'block';
 
     document.getElementById('ads-total-leads').textContent = data.totalLeads;
     document.getElementById('ads-avg-cpl').textContent = '$' + data.avgCpl.toFixed(2);
     document.getElementById('ads-total-spend').textContent = '$' + Number(data.totalSpend).toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
-    document.getElementById('ads-creative-count').textContent = data.creatives.length;
 
-    var list = document.getElementById('ads-creatives-list');
-    list.innerHTML = '';
-    data.creatives.forEach(function(c) {
+    var callsBooked = parseInt(document.getElementById('ads-calls-booked').value) || 0;
+
+    var grid = document.getElementById('ads-grid');
+    grid.innerHTML = '';
+    data.creatives.forEach(function(c, i) {
+      var rank = i + 1;
       var winning = c.cpl > 0 && c.cpl < data.avgCpl;
       var pillCls = winning ? 'winning' : 'testing';
       var pillTxt = winning ? 'Winning' : 'Testing';
+      var actionCls = !winning ? 'monitor' : rank === 1 ? 'scale' : 'keep';
+      var actionTxt = !winning ? 'Monitor' : rank === 1 ? 'Scale' : 'Keep running';
+
       var card = document.createElement('div');
-      card.className = 'ads-creative-card';
-      card.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;">'
-        + '<div class="ads-creative-name">' + c.name + '</div>'
-        + '<span class="ads-status-pill ' + pillCls + '">' + pillTxt + '</span>'
-        + '</div>'
-        + '<div style="display:flex;gap:28px;flex-wrap:wrap;">'
-        + '<div><div class="stat-label">Leads</div><div style="font-size:16px;font-weight:600;color:#f0eaff;margin-top:2px;">' + c.leads + '</div></div>'
-        + '<div><div class="stat-label">Cost / Lead</div><div style="font-size:16px;font-weight:600;color:#f0eaff;margin-top:2px;">$' + c.cpl.toFixed(2) + '</div></div>'
-        + '<div><div class="stat-label">Spend</div><div style="font-size:16px;font-weight:600;color:#f0eaff;margin-top:2px;">$' + c.spend.toFixed(2) + '</div></div>'
-        + '<div><div class="stat-label">Impressions</div><div style="font-size:16px;font-weight:600;color:#f0eaff;margin-top:2px;">' + fv(c.impressions) + '</div></div>'
-        + '<div><div class="stat-label">Clicks</div><div style="font-size:16px;font-weight:600;color:#f0eaff;margin-top:2px;">' + fv(c.clicks) + '</div></div>'
+      card.className = 'ads-card';
+      card.onclick = function() { openAdVideo(c.id); };
+
+      var thumbHtml = '<div class="ads-thumb">'
+        + (rank === 1 ? '<div class="ads-winner-badge">Winner</div>' : '')
+        + '<div class="ads-rank-badge">' + rank + '</div>'
+        + '<div class="ads-play-btn">&#9654;</div>'
         + '</div>';
-      list.appendChild(card);
+
+      var bodyHtml = '<div class="ads-card-body">'
+        + '<div class="ads-card-name">' + c.name + '</div>'
+        + '<div class="ads-metrics-grid">'
+        + '<div><div class="stat-label">Leads</div><div class="ads-metric-val">' + c.leads + '</div></div>'
+        + '<div><div class="stat-label">Cost per lead</div><div class="ads-metric-val">$' + c.cpl.toFixed(2) + '</div></div>'
+        + '<div><div class="stat-label">Spend</div><div class="ads-metric-val">$' + c.spend.toFixed(2) + '</div></div>'
+        + '<div><div class="stat-label">Calls booked</div><div class="ads-metric-val">' + callsBooked + '</div></div>'
+        + '</div>'
+        + '<div class="ads-card-footer">'
+        + '<span class="ads-status-pill ' + pillCls + '">' + pillTxt + '</span>'
+        + '<span class="ads-action-text ' + actionCls + '">' + actionTxt + '</span>'
+        + '</div>'
+        + '</div>';
+
+      card.innerHTML = thumbHtml + bodyHtml;
+      grid.appendChild(card);
     });
 
     if (_adsChart) _adsChart.destroy();
@@ -1575,6 +1605,15 @@ async function loadAds(force) {
     } else {
       console.error('Ads error:', e);
     }
+  }
+}
+
+async function openAdVideo(adId) {
+  try {
+    var res = await api('GET', '/api/ads/video/' + adId);
+    window.open(res.url, '_blank');
+  } catch(e) {
+    alert('Could not load video: ' + e.message);
   }
 }
 
