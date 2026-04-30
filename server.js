@@ -735,27 +735,38 @@ app.get('/api/ads', auth, async (req, res) => {
       thumbMap[ad.id] = ad.creative?.thumbnail_url || ad.creative?.image_url || null;
     });
 
-    const LEAD_TYPES = ['lead', 'onsite_conversion.lead_grouped', 'offsite_conversion.fb_pixel_lead'];
+    const RESULT_TYPES = ['schedule', 'onsite_conversion.flow_complete', 'lead'];
 
     const creatives = (insRes.data || []).map(ad => {
-      const leadAct = (ad.actions || []).find(a => LEAD_TYPES.includes(a.action_type));
-      const cplAct  = (ad.cost_per_action_type || []).find(a => LEAD_TYPES.includes(a.action_type));
+      const actions = ad.actions || [];
+      const cpaList = ad.cost_per_action_type || [];
+
+      // Pick whichever tracked action type has the highest count
+      let bestAct = null;
+      for (const a of actions) {
+        if (RESULT_TYPES.includes(a.action_type)) {
+          if (!bestAct || parseInt(a.value) > parseInt(bestAct.value)) bestAct = a;
+        }
+      }
+      const results = parseInt(bestAct?.value || 0);
+      const cpaAct  = bestAct ? cpaList.find(a => a.action_type === bestAct.action_type) : null;
+
       return {
         id:          ad.ad_id,
         name:        ad.ad_name,
         thumbnail:   thumbMap[ad.ad_id] || null,
         spend:       parseFloat(ad.spend || 0),
-        leads:       parseInt(leadAct?.value || 0),
-        cpl:         parseFloat(cplAct?.value || 0),
+        results,
+        cpl:         parseFloat(cpaAct?.value || 0),
         impressions: parseInt(ad.impressions || 0),
         clicks:      parseInt(ad.clicks || 0),
       };
     });
-    creatives.sort((a, b) => b.leads - a.leads);
+    creatives.sort((a, b) => b.results - a.results);
 
-    const totalLeads = creatives.reduce((s, c) => s + c.leads, 0);
-    const totalSpend = parseFloat(creatives.reduce((s, c) => s + c.spend, 0).toFixed(2));
-    const avgCpl     = totalLeads > 0 ? parseFloat((totalSpend / totalLeads).toFixed(2)) : 0;
+    const totalResults = creatives.reduce((s, c) => s + c.results, 0);
+    const totalSpend   = parseFloat(creatives.reduce((s, c) => s + c.spend, 0).toFixed(2));
+    const avgCpl       = totalResults > 0 ? parseFloat((totalSpend / totalResults).toFixed(2)) : 0;
 
     const chartMonthCounts = {};
     for (let i = 0; i < 6; i++) {
@@ -768,7 +779,7 @@ app.get('/api/ads', auth, async (req, res) => {
     });
 
     res.json({
-      totalLeads,
+      totalResults,
       totalSpend,
       avgCpl,
       totalCreatives: creatives.length,

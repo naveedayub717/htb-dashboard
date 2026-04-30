@@ -464,8 +464,8 @@ textarea::placeholder{color:#5a5080;}
   <div id="ads-content" style="display:none;">
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;">
       <div class="stat-card">
-        <div class="stat-label">Total Leads</div>
-        <div class="stat-val" id="ads-total-leads">—</div>
+        <div class="stat-label">Total Results</div>
+        <div class="stat-val" id="ads-total-results">—</div>
         <div class="stat-sub">This month</div>
       </div>
       <div class="stat-card">
@@ -486,7 +486,7 @@ textarea::placeholder{color:#5a5080;}
     </div>
     <div style="margin-bottom:8px;">
       <div style="font-size:15px;font-weight:600;color:#f0eaff;margin-bottom:3px;">Winning creatives this month</div>
-      <div style="font-size:12px;color:#7a6fa0;margin-bottom:20px;">Ranked by highest leads generated</div>
+      <div style="font-size:12px;color:#7a6fa0;margin-bottom:20px;">Ranked by highest results generated</div>
       <div class="ads-grid" id="ads-grid"></div>
     </div>
     <div class="chart-card" style="max-width:560px;">
@@ -1531,7 +1531,7 @@ async function loadAds(force) {
     document.getElementById('ads-empty').style.display = 'none';
     document.getElementById('ads-content').style.display = 'block';
 
-    document.getElementById('ads-total-leads').textContent = data.totalLeads;
+    document.getElementById('ads-total-results').textContent = data.totalResults;
     document.getElementById('ads-avg-cpl').textContent = '$' + data.avgCpl.toFixed(2);
     document.getElementById('ads-total-spend').textContent = '$' + Number(data.totalSpend).toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
 
@@ -1560,8 +1560,8 @@ async function loadAds(force) {
       var bodyHtml = '<div class="ads-card-body">'
         + '<div class="ads-card-name">' + c.name + '</div>'
         + '<div class="ads-metrics-grid">'
-        + '<div><div class="stat-label">Leads</div><div class="ads-metric-val">' + c.leads + '</div></div>'
-        + '<div><div class="stat-label">Cost per lead</div><div class="ads-metric-val">$' + c.cpl.toFixed(2) + '</div></div>'
+        + '<div><div class="stat-label">Results</div><div class="ads-metric-val">' + c.results + '</div></div>'
+        + '<div><div class="stat-label">Cost per result</div><div class="ads-metric-val">$' + c.cpl.toFixed(2) + '</div></div>'
         + '<div><div class="stat-label">Spend</div><div class="ads-metric-val">$' + c.spend.toFixed(2) + '</div></div>'
         + '<div><div class="stat-label">Calls booked</div><div class="ads-metric-val">' + callsBooked + '</div></div>'
         + '</div>'
