@@ -169,6 +169,11 @@ textarea::placeholder{color:#5a5080;}
 .chart-card-title{font-size:14px;font-weight:600;color:#f0eaff;margin-bottom:3px;}
 .chart-card-sub{font-size:11px;color:#7a6fa0;margin-bottom:18px;}
 .chart-wrap{position:relative;height:280px;}
+.ads-creative-card{background:#13102a;border:0.5px solid #2a2550;border-radius:10px;padding:16px 20px;}
+.ads-creative-name{font-size:13px;font-weight:500;color:#f0eaff;}
+.ads-status-pill{font-size:9px;font-weight:600;padding:3px 9px;border-radius:10px;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
+.ads-status-pill.winning{background:rgba(16,185,129,0.15);color:#10b981;border:0.5px solid rgba(16,185,129,0.3);}
+.ads-status-pill.testing{background:rgba(124,58,237,0.1);color:#a78bfa;border:0.5px solid rgba(124,58,237,0.3);}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -222,6 +227,7 @@ textarea::placeholder{color:#5a5080;}
     <div class="ni" onclick="nav('posts',this)">&#9675; &nbsp;All Posts</div>
     <div class="ni" onclick="nav('outliers',this)">&#9677; &nbsp;Outliers</div>
     <div class="ni" onclick="nav('formats',this)">&#9671; &nbsp;Winning Formats</div>
+    <div class="ni" onclick="nav('ads',this);loadAds()">&#9670; &nbsp;Ads</div>
     <div class="ni" onclick="nav('workflow',this)">&#9670; &nbsp;Workflow</div>
     <div class="ni" onclick="nav('settings',this)">&#9676; &nbsp;Settings</div>
   </nav>
@@ -433,6 +439,53 @@ textarea::placeholder{color:#5a5080;}
   </div>
 </div>
 
+<div class="page" id="page-ads">
+  <div class="ph">
+    <div><div class="pt">Ads</div><div class="ps">Meta Ads performance &mdash; current month</div></div>
+    <button class="btn btn-border btn-sm" onclick="loadAds(true)">&#8635; Refresh</button>
+  </div>
+  <div id="ads-empty" style="display:none;">
+    <div class="empty"><div class="empty-icon">&#9651;</div><div class="empty-text">No Meta Ads token</div><div class="empty-sub">Add your Meta Ads token in Settings to see data.</div></div>
+  </div>
+  <div id="ads-content" style="display:none;">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
+      <div class="stat-card">
+        <div class="stat-label">Total Leads</div>
+        <div class="stat-val" id="ads-total-leads">—</div>
+        <div class="stat-sub">This month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Calls Booked</div>
+        <input type="number" class="inp" id="ads-calls-booked" placeholder="0" min="0" style="width:100%;margin-top:6px;font-size:20px;font-weight:600;color:#f0eaff;padding:4px 0;border:none;background:transparent;outline:none;" oninput="saveCallsBooked(this)" />
+        <div class="stat-sub">Manual entry</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Cost per Lead</div>
+        <div class="stat-val" id="ads-avg-cpl">—</div>
+        <div class="stat-sub">This month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Spend</div>
+        <div class="stat-val" id="ads-total-spend">—</div>
+        <div class="stat-sub">This month</div>
+      </div>
+    </div>
+    <div style="margin-bottom:24px;">
+      <div class="sec-hd" style="margin-bottom:12px;">
+        <div class="sec-hd-title">Ad Creatives</div>
+        <div class="count-pill" id="ads-creative-count">0</div>
+        <span style="font-size:11px;color:#5a5080;margin-left:4px;">ranked by leads</span>
+      </div>
+      <div id="ads-creatives-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+    <div class="chart-card" style="max-width:560px;">
+      <div class="chart-card-title">Ads per month</div>
+      <div class="chart-card-sub">Active ad creatives — last 6 months</div>
+      <div class="chart-wrap"><canvas id="chart-ads-per-month"></canvas></div>
+    </div>
+  </div>
+</div>
+
 <div class="page" id="page-workflow">
   <div class="ph"><div><div class="pt">Workflow</div></div></div>
   <iframe
@@ -455,6 +508,9 @@ textarea::placeholder{color:#5a5080;}
     <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:#f0eaff;">Anthropic API key</div>
     <input type="password" class="inp" id="s-ak" placeholder="sk-ant-..." style="width:100%;margin-bottom:6px;" />
     <div style="font-size:11px;color:#7a6fa0;margin-bottom:24px;">Free at <a href="https://console.anthropic.com" target="_blank" style="color:#a78bfa;">console.anthropic.com</a> &mdash; Key stored securely on server.</div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:#f0eaff;">Meta Ads Token</div>
+    <input type="password" class="inp" id="s-meta-ads" placeholder="Meta Ads access token" style="width:100%;margin-bottom:6px;" />
+    <div style="font-size:11px;color:#7a6fa0;margin-bottom:24px;">Used for the Ads page. Token stored securely on server.</div>
     <div style="border-top:0.5px solid #2a2550;margin-bottom:24px;"></div>
     <div style="font-size:13px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:#f0eaff;"><span class="plat-dot pd-ig"></span> Instagram Targets</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
@@ -637,6 +693,8 @@ async function loadApp() {
     D.hooks = data.hooks;
     D.hasIGToken = data.hasIGToken;
     D.hasYTKey = data.hasYTKey;
+    D.hasMetaAdsToken = data.hasMetaAdsToken;
+    if (data.adsCallsBooked) document.getElementById('ads-calls-booked').value = data.adsCallsBooked;
     D.igWeekTarget = data.igWeekTarget || 0;
     D.igMonthTarget = data.igMonthTarget || 0;
     D.ytWeekTarget = data.ytWeekTarget || 0;
@@ -1205,6 +1263,7 @@ async function saveSettings() {
   var tok=document.getElementById('s-tok').value.trim();
   var ytKey=document.getElementById('s-yt-key').value.trim();
   var ak=document.getElementById('s-ak').value.trim();
+  var metaAds=document.getElementById('s-meta-ads').value.trim();
   var igW=parseInt(document.getElementById('s-ig-week').value)||0;
   var igM=parseInt(document.getElementById('s-ig-month').value)||0;
   var ytW=parseInt(document.getElementById('s-yt-week').value)||0;
@@ -1213,11 +1272,13 @@ async function saveSettings() {
   if(tok) payload.igToken=tok;
   if(ytKey) payload.ytKey=ytKey;
   if(ak) payload.anthropicKey=ak;
+  if(metaAds) payload.metaAdsToken=metaAds;
   try {
     await api('PUT','/api/settings',payload);
     D.igWeekTarget=igW; D.igMonthTarget=igM; D.ytWeekTarget=ytW; D.ytMonthTarget=ytM;
     if(tok){ D.hasIGToken=true; document.getElementById('s-acc').textContent='@hakeemhoang'; }
     if(ytKey) D.hasYTKey=true;
+    if(metaAds) D.hasMetaAdsToken=true;
     renderTargetProgress();
     alert('Settings saved.');
   } catch(e){ alert('Error: '+e.message); }
@@ -1443,6 +1504,88 @@ function buildHookCard(h) {
 
 var _analyticsCharts = {};
 var _analyticsLoaded = false;
+
+// ── Ads ───────────────────────────────────────────────────────────────────────
+
+var _adsLoaded = false;
+var _adsChart = null;
+
+async function loadAds(force) {
+  if (_adsLoaded && !force) return;
+  try {
+    var data = await api('GET', '/api/ads');
+    _adsLoaded = true;
+    document.getElementById('ads-empty').style.display = 'none';
+    document.getElementById('ads-content').style.display = 'block';
+
+    document.getElementById('ads-total-leads').textContent = data.totalLeads;
+    document.getElementById('ads-avg-cpl').textContent = '$' + data.avgCpl.toFixed(2);
+    document.getElementById('ads-total-spend').textContent = '$' + Number(data.totalSpend).toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('ads-creative-count').textContent = data.creatives.length;
+
+    var list = document.getElementById('ads-creatives-list');
+    list.innerHTML = '';
+    data.creatives.forEach(function(c) {
+      var winning = c.cpl > 0 && c.cpl < data.avgCpl;
+      var pillCls = winning ? 'winning' : 'testing';
+      var pillTxt = winning ? 'Winning' : 'Testing';
+      var card = document.createElement('div');
+      card.className = 'ads-creative-card';
+      card.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;">'
+        + '<div class="ads-creative-name">' + c.name + '</div>'
+        + '<span class="ads-status-pill ' + pillCls + '">' + pillTxt + '</span>'
+        + '</div>'
+        + '<div style="display:flex;gap:28px;flex-wrap:wrap;">'
+        + '<div><div class="stat-label">Leads</div><div style="font-size:16px;font-weight:600;color:#f0eaff;margin-top:2px;">' + c.leads + '</div></div>'
+        + '<div><div class="stat-label">Cost / Lead</div><div style="font-size:16px;font-weight:600;color:#f0eaff;margin-top:2px;">$' + c.cpl.toFixed(2) + '</div></div>'
+        + '<div><div class="stat-label">Spend</div><div style="font-size:16px;font-weight:600;color:#f0eaff;margin-top:2px;">$' + c.spend.toFixed(2) + '</div></div>'
+        + '<div><div class="stat-label">Impressions</div><div style="font-size:16px;font-weight:600;color:#f0eaff;margin-top:2px;">' + fv(c.impressions) + '</div></div>'
+        + '<div><div class="stat-label">Clicks</div><div style="font-size:16px;font-weight:600;color:#f0eaff;margin-top:2px;">' + fv(c.clicks) + '</div></div>'
+        + '</div>';
+      list.appendChild(card);
+    });
+
+    if (_adsChart) _adsChart.destroy();
+    var sc = _chartDefaults.scales, tb = _chartDefaults.tooltipBase;
+    _adsChart = new Chart(
+      document.getElementById('chart-ads-per-month').getContext('2d'),
+      {
+        type: 'bar',
+        data: {
+          labels: data.chartMonths.map(_fmtMonth),
+          datasets: [{ label:'Ads', data:data.chartAdCounts, backgroundColor:'rgba(124,58,237,0.7)', borderColor:'#7c3aed', borderWidth:1, borderRadius:3 }]
+        },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins: {
+            legend:{ display:false },
+            tooltip: Object.assign({}, tb, { callbacks:{ label:function(c){ return ' '+c.parsed.y+' ads'; } } })
+          },
+          scales: {
+            x: sc.x,
+            y: Object.assign({}, sc.y, { ticks: Object.assign({}, sc.y.ticks, { stepSize:1 }) })
+          }
+        }
+      }
+    );
+  } catch(e) {
+    if (e.message && e.message.includes('No Meta Ads token')) {
+      document.getElementById('ads-empty').style.display = 'block';
+      document.getElementById('ads-content').style.display = 'none';
+    } else {
+      console.error('Ads error:', e);
+    }
+  }
+}
+
+var _callsBookedTimer = null;
+function saveCallsBooked(input) {
+  clearTimeout(_callsBookedTimer);
+  _callsBookedTimer = setTimeout(function() {
+    var v = parseInt(input.value) || 0;
+    api('PUT', '/api/settings', { adsCallsBooked: v }).catch(function(){});
+  }, 800);
+}
 
 function _fmtMonth(ym) {
   var p = ym.split('-');

@@ -139,7 +139,9 @@ app.get('/api/data', auth, async (req, res) => {
       hooks: hooks.rows,
       hasIGToken: !!settingsMap.ig_token,
       hasYTKey: !!settingsMap.yt_key,
+      hasMetaAdsToken: !!settingsMap.meta_ads_token,
       manualAvg: parseInt(settingsMap.manual_avg || '0') || 0,
+      adsCallsBooked: parseInt(settingsMap.ads_calls_booked || '0') || 0,
       igWeekTarget: parseInt(settingsMap.ig_week_target || '0') || 0,
       igMonthTarget: parseInt(settingsMap.ig_month_target || '0') || 0,
       ytWeekTarget: parseInt(settingsMap.yt_week_target || '0') || 0,
@@ -155,11 +157,13 @@ app.get('/api/data', auth, async (req, res) => {
 
 app.put('/api/settings', auth, async (req, res) => {
   try {
-    const { igToken, ytKey, anthropicKey, manualAvg, igWeekTarget, igMonthTarget, ytWeekTarget, ytMonthTarget } = req.body;
+    const { igToken, ytKey, anthropicKey, manualAvg, metaAdsToken, adsCallsBooked, igWeekTarget, igMonthTarget, ytWeekTarget, ytMonthTarget } = req.body;
     if (igToken !== undefined) await setSetting('ig_token', igToken);
     if (ytKey !== undefined) await setSetting('yt_key', ytKey);
     if (anthropicKey !== undefined) await setSetting('anthropic_key', anthropicKey);
     if (manualAvg !== undefined) await setSetting('manual_avg', String(manualAvg));
+    if (metaAdsToken !== undefined) await setSetting('meta_ads_token', metaAdsToken);
+    if (adsCallsBooked !== undefined) await setSetting('ads_calls_booked', String(adsCallsBooked));
     if (igWeekTarget !== undefined) await setSetting('ig_week_target', String(igWeekTarget));
     if (igMonthTarget !== undefined) await setSetting('ig_month_target', String(igMonthTarget));
     if (ytWeekTarget !== undefined) await setSetting('yt_week_target', String(ytWeekTarget));
@@ -696,6 +700,74 @@ app.get('/api/analytics', auth, async (req, res) => {
       igCounts: months.map(m => igMap[m] || 0),
       ytCounts: months.map(m => ytMap[m] || 0),
       ytViews:  months.map(m => ytViewsMap[m] || 0),
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ── Ads ───────────────────────────────────────────────────────────────────────
+
+app.get('/api/ads', auth, async (req, res) => {
+  try {
+    const token = await getSetting('meta_ads_token');
+    if (!token) return res.status(400).json({ error: 'No Meta Ads token configured. Add it in Settings.' });
+
+    const acct = '1492877368066743';
+    const base = `https://graph.facebook.com/v19.0/act_${acct}`;
+
+    const now = new Date();
+    const yr = now.getFullYear(), mo = now.getMonth();
+    const since = `${yr}-${String(mo + 1).padStart(2, '0')}-01`;
+    const until = `${yr}-${String(mo + 1).padStart(2, '0')}-${String(new Date(yr, mo + 1, 0).getDate()).padStart(2, '0')}`;
+
+    const chartStart = new Date(yr, mo - 5, 1);
+    const chartSince = `${chartStart.getFullYear()}-${String(chartStart.getMonth() + 1).padStart(2, '0')}-01`;
+
+    const [insRes, chartRes] = await Promise.all([
+      apiFetch(`${base}/insights?level=ad&fields=ad_id,ad_name,spend,impressions,clicks,actions,cost_per_action_type&time_range={"since":"${since}","until":"${until}"}&limit=500&access_token=${token}`),
+      apiFetch(`${base}/insights?level=ad&fields=ad_id,date_start&time_range={"since":"${chartSince}","until":"${until}"}&time_increment=monthly&limit=1000&access_token=${token}`),
+    ]);
+
+    const LEAD_TYPES = ['lead', 'onsite_conversion.lead_grouped', 'offsite_conversion.fb_pixel_lead'];
+
+    const creatives = (insRes.data || []).map(ad => {
+      const leadAct = (ad.actions || []).find(a => LEAD_TYPES.includes(a.action_type));
+      const cplAct  = (ad.cost_per_action_type || []).find(a => LEAD_TYPES.includes(a.action_type));
+      return {
+        id:          ad.ad_id,
+        name:        ad.ad_name,
+        spend:       parseFloat(ad.spend || 0),
+        leads:       parseInt(leadAct?.value || 0),
+        cpl:         parseFloat(cplAct?.value || 0),
+        impressions: parseInt(ad.impressions || 0),
+        clicks:      parseInt(ad.clicks || 0),
+      };
+    });
+    creatives.sort((a, b) => b.leads - a.leads);
+
+    const totalLeads = creatives.reduce((s, c) => s + c.leads, 0);
+    const totalSpend = parseFloat(creatives.reduce((s, c) => s + c.spend, 0).toFixed(2));
+    const avgCpl     = totalLeads > 0 ? parseFloat((totalSpend / totalLeads).toFixed(2)) : 0;
+
+    const chartMonthCounts = {};
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(yr, mo - 5 + i, 1);
+      chartMonthCounts[d.toISOString().slice(0, 7)] = 0;
+    }
+    (chartRes.data || []).forEach(row => {
+      const m = row.date_start.slice(0, 7);
+      if (m in chartMonthCounts) chartMonthCounts[m]++;
+    });
+
+    res.json({
+      totalLeads,
+      totalSpend,
+      avgCpl,
+      totalCreatives: creatives.length,
+      creatives,
+      chartMonths:    Object.keys(chartMonthCounts),
+      chartAdCounts:  Object.values(chartMonthCounts),
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
