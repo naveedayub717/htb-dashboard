@@ -1152,6 +1152,11 @@ async function promoteIGManual(fid) {
   catch(e){ alert('Error: '+e.message); }
 }
 
+async function demoteIGManual(fid) {
+  try { await api('PUT', '/api/ig-manual-formats/'+fid, { status:'testing' }); }
+  catch(e){ alert('Error: '+e.message); }
+}
+
 async function removeIGManual(fid) {
   try { await api('DELETE', '/api/ig-manual-formats/'+fid); }
   catch(e){ alert('Error: '+e.message); }
@@ -1178,6 +1183,11 @@ async function addYTFormat() {
 
 async function promoteYT(fid) {
   try { await api('PUT', '/api/yt-formats/'+fid, { status:'confirmed' }); }
+  catch(e){ alert('Error: '+e.message); }
+}
+
+async function demoteYT(fid) {
+  try { await api('PUT', '/api/yt-formats/'+fid, { status:'testing' }); }
   catch(e){ alert('Error: '+e.message); }
 }
 
@@ -1356,7 +1366,7 @@ function buildUserCard(f) {
   return h;
 }
 
-function buildManualCard(f, promoteFn, removeFn) {
+function buildManualCard(f, promoteFn, removeFn, demoteFn) {
   var isW=f.status==='confirmed';
   var id='manual-'+f.id;
   var h='<div class="wf-card'+(isW?' confirmed':'')+'"><div class="wf-badge '+(isW?'confirmed':'testing')+'">'+(isW?'Winner':'Testing')+'</div>'
@@ -1365,6 +1375,7 @@ function buildManualCard(f, promoteFn, removeFn) {
     +'<div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Steps</div>'+buildStepsH(f.steps);
   if(f.links&&f.links.length){ h+='<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'; f.links.forEach(function(lnk){ h+='<div style="margin-bottom:4px;"><a href="'+lnk+'" target="_blank" style="font-size:11px;color:#a78bfa;text-decoration:none;">&#8599; '+lnk+'</a></div>'; }); }
   h+='<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;">'
+    +(isW&&demoteFn?'<button class="btn btn-border btn-sm" onclick="'+demoteFn+'(\''+f.id+'\')" style="color:#9b8ec4;">Move to Testing</button>':'')
     +(isW?'':'<button class="btn btn-green btn-sm" onclick="'+promoteFn+'(\''+f.id+'\')">&#8594; Mark winner</button>')
     +'<button class="btn btn-border btn-sm" onclick="'+removeFn+'(\''+f.id+'\')" style="color:#7a6fa0;">Remove</button></div>'
     +'</div></div>';
@@ -1378,7 +1389,7 @@ function renderFormatsPage() {
   var demotedWFItems=WF.filter(function(f){ return demotedIds.indexOf(f.id)!==-1; });
   var wh=activeWF.map(buildPreCard).join('');
   var uw=D.userFormats.filter(function(f){ return f.status==='confirmed'; }); uw.forEach(function(f){ wh+=buildUserCard(f); });
-  var igmw=(D.igManualFormats||[]).filter(function(f){ return f.status==='confirmed'; }); igmw.forEach(function(f){ wh+=buildManualCard(f,'promoteIGManual','removeIGManual'); });
+  var igmw=(D.igManualFormats||[]).filter(function(f){ return f.status==='confirmed'; }); igmw.forEach(function(f){ wh+=buildManualCard(f,'promoteIGManual','removeIGManual','demoteIGManual'); });
   wg.innerHTML=wh; document.getElementById('win-ct').textContent=activeWF.length+uw.length+igmw.length;
   var th=TF.map(buildTFCard).join('')+demotedWFItems.map(buildDemotedPreCard).join('');
   var ut=D.userFormats.filter(function(f){ return f.status==='testing'; }); ut.forEach(function(f){ th+=buildUserCard(f); });
@@ -1388,7 +1399,7 @@ function renderFormatsPage() {
   document.getElementById('fmt-ig-ct').textContent=WF.length+TF.length+uw.length+ut.length+igmw.length+igmt.length;
   var ywg=document.getElementById('yt-win-grid'); var ytg=document.getElementById('yt-test-grid');
   var yw=D.ytFormats.filter(function(f){ return f.status==='confirmed'; }); var yt2=D.ytFormats.filter(function(f){ return f.status==='testing'; });
-  ywg.innerHTML=yw.length?yw.map(function(f){ return buildManualCard(f,'promoteYT','removeYT'); }).join(''):'<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9675;</div><div class="empty-text" style="font-size:12px;">No YouTube formats yet</div><div class="empty-sub">Add a format using the form below</div></div>';
+  ywg.innerHTML=yw.length?yw.map(function(f){ return buildManualCard(f,'promoteYT','removeYT','demoteYT'); }).join(''):'<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9675;</div><div class="empty-text" style="font-size:12px;">No YouTube formats yet</div><div class="empty-sub">Add a format using the form below</div></div>';
   ytg.innerHTML=yt2.length?yt2.map(function(f){ return buildManualCard(f,'promoteYT','removeYT'); }).join(''):'<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9675;</div><div class="empty-text" style="font-size:12px;">No testing formats</div></div>';
   document.getElementById('yt-win-ct').textContent=yw.length;
   document.getElementById('yt-test-ct').textContent=yt2.length;
