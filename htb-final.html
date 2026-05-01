@@ -394,7 +394,7 @@ rules:["The physical activity must be real and natural to Hakeem. Never forced."
 ];
 
 var D={
-  igPosts:[],ytVideos:[],userFormats:[],ytFormats:[],igManualFormats:[],hooks:[],
+  igPosts:[],ytVideos:[],userFormats:[],ytFormats:[],igManualFormats:[],hooks:[],demotedWF:[],
   token:'',ytKey:'',ak:'',manualAvg:0,
   igAvg:20000,ytAvg:0,ytAvgLong:0,ytAvgShort:0,
   sel:null,igPostFilter:'all',ytPostFilter:'all',ytOutFilter:'all',
@@ -411,6 +411,7 @@ function init(){
   D.ytFormats=JSON.parse(g('ytfmts')||'[]');
   D.hooks=JSON.parse(g('hooks')||'[]');
   D.igManualFormats=JSON.parse(g('igmfmts')||'[]');
+  D.demotedWF=JSON.parse(g('demotedwf')||'[]');
   var ig=g('igp'); if(ig){D.igPosts=JSON.parse(ig);recalcIG();}
   var yt=g('ytp'); if(yt){D.ytVideos=JSON.parse(yt);recalcYT();}
   if(D.token){document.getElementById('s-tok').value=D.token;document.getElementById('s-acc').textContent='@hakeemhoang';updateIGUI();}
@@ -892,11 +893,17 @@ function addYTFormat(){
 }
 
 function promoteWinner(pid){var f=D.userFormats.find(function(f){return f.pid===pid;});var p=D.igPosts.find(function(p){return p.id===pid;});if(f)f.status='confirmed';if(p)p.fStatus='confirmed';s('igp',JSON.stringify(D.igPosts));s('ufmts',JSON.stringify(D.userFormats));renderFormatsPage();renderOutliers();}
+function demoteWinner(pid){var f=D.userFormats.find(function(f){return f.pid===pid;});var p=D.igPosts.find(function(p){return p.id===pid;});if(f)f.status='testing';if(p)p.fStatus='testing';s('igp',JSON.stringify(D.igPosts));s('ufmts',JSON.stringify(D.userFormats));renderFormatsPage();renderOutliers();}
 function removeFmt(pid){D.userFormats=D.userFormats.filter(function(f){return f.pid!==pid;});var p=D.igPosts.find(function(p){return p.id===pid;});if(p)p.fStatus=null;s('igp',JSON.stringify(D.igPosts));s('ufmts',JSON.stringify(D.userFormats));renderFormatsPage();renderOutliers();}
 function promoteIGManual(fid){var f=(D.igManualFormats||[]).find(function(f){return f.id===fid;});if(f)f.status='confirmed';s('igmfmts',JSON.stringify(D.igManualFormats));renderFormatsPage();}
+function demoteIGManual(fid){var f=(D.igManualFormats||[]).find(function(f){return f.id===fid;});if(f)f.status='testing';s('igmfmts',JSON.stringify(D.igManualFormats));renderFormatsPage();}
 function removeIGManual(fid){D.igManualFormats=(D.igManualFormats||[]).filter(function(f){return f.id!==fid;});s('igmfmts',JSON.stringify(D.igManualFormats));renderFormatsPage();}
 function promoteYT(fid){var f=D.ytFormats.find(function(f){return f.id===fid;});if(f)f.status='confirmed';s('ytfmts',JSON.stringify(D.ytFormats));renderFormatsPage();}
+function demoteYT(fid){var f=D.ytFormats.find(function(f){return f.id===fid;});if(f)f.status='testing';s('ytfmts',JSON.stringify(D.ytFormats));renderFormatsPage();}
 function removeYT(fid){D.ytFormats=D.ytFormats.filter(function(f){return f.id!==fid;});s('ytfmts',JSON.stringify(D.ytFormats));renderFormatsPage();}
+function demotePreWinner(fid){if(!D.demotedWF)D.demotedWF=[];if(D.demotedWF.indexOf(fid)===-1)D.demotedWF.push(fid);s('demotedwf',JSON.stringify(D.demotedWF));renderFormatsPage();}
+function promotePreWinner(fid){D.demotedWF=(D.demotedWF||[]).filter(function(id){return id!==fid;});s('demotedwf',JSON.stringify(D.demotedWF));renderFormatsPage();}
+function demoteHook(fid){var h=(D.hooks||[]).find(function(h){return h.id===fid;});if(h)h.status='testing';s('hooks',JSON.stringify(D.hooks));renderHooks();}
 function addLink(pid){var inp=document.getElementById('lnk-'+pid);if(!inp)return;var v=inp.value.trim();if(!v){alert('Paste a link first.');return;}var f=D.userFormats.find(function(f){return f.pid===pid;});if(!f)return;if(!f.links)f.links=[];f.links.push(v);inp.value='';s('ufmts',JSON.stringify(D.userFormats));renderFormatsPage();setTimeout(function(){openCard('usr-'+pid);},50);}
 function removeLink(pid,idx){var f=D.userFormats.find(function(f){return f.pid===pid;});if(!f||!f.links)return;f.links.splice(idx,1);s('ufmts',JSON.stringify(D.userFormats));renderFormatsPage();setTimeout(function(){openCard('usr-'+pid);},50);}
 function addPreLink(fid){
@@ -1012,6 +1019,24 @@ function buildPreCard(f){
     +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
     +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
     +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="vi-inp" id="plnk-'+f.id+'" type="text" placeholder="Paste reference link..." style="flex:1;" /><button class="vi-btn" onclick="addPreLink(\''+f.id+'\')">Add link</button></div>'
+    +'<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;"><button class="btn btn-border btn-sm" onclick="demotePreWinner(\''+f.id+'\')" style="color:#666;">Move to Testing</button></div>'
+    +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
+    +'</div></div>';
+  return h;
+}
+
+function buildDemotedPreCard(f){
+  var id='pre-'+f.id;
+  var sw=buildSWHtml(id,f.name,f.type,f.steps);
+  var lh=buildLinksH(f.links||[],'pre-'+f.id,false,'addPreLink','removePreLink');
+  var h='<div class="wf-card"><div class="wf-badge testing">Testing</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score" style="color:#888;">'+f.score+' - '+f.type+' - '+f.month+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#999;">&#9656;</span></div>'
+    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#888;margin-bottom:10px;font-style:italic;">'+f.description+'</div><div class="sep"></div>'
+    +'<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>'+buildStepsH(f.steps)
+    +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
+    +'<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
+    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="vi-inp" id="plnk-'+f.id+'" type="text" placeholder="Paste reference link..." style="flex:1;" /><button class="vi-btn" onclick="addPreLink(\''+f.id+'\')">Add link</button></div>'
+    +'<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;"><button class="btn btn-green btn-sm" onclick="promotePreWinner(\''+f.id+'\')">&#8594; Mark winner</button></div>'
     +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
     +'</div></div>';
   return h;
@@ -1052,14 +1077,14 @@ function buildUserCard(f){
   h+='<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
     +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="vi-inp" id="lnk-'+f.pid+'" type="text" placeholder="Paste Instagram link..." style="flex:1;" /><button class="vi-btn" onclick="addLink(\''+f.pid+'\')">Add link</button></div>'
     +'<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;">'
-    +(isW?'':'<button class="btn btn-green btn-sm" onclick="promoteWinner(\''+f.pid+'\')">&#8594; Mark winner</button>')
+    +(isW?'<button class="btn btn-border btn-sm" onclick="demoteWinner(\''+f.pid+'\')" style="color:#666;">Move to Testing</button>':'<button class="btn btn-green btn-sm" onclick="promoteWinner(\''+f.pid+'\')">&#8594; Mark winner</button>')
     +'<button class="btn btn-border btn-sm" onclick="removeFmt(\''+f.pid+'\')" style="color:#999;">Remove</button></div>'
     +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
     +'</div></div>';
   return h;
 }
 
-function buildManualCard(f,promoteFn,removeFn){
+function buildManualCard(f,promoteFn,removeFn,demoteFn){
   var isW=f.status==='confirmed';
   var id='manual-'+f.id;
   var sw=buildSWHtml(id,f.name,'Manual',f.steps);
@@ -1069,6 +1094,7 @@ function buildManualCard(f,promoteFn,removeFn){
     +'<div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Steps</div>'+buildStepsH(f.steps);
   if(f.links&&f.links.length){h+='<div class="sep"></div><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>';f.links.forEach(function(lnk){h+='<div style="margin-bottom:4px;"><a href="'+lnk+'" target="_blank" style="font-size:11px;color:#1857a4;text-decoration:none;">&#8599; '+lnk+'</a></div>';});}
   h+='<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;">'
+    +(isW&&demoteFn?'<button class="btn btn-border btn-sm" onclick="'+demoteFn+'(\''+f.id+'\')" style="color:#666;">Move to Testing</button>':'')
     +(isW?'':'<button class="btn btn-green btn-sm" onclick="'+promoteFn+'(\''+f.id+'\')">&#8594; Mark winner</button>')
     +'<button class="btn btn-border btn-sm" onclick="'+removeFn+'(\''+f.id+'\')" style="color:#999;">Remove</button></div>'
     +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
@@ -1078,19 +1104,22 @@ function buildManualCard(f,promoteFn,removeFn){
 
 function renderFormatsPage(){
   var wg=document.getElementById('win-grid'); var tg=document.getElementById('test-grid');
-  var wh=WF.map(buildPreCard).join('');
+  var demotedIds=D.demotedWF||[];
+  var activeWF=WF.filter(function(f){return demotedIds.indexOf(f.id)===-1;});
+  var demotedWFItems=WF.filter(function(f){return demotedIds.indexOf(f.id)!==-1;});
+  var wh=activeWF.map(buildPreCard).join('');
   var uw=D.userFormats.filter(function(f){return f.status==='confirmed';}); uw.forEach(function(f){wh+=buildUserCard(f);});
-  var igmw=(D.igManualFormats||[]).filter(function(f){return f.status==='confirmed';}); igmw.forEach(function(f){wh+=buildManualCard(f,'promoteIGManual','removeIGManual');});
-  wg.innerHTML=wh; document.getElementById('win-ct').textContent=WF.length+uw.length+igmw.length;
-  var th=TF.map(buildTFCard).join('');
+  var igmw=(D.igManualFormats||[]).filter(function(f){return f.status==='confirmed';}); igmw.forEach(function(f){wh+=buildManualCard(f,'promoteIGManual','removeIGManual','demoteIGManual');});
+  wg.innerHTML=wh; document.getElementById('win-ct').textContent=activeWF.length+uw.length+igmw.length;
+  var th=TF.map(buildTFCard).join('')+demotedWFItems.map(buildDemotedPreCard).join('');
   var ut=D.userFormats.filter(function(f){return f.status==='testing';}); ut.forEach(function(f){th+=buildUserCard(f);});
   var igmt=(D.igManualFormats||[]).filter(function(f){return f.status==='testing';}); igmt.forEach(function(f){th+=buildManualCard(f,'promoteIGManual','removeIGManual');});
   if(!th)th='<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9677;</div><div class="empty-text" style="font-size:12px;">No testing formats</div></div>';
-  tg.innerHTML=th; document.getElementById('test-ct').textContent=TF.length+ut.length+igmt.length;
+  tg.innerHTML=th; document.getElementById('test-ct').textContent=TF.length+demotedWFItems.length+ut.length+igmt.length;
   document.getElementById('fmt-ig-ct').textContent=WF.length+TF.length+uw.length+ut.length+igmw.length+igmt.length;
   var ywg=document.getElementById('yt-win-grid'); var ytg=document.getElementById('yt-test-grid');
   var yw=D.ytFormats.filter(function(f){return f.status==='confirmed';}); var yt2=D.ytFormats.filter(function(f){return f.status==='testing';});
-  ywg.innerHTML=yw.length?yw.map(function(f){return buildManualCard(f,'promoteYT','removeYT');}).join(''):'<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9675;</div><div class="empty-text" style="font-size:12px;">No YouTube formats yet</div><div class="empty-sub">Add a format using the form below</div></div>';
+  ywg.innerHTML=yw.length?yw.map(function(f){return buildManualCard(f,'promoteYT','removeYT','demoteYT');}).join(''):'<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9675;</div><div class="empty-text" style="font-size:12px;">No YouTube formats yet</div><div class="empty-sub">Add a format using the form below</div></div>';
   ytg.innerHTML=yt2.length?yt2.map(function(f){return buildManualCard(f,'promoteYT','removeYT');}).join(''):'<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9675;</div><div class="empty-text" style="font-size:12px;">No testing formats</div></div>';
   document.getElementById('yt-win-ct').textContent=yw.length;
   document.getElementById('yt-test-ct').textContent=yt2.length;
@@ -1149,6 +1178,7 @@ function buildHookCard(h){
   if(h.link){o+='<div style="margin-bottom:8px;"><a href="'+h.link+'" target="_blank" style="font-size:11px;color:#1857a4;">&#8599; Reference video</a></div>';}
   o+='<div style="display:flex;justify-content:flex-end;gap:6px;">';
   if(!isW){o+='<button class="btn btn-green btn-sm" onclick="promoteHook(\''+h.id+'\')">&#8594; Mark winner</button>';}
+  if(isW){o+='<button class="btn btn-border btn-sm" onclick="demoteHook(\''+h.id+'\')" style="color:#666;">Move to Testing</button>';}
   o+='<button class="btn btn-border btn-sm" onclick="removeHook(\''+h.id+'\')" style="color:#999;">Remove</button>';
   o+='</div></div>';
   return o;
