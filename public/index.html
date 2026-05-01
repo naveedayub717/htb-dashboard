@@ -169,25 +169,6 @@ textarea::placeholder{color:#5a5080;}
 .chart-card-title{font-size:14px;font-weight:600;color:#f0eaff;margin-bottom:3px;}
 .chart-card-sub{font-size:11px;color:#7a6fa0;margin-bottom:18px;}
 .chart-wrap{position:relative;height:280px;}
-.ads-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px;}
-.ads-card{background:#13102a;border:0.5px solid #2a2550;border-radius:10px;overflow:hidden;cursor:pointer;transition:all 0.15s;}
-.ads-card:hover{border-color:#7c3aed;transform:translateY(-1px);box-shadow:0 4px 16px rgba(124,58,237,0.1);}
-.ads-thumb{position:relative;width:100%;height:140px;background:linear-gradient(160deg,#1a1630 0%,#0e0b1f 100%);background-size:cover;background-position:center;overflow:hidden;}
-.ads-winner-badge{position:absolute;top:7px;left:7px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:#f59e0b;color:#1a0a00;letter-spacing:0.05em;text-transform:uppercase;}
-.ads-rank-badge{position:absolute;top:7px;right:7px;font-size:9px;font-weight:700;width:20px;height:20px;border-radius:50%;background:rgba(14,11,31,0.75);color:#f0eaff;display:flex;align-items:center;justify-content:center;border:1px solid rgba(240,234,255,0.2);}
-.ads-card-body{padding:10px 10px 11px;}
-.ads-card-name{font-size:11px;font-weight:500;color:#f0eaff;margin-bottom:9px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.ads-metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 8px;margin-bottom:10px;}
-.ads-metrics-grid .stat-label{margin-bottom:1px;}
-.ads-metric-val{font-size:13px;font-weight:600;color:#f0eaff;line-height:1;}
-.ads-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:0.5px solid #2a2550;}
-.ads-status-pill{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;}
-.ads-status-pill.winning{background:rgba(16,185,129,0.15);color:#10b981;border:0.5px solid rgba(16,185,129,0.3);}
-.ads-status-pill.testing{background:rgba(124,58,237,0.1);color:#a78bfa;border:0.5px solid rgba(124,58,237,0.3);}
-.ads-action-text{font-size:10px;font-weight:500;}
-.ads-action-text.scale{color:#10b981;}
-.ads-action-text.keep{color:#a78bfa;}
-.ads-action-text.monitor{color:#5a5080;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -241,7 +222,6 @@ textarea::placeholder{color:#5a5080;}
     <div class="ni" onclick="nav('posts',this)">&#9675; &nbsp;All Posts</div>
     <div class="ni" onclick="nav('outliers',this)">&#9677; &nbsp;Outliers</div>
     <div class="ni" onclick="nav('formats',this)">&#9671; &nbsp;Winning Formats</div>
-    <div class="ni" onclick="nav('ads',this);loadAds()">&#9670; &nbsp;Ads</div>
     <div class="ni" onclick="nav('workflow',this)">&#9670; &nbsp;Workflow</div>
     <div class="ni" onclick="nav('settings',this)">&#9676; &nbsp;Settings</div>
   </nav>
@@ -453,50 +433,6 @@ textarea::placeholder{color:#5a5080;}
   </div>
 </div>
 
-<div class="page" id="page-ads">
-  <div class="ph">
-    <div><div class="pt">Ads</div><div class="ps">Meta Ads performance &mdash; current month</div></div>
-    <button class="btn btn-border btn-sm" onclick="loadAds(true)">&#8635; Refresh</button>
-  </div>
-  <div id="ads-empty" style="display:none;">
-    <div class="empty"><div class="empty-icon">&#9651;</div><div class="empty-text">No Meta Ads token</div><div class="empty-sub">Add your Meta Ads token in Settings to see data.</div></div>
-  </div>
-  <div id="ads-content" style="display:none;">
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;">
-      <div class="stat-card">
-        <div class="stat-label">Total Results</div>
-        <div class="stat-val" id="ads-total-results">—</div>
-        <div class="stat-sub">This month</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Calls Booked</div>
-        <input type="number" class="inp" id="ads-calls-booked" placeholder="0" min="0" style="width:100%;margin-top:4px;font-size:20px;font-weight:600;color:#f0eaff;padding:4px 0;border:none;background:transparent;outline:none;" oninput="saveCallsBooked(this)" />
-        <div class="stat-sub">Manual entry</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Avg Cost per Lead</div>
-        <div class="stat-val" id="ads-avg-cpl">—</div>
-        <div class="stat-sub">This month</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Spend</div>
-        <div class="stat-val" id="ads-total-spend">—</div>
-        <div class="stat-sub">This month</div>
-      </div>
-    </div>
-    <div style="margin-bottom:8px;">
-      <div style="font-size:15px;font-weight:600;color:#f0eaff;margin-bottom:3px;">Winning creatives this month</div>
-      <div style="font-size:12px;color:#7a6fa0;margin-bottom:20px;">Ranked by highest results generated</div>
-      <div class="ads-grid" id="ads-grid"></div>
-    </div>
-    <div class="chart-card" style="max-width:560px;">
-      <div class="chart-card-title">Ads posted per month</div>
-      <div class="chart-card-sub">Active ad creatives — last 6 months</div>
-      <div class="chart-wrap"><canvas id="chart-ads-per-month"></canvas></div>
-    </div>
-  </div>
-</div>
-
 <div class="page" id="page-workflow">
   <div class="ph"><div><div class="pt">Workflow</div></div></div>
   <iframe
@@ -519,9 +455,6 @@ textarea::placeholder{color:#5a5080;}
     <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:#f0eaff;">Anthropic API key</div>
     <input type="password" class="inp" id="s-ak" placeholder="sk-ant-..." style="width:100%;margin-bottom:6px;" />
     <div style="font-size:11px;color:#7a6fa0;margin-bottom:24px;">Free at <a href="https://console.anthropic.com" target="_blank" style="color:#a78bfa;">console.anthropic.com</a> &mdash; Key stored securely on server.</div>
-    <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:#f0eaff;">Meta Ads Token</div>
-    <input type="password" class="inp" id="s-meta-ads" placeholder="Meta Ads access token" style="width:100%;margin-bottom:6px;" />
-    <div style="font-size:11px;color:#7a6fa0;margin-bottom:24px;">Used for the Ads page. Token stored securely on server.</div>
     <div style="border-top:0.5px solid #2a2550;margin-bottom:24px;"></div>
     <div style="font-size:13px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:#f0eaff;"><span class="plat-dot pd-ig"></span> Instagram Targets</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
@@ -559,7 +492,6 @@ textarea::placeholder{color:#5a5080;}
 var TOKEN = localStorage.getItem('htb_token') || '';
 var USER_EMAIL = localStorage.getItem('htb_email') || '';
 var AUTH_MODE = 'login';
-var SW = {};
 var OUTLIER_PICK = { pid: null, plat: null, mult: null };
 
 var WF = [
@@ -704,8 +636,6 @@ async function loadApp() {
     D.hooks = data.hooks;
     D.hasIGToken = data.hasIGToken;
     D.hasYTKey = data.hasYTKey;
-    D.hasMetaAdsToken = data.hasMetaAdsToken;
-    if (data.adsCallsBooked) document.getElementById('ads-calls-booked').value = data.adsCallsBooked;
     D.igWeekTarget = data.igWeekTarget || 0;
     D.igMonthTarget = data.igMonthTarget || 0;
     D.ytWeekTarget = data.ytWeekTarget || 0;
@@ -1087,8 +1017,6 @@ async function runAI(pid) {
 function renderFormatPanel(post) {
   var f=post.format;
   var pan=document.getElementById('fmt-panel');
-  var swId='panel-'+post.id;
-  SW[swId]={formatName:f.name,formatType:f.hookType,steps:f.reusableTemplate||[]};
   var h='<div class="fp-hd"><div><div class="fp-title">'+f.name+'</div><div class="fp-meta">'+f.pillar+' &middot; Hook: '+f.hookType+'</div></div>'
     +'<div style="display:flex;gap:6px;flex-shrink:0;"><button class="btn btn-border btn-sm" onclick="addFmt(\''+post.id+'\',\'testing\')">+ Testing</button><button class="btn btn-dark btn-sm" onclick="addFmt(\''+post.id+'\',\'confirmed\')">Mark winner</button></div></div>';
   if(!f.isNewFormat)h+='<div class="match-box">Matches: <strong>'+f.matchedFormat+'</strong></div>';
@@ -1100,8 +1028,7 @@ function renderFormatPanel(post) {
   });
   h+='<div class="tpl-box"><div class="tpl-label">Reusable template</div>';
   (f.reusableTemplate||[]).forEach(function(step,i){ h+='<div class="tpl-line"><div class="tpl-num">'+(i+1)+'</div><div class="tpl-text">'+step+'</div></div>'; });
-  h+='</div><div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+swId+'\')">&#9997; Write a script in this format</button>';
-  h+=buildSWHtml(swId,f.name,f.hookType,f.reusableTemplate||[]);
+  h+='</div>';
   pan.innerHTML=h;
 }
 
@@ -1274,7 +1201,6 @@ async function saveSettings() {
   var tok=document.getElementById('s-tok').value.trim();
   var ytKey=document.getElementById('s-yt-key').value.trim();
   var ak=document.getElementById('s-ak').value.trim();
-  var metaAds=document.getElementById('s-meta-ads').value.trim();
   var igW=parseInt(document.getElementById('s-ig-week').value)||0;
   var igM=parseInt(document.getElementById('s-ig-month').value)||0;
   var ytW=parseInt(document.getElementById('s-yt-week').value)||0;
@@ -1283,13 +1209,11 @@ async function saveSettings() {
   if(tok) payload.igToken=tok;
   if(ytKey) payload.ytKey=ytKey;
   if(ak) payload.anthropicKey=ak;
-  if(metaAds) payload.metaAdsToken=metaAds;
   try {
     await api('PUT','/api/settings',payload);
     D.igWeekTarget=igW; D.igMonthTarget=igM; D.ytWeekTarget=ytW; D.ytMonthTarget=ytM;
     if(tok){ D.hasIGToken=true; document.getElementById('s-acc').textContent='@hakeemhoang'; }
     if(ytKey) D.hasYTKey=true;
-    if(metaAds) D.hasMetaAdsToken=true;
     renderTargetProgress();
     alert('Settings saved.');
   } catch(e){ alert('Error: '+e.message); }
@@ -1333,8 +1257,6 @@ function renderTargetProgress() {
 
 function toggleCard(id){ var b=document.getElementById('wfc-'+id); var a=document.getElementById('wfa-'+id); if(!b)return; var open=b.style.display!=='none'; b.style.display=open?'none':'block'; if(a)a.innerHTML=open?'&#9656;':'&#9660;'; }
 function openCard(id){ var b=document.getElementById('wfc-'+id); var a=document.getElementById('wfa-'+id); if(b)b.style.display='block'; if(a)a.innerHTML='&#9660;'; }
-function toggleSW(fid){ var sw=document.getElementById('sw-'+fid); if(!sw)return; sw.style.display=sw.style.display==='none'?'block':'none'; }
-
 function buildStepsH(steps){ return steps.map(function(step,i){ return '<div class="wf-step"><div class="wf-step-n">'+(i+1)+'</div><div>'+step+'</div></div>'; }).join(''); }
 function buildRulesH(rules){ return (rules||[]).map(function(r){ return '<div class="wf-rule">- '+r+'</div>'; }).join(''); }
 
@@ -1350,46 +1272,8 @@ function buildLinksH(links, pid, isTF, addFnName, rmFnName) {
   return h;
 }
 
-function buildSWHtml(fid, fmtName, fmtType, steps) {
-  SW[fid]={formatName:fmtName,formatType:fmtType,steps:steps};
-  return '<div id="sw-'+fid+'" class="sw-box">'
-    +'<div style="font-size:12px;font-weight:500;margin-bottom:4px;color:#f0eaff;">Write a script in this format</div>'
-    +'<div style="font-size:11px;color:#9b8ec4;margin-bottom:10px;">Paste your idea or brain dump. AI writes a full script in the <strong style="color:#f0eaff;">'+fmtName+'</strong> format using Hakeems voice.</div>'
-    +'<textarea id="sw-inp-'+fid+'" placeholder="e.g. I want to talk about how barbers undercharge because they are afraid of losing clients..."></textarea>'
-    +'<div style="display:flex;gap:6px;margin-top:8px;"><button class="btn btn-dark" style="font-size:11px;padding:6px 14px;" onclick="generateScript(\''+fid+'\')">Generate script</button>'
-    +'<button class="btn btn-border btn-sm" style="font-size:11px;" onclick="document.getElementById(\'sw-'+fid+'\').style.display=\'none\'">Cancel</button></div>'
-    +'<div id="sw-out-'+fid+'" style="display:none;margin-top:12px;"></div></div>';
-}
-
-async function generateScript(fid) {
-  var meta=SW[fid]; if(!meta){ alert('Format data not found.'); return; }
-  var inp=document.getElementById('sw-inp-'+fid);
-  var out=document.getElementById('sw-out-'+fid);
-  if(!inp||!out)return;
-  var idea=inp.value.trim(); if(!idea){ alert('Paste your idea first.'); return; }
-  out.style.display='block';
-  out.innerHTML='<div style="text-align:center;padding:20px;"><div class="spinner" style="margin:0 auto 10px;width:20px;height:20px;border-width:1.5px;"></div><div style="font-size:11px;color:#9b8ec4;">Writing script in '+meta.formatName+' format...</div></div>';
-  try {
-    var data=await api('POST', '/api/generate-script', { formatName:meta.formatName, formatType:meta.formatType, steps:meta.steps, idea:idea });
-    var script=data.script;
-    var formatted=script.split('\n').map(function(line){
-      line=line.trim(); if(!line)return '<div style="height:8px;"></div>';
-      if(/^(HOOK|SHAME|GRIND|TURNING|CLIMB|RESULT|LESSON|BODY|CLOSE|PAIR|LEFT|RIGHT|VISUAL|CTA|REFRAME|POINT|OPEN|QUESTION|ANSWER|SETUP|SCENE)/i.test(line)&&line.length<60) return '<div style="font-size:10px;font-weight:600;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.08em;margin-top:14px;margin-bottom:4px;">'+line+'</div>';
-      if(line.charAt(0)==='[') return '<div style="font-size:11px;color:#a78bfa;font-style:italic;padding:4px 0;">'+line+'</div>';
-      return '<div style="font-size:12px;color:#f0eaff;line-height:1.7;padding:1px 0;">'+line+'</div>';
-    }).join('');
-    var sid='sw-script-'+fid;
-    out.innerHTML='<div style="background:#0e0b1f;border:0.5px solid #2a2550;border-radius:8px;padding:14px;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div style="font-size:11px;font-weight:600;color:#10b981;">Script ready</div><button class="btn btn-border btn-sm" style="font-size:10px;" onclick="copyScript(\''+sid+'\')">Copy</button></div><div id="'+sid+'">'+formatted+'</div></div>';
-  } catch(e){
-    out.innerHTML='<div style="font-size:11px;color:#f87171;padding:10px;">Failed: '+e.message+'<br><br><button class="btn btn-border btn-sm" onclick="generateScript(\''+fid+'\')">Retry</button></div>';
-  }
-}
-
-function copyScript(id){ var el=document.getElementById(id); if(!el)return; navigator.clipboard.writeText(el.innerText).then(function(){ alert('Copied.'); }).catch(function(){ alert('Select and copy manually.'); }); }
-
 function buildPreCard(f) {
   var id='pre-'+f.id;
-  var sw=buildSWHtml(id,f.name,f.type,f.steps);
   var lh=buildLinksH(f.links||[],'pre-'+f.id,false,'addPreLink','removePreLink');
   var h='<div class="wf-card confirmed"><div class="wf-badge confirmed">Winner</div>'
     +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score">'+f.score+' &middot; '+f.type+' &middot; '+f.month+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
@@ -1398,14 +1282,12 @@ function buildPreCard(f) {
     +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
     +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
     +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="inp" id="plnk-'+f.id+'" type="text" placeholder="Paste reference link..." style="flex:1;font-size:11px;padding:5px 9px;" /><button class="btn btn-border btn-sm" onclick="addPreLink(\''+f.id+'\')">Add link</button></div>'
-    +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
     +'</div></div>';
   return h;
 }
 
 function buildTFCard(f) {
   var id='tpre-'+f.id;
-  var sw=buildSWHtml(id,f.name,f.type,f.steps);
   var lh=buildLinksH(f.links||[],f.id,true);
   var h='<div class="wf-card"><div class="wf-badge testing">Testing</div>'
     +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score" style="color:#9b8ec4;">'+f.score+' &middot; '+f.type+' &middot; '+f.month+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
@@ -1414,7 +1296,6 @@ function buildTFCard(f) {
     +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
     +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
     +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="inp" id="tlnk-'+f.id+'" type="text" placeholder="Paste Instagram link..." style="flex:1;font-size:11px;padding:5px 9px;" /><button class="btn btn-border btn-sm" onclick="addTFLink(\''+f.id+'\')">Add link</button></div>'
-    +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
     +'</div></div>';
   return h;
 }
@@ -1423,7 +1304,6 @@ function buildUserCard(f) {
   var isW=f.status==='confirmed';
   var fm=f.format; var id='usr-'+f.pid;
   var lh=buildLinksH(f.links||[],f.pid,false);
-  var sw=buildSWHtml(id,fm.name,fm.hookType,fm.reusableTemplate||[]);
   var h='<div class="wf-card'+(isW?' confirmed':'')+'"><div class="wf-badge '+(isW?'confirmed':'testing')+'">'+(isW?'Winner':'Testing')+'</div>'
     +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+fm.name+'</div><div class="wf-score" style="color:#a78bfa;">AI analyzed format</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
     +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#9b8ec4;margin-bottom:10px;font-style:italic;">'+fm.whyItWorks+'</div><div class="sep"></div>'
@@ -1440,7 +1320,6 @@ function buildUserCard(f) {
     +'<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;">'
     +(isW?'':'<button class="btn btn-green btn-sm" onclick="promoteWinner(\''+f.pid+'\')">&#8594; Mark winner</button>')
     +'<button class="btn btn-border btn-sm" onclick="removeFmt(\''+f.pid+'\')" style="color:#7a6fa0;">Remove</button></div>'
-    +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
     +'</div></div>';
   return h;
 }
@@ -1448,7 +1327,6 @@ function buildUserCard(f) {
 function buildManualCard(f, promoteFn, removeFn) {
   var isW=f.status==='confirmed';
   var id='manual-'+f.id;
-  var sw=buildSWHtml(id,f.name,'Manual',f.steps);
   var h='<div class="wf-card'+(isW?' confirmed':'')+'"><div class="wf-badge '+(isW?'confirmed':'testing')+'">'+(isW?'Winner':'Testing')+'</div>'
     +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
     +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#9b8ec4;margin-bottom:10px;font-style:italic;">'+f.whyItWorks+'</div><div class="sep"></div>'
@@ -1457,7 +1335,6 @@ function buildManualCard(f, promoteFn, removeFn) {
   h+='<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;">'
     +(isW?'':'<button class="btn btn-green btn-sm" onclick="'+promoteFn+'(\''+f.id+'\')">&#8594; Mark winner</button>')
     +'<button class="btn btn-border btn-sm" onclick="'+removeFn+'(\''+f.id+'\')" style="color:#7a6fa0;">Remove</button></div>'
-    +'<div class="sep"></div><button class="btn btn-dark" style="width:100%;font-size:12px;" onclick="toggleSW(\''+id+'\')">&#9997; Write a script in this format</button>'+sw
     +'</div></div>';
   return h;
 }
@@ -1515,107 +1392,6 @@ function buildHookCard(h) {
 
 var _analyticsCharts = {};
 var _analyticsLoaded = false;
-
-// ── Ads ───────────────────────────────────────────────────────────────────────
-
-var _adsLoaded = false;
-var _adsChart = null;
-var _adsData = null;
-
-async function loadAds(force) {
-  if (_adsLoaded && !force) return;
-  try {
-    var data = await api('GET', '/api/ads');
-    _adsLoaded = true;
-    _adsData = data;
-    document.getElementById('ads-empty').style.display = 'none';
-    document.getElementById('ads-content').style.display = 'block';
-
-    document.getElementById('ads-total-results').textContent = data.totalResults;
-    document.getElementById('ads-avg-cpl').textContent = '$' + data.avgCpl.toFixed(2);
-    document.getElementById('ads-total-spend').textContent = '$' + Number(data.totalSpend).toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2});
-
-    var callsBooked = parseInt(document.getElementById('ads-calls-booked').value) || 0;
-
-    var grid = document.getElementById('ads-grid');
-    grid.innerHTML = '';
-    data.creatives.forEach(function(c, i) {
-      var rank = i + 1;
-      var winning = c.cpl > 0 && c.cpl < data.avgCpl;
-      var pillCls = winning ? 'winning' : 'testing';
-      var pillTxt = winning ? 'Winning' : 'Testing';
-      var actionCls = !winning ? 'monitor' : rank === 1 ? 'scale' : 'keep';
-      var actionTxt = !winning ? 'Monitor' : rank === 1 ? 'Scale' : 'Keep running';
-
-      var card = document.createElement('div');
-      card.className = 'ads-card';
-      card.onclick = function() { window.open('https://adsmanager.facebook.com/adsmanager/manage/ads?act=1492877368066743', '_blank'); };
-
-      var thumbStyle = c.thumbnail ? 'background-image:url(' + c.thumbnail + ');' : '';
-      var thumbHtml = '<div class="ads-thumb" style="' + thumbStyle + '">'
-        + (rank === 1 ? '<div class="ads-winner-badge">Winner</div>' : '')
-        + '<div class="ads-rank-badge">' + rank + '</div>'
-        + '</div>';
-
-      var bodyHtml = '<div class="ads-card-body">'
-        + '<div class="ads-card-name">' + c.name + '</div>'
-        + '<div class="ads-metrics-grid">'
-        + '<div><div class="stat-label">Results</div><div class="ads-metric-val">' + c.results + '</div></div>'
-        + '<div><div class="stat-label">Cost per result</div><div class="ads-metric-val">$' + c.cpl.toFixed(2) + '</div></div>'
-        + '<div><div class="stat-label">Spend</div><div class="ads-metric-val">$' + c.spend.toFixed(2) + '</div></div>'
-        + '<div><div class="stat-label">Calls booked</div><div class="ads-metric-val">' + callsBooked + '</div></div>'
-        + '</div>'
-        + '<div class="ads-card-footer">'
-        + '<span class="ads-status-pill ' + pillCls + '">' + pillTxt + '</span>'
-        + '<span class="ads-action-text ' + actionCls + '">' + actionTxt + '</span>'
-        + '</div>'
-        + '</div>';
-
-      card.innerHTML = thumbHtml + bodyHtml;
-      grid.appendChild(card);
-    });
-
-    if (_adsChart) _adsChart.destroy();
-    var sc = _chartDefaults.scales, tb = _chartDefaults.tooltipBase;
-    _adsChart = new Chart(
-      document.getElementById('chart-ads-per-month').getContext('2d'),
-      {
-        type: 'bar',
-        data: {
-          labels: data.chartMonths.map(_fmtMonth),
-          datasets: [{ label:'Ads', data:data.chartAdCounts, backgroundColor:'rgba(124,58,237,0.7)', borderColor:'#7c3aed', borderWidth:1, borderRadius:3 }]
-        },
-        options: {
-          responsive:true, maintainAspectRatio:false,
-          plugins: {
-            legend:{ display:false },
-            tooltip: Object.assign({}, tb, { callbacks:{ label:function(c){ return ' '+c.parsed.y+' ads'; } } })
-          },
-          scales: {
-            x: sc.x,
-            y: Object.assign({}, sc.y, { ticks: Object.assign({}, sc.y.ticks, { stepSize:1 }) })
-          }
-        }
-      }
-    );
-  } catch(e) {
-    if (e.message && e.message.includes('No Meta Ads token')) {
-      document.getElementById('ads-empty').style.display = 'block';
-      document.getElementById('ads-content').style.display = 'none';
-    } else {
-      console.error('Ads error:', e);
-    }
-  }
-}
-
-var _callsBookedTimer = null;
-function saveCallsBooked(input) {
-  clearTimeout(_callsBookedTimer);
-  _callsBookedTimer = setTimeout(function() {
-    var v = parseInt(input.value) || 0;
-    api('PUT', '/api/settings', { adsCallsBooked: v }).catch(function(){});
-  }, 800);
-}
 
 function _fmtMonth(ym) {
   var p = ym.split('-');
