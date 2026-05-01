@@ -517,7 +517,7 @@ var TF = [
 ];
 
 var D = {
-  igPosts:[], ytVideos:[], userFormats:[], ytFormats:[], igManualFormats:[], hooks:[],
+  igPosts:[], ytVideos:[], userFormats:[], ytFormats:[], igManualFormats:[], hooks:[], demotedWF:[],
   hasIGToken:false, hasYTKey:false,
   igWeekTarget:0, igMonthTarget:0, ytWeekTarget:0, ytMonthTarget:0,
   sel:null, igPostFilter:'all', ytPostFilter:'all', ytOutFilter:'all',
@@ -619,6 +619,8 @@ function handleWSMessage(msg) {
       WF.forEach(function(f){ f.links = wfl[f.id] || []; });
       TF.forEach(function(f){ f.links = wfl['tf-'+f.id] || []; });
       renderFormatsPage(); break;
+    case 'demotedwf':
+      D.demotedWF = msg.data; renderFormatsPage(); break;
   }
 }
 
@@ -644,6 +646,7 @@ async function loadApp() {
     if (D.igMonthTarget) document.getElementById('s-ig-month').value = D.igMonthTarget;
     if (D.ytWeekTarget) document.getElementById('s-yt-week').value = D.ytWeekTarget;
     if (D.ytMonthTarget) document.getElementById('s-yt-month').value = D.ytMonthTarget;
+    D.demotedWF = data.demotedWF || [];
     var wfl = data.wflinks || {};
     WF.forEach(function(f){ if(wfl[f.id]) f.links = wfl[f.id]; });
     TF.forEach(function(f){ if(wfl['tf-'+f.id]) f.links = wfl['tf-'+f.id]; });
@@ -1078,6 +1081,19 @@ function saveWFLinks() {
   api('PUT', '/api/settings/wflinks', map).catch(function(e){ console.error('WF links save failed:', e.message); });
 }
 
+function demotePreWinner(fid) {
+  if(!D.demotedWF)D.demotedWF=[];
+  if(D.demotedWF.indexOf(fid)===-1)D.demotedWF.push(fid);
+  api('PUT', '/api/settings/demotedwf', D.demotedWF).catch(function(e){ console.error('demotedwf save failed:', e.message); });
+  renderFormatsPage();
+}
+
+function promotePreWinner(fid) {
+  D.demotedWF=(D.demotedWF||[]).filter(function(id){ return id!==fid; });
+  api('PUT', '/api/settings/demotedwf', D.demotedWF).catch(function(e){ console.error('demotedwf save failed:', e.message); });
+  renderFormatsPage();
+}
+
 function addPreLink(fid) {
   var inp=document.getElementById('plnk-'+fid); if(!inp)return;
   var v=inp.value.trim(); if(!v){ alert('Paste a link first.'); return; }
@@ -1282,6 +1298,22 @@ function buildPreCard(f) {
     +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
     +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
     +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="inp" id="plnk-'+f.id+'" type="text" placeholder="Paste reference link..." style="flex:1;font-size:11px;padding:5px 9px;" /><button class="btn btn-border btn-sm" onclick="addPreLink(\''+f.id+'\')">Add link</button></div>'
+    +'<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;"><button class="btn btn-border btn-sm" onclick="demotePreWinner(\''+f.id+'\')" style="color:#9b8ec4;">Move to Testing</button></div>'
+    +'</div></div>';
+  return h;
+}
+
+function buildDemotedPreCard(f) {
+  var id='pre-'+f.id;
+  var lh=buildLinksH(f.links||[],'pre-'+f.id,false,'addPreLink','removePreLink');
+  var h='<div class="wf-card"><div class="wf-badge testing">Testing</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleCard(\''+id+'\')"><div><div class="wf-name">'+f.name+'</div><div class="wf-score" style="color:#9b8ec4;">'+f.score+' &middot; '+f.type+' &middot; '+f.month+'</div></div><span id="wfa-'+id+'" style="font-size:12px;color:#7a6fa0;">&#9656;</span></div>'
+    +'<div id="wfc-'+id+'" style="display:none;margin-top:12px;"><div style="font-size:11px;color:#9b8ec4;margin-bottom:10px;font-style:italic;">'+f.description+'</div><div class="sep"></div>'
+    +'<div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:8px;">Format structure</div>'+buildStepsH(f.steps)
+    +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Rules</div>'+buildRulesH(f.rules)
+    +'<div class="sep"></div><div style="font-size:10px;color:#7a6fa0;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">Reference videos</div>'+lh
+    +'<div style="display:flex;gap:5px;margin-top:6px;"><input class="inp" id="plnk-'+f.id+'" type="text" placeholder="Paste reference link..." style="flex:1;font-size:11px;padding:5px 9px;" /><button class="btn btn-border btn-sm" onclick="addPreLink(\''+f.id+'\')">Add link</button></div>'
+    +'<div class="sep"></div><div style="display:flex;justify-content:flex-end;gap:6px;"><button class="btn btn-green btn-sm" onclick="promotePreWinner(\''+f.id+'\')">&#8594; Mark winner</button></div>'
     +'</div></div>';
   return h;
 }
@@ -1341,15 +1373,18 @@ function buildManualCard(f, promoteFn, removeFn) {
 
 function renderFormatsPage() {
   var wg=document.getElementById('win-grid'); var tg=document.getElementById('test-grid');
-  var wh=WF.map(buildPreCard).join('');
+  var demotedIds=D.demotedWF||[];
+  var activeWF=WF.filter(function(f){ return demotedIds.indexOf(f.id)===-1; });
+  var demotedWFItems=WF.filter(function(f){ return demotedIds.indexOf(f.id)!==-1; });
+  var wh=activeWF.map(buildPreCard).join('');
   var uw=D.userFormats.filter(function(f){ return f.status==='confirmed'; }); uw.forEach(function(f){ wh+=buildUserCard(f); });
   var igmw=(D.igManualFormats||[]).filter(function(f){ return f.status==='confirmed'; }); igmw.forEach(function(f){ wh+=buildManualCard(f,'promoteIGManual','removeIGManual'); });
-  wg.innerHTML=wh; document.getElementById('win-ct').textContent=WF.length+uw.length+igmw.length;
-  var th=TF.map(buildTFCard).join('');
+  wg.innerHTML=wh; document.getElementById('win-ct').textContent=activeWF.length+uw.length+igmw.length;
+  var th=TF.map(buildTFCard).join('')+demotedWFItems.map(buildDemotedPreCard).join('');
   var ut=D.userFormats.filter(function(f){ return f.status==='testing'; }); ut.forEach(function(f){ th+=buildUserCard(f); });
   var igmt=(D.igManualFormats||[]).filter(function(f){ return f.status==='testing'; }); igmt.forEach(function(f){ th+=buildManualCard(f,'promoteIGManual','removeIGManual'); });
   if(!th)th='<div class="empty"><div class="empty-icon" style="font-size:20px;">&#9677;</div><div class="empty-text" style="font-size:12px;">No testing formats</div></div>';
-  tg.innerHTML=th; document.getElementById('test-ct').textContent=TF.length+ut.length+igmt.length;
+  tg.innerHTML=th; document.getElementById('test-ct').textContent=TF.length+demotedWFItems.length+ut.length+igmt.length;
   document.getElementById('fmt-ig-ct').textContent=WF.length+TF.length+uw.length+ut.length+igmw.length+igmt.length;
   var ywg=document.getElementById('yt-win-grid'); var ytg=document.getElementById('yt-test-grid');
   var yw=D.ytFormats.filter(function(f){ return f.status==='confirmed'; }); var yt2=D.ytFormats.filter(function(f){ return f.status==='testing'; });

@@ -145,6 +145,7 @@ app.get('/api/data', auth, async (req, res) => {
       ytWeekTarget: parseInt(settingsMap.yt_week_target || '0') || 0,
       ytMonthTarget: parseInt(settingsMap.yt_month_target || '0') || 0,
       wflinks: settingsMap.wflinks ? JSON.parse(settingsMap.wflinks) : {},
+      demotedWF: settingsMap.demotedwf ? JSON.parse(settingsMap.demotedwf) : [],
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -174,6 +175,16 @@ app.put('/api/settings/wflinks', auth, async (req, res) => {
   try {
     await setSetting('wflinks', JSON.stringify(req.body));
     broadcast({ type: 'wflinks', data: req.body });
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.put('/api/settings/demotedwf', auth, async (req, res) => {
+  try {
+    await setSetting('demotedwf', JSON.stringify(req.body));
+    broadcast({ type: 'demotedwf', data: req.body });
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: e.message });
